@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MikroTik PPPoE Server Generator — RouterOS Config with RADIUS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0E1420;
+    --bg-panel: #161D2B;
+    --bg-panel-2: #1B2333;
+    --bg-input: #10161F;
+    --border: #2A3448;
+    --border-soft: #202940;
+    --text-primary: #E8ECF4;
+    --text-secondary: #96A1B8;
+    --text-dim: #5B6479;
+    --accent: #3DDC84;
+    --accent-soft: rgba(61, 220, 132, 0.13);
+    --accent-ring: rgba(61, 220, 132, 0.35);
+    --amber: #F5A623;
+    --red: #E5484D;
+    --mono-bg: #090D14;
+    --font-display: 'Space Grotesk', sans-serif;
+    --font-body: 'Inter', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+    --radius: 8px;
+    --radius-lg: 12px;
+  }
+
+  * { box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    margin: 0;
+    background:
+      radial-gradient(1100px 500px at 85% -10%, rgba(61,220,132,0.07), transparent 60%),
+      radial-gradient(900px 400px at -10% 10%, rgba(245,166,35,0.05), transparent 55%),
+      var(--bg);
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  a { color: var(--accent); }
+
+  ::selection { background: var(--accent-soft); color: var(--text-primary); }
+
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  .wrap {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 0 24px 80px;
+  }
+
+  /* ---------- Header ---------- */
+
+  header {
+    padding: 56px 0 40px;
+    border-bottom: 1px solid var(--border-soft);
+    margin-bottom: 40px;
+  }
+
+  .leds {
+    display: flex;
+    gap: 7px;
+    margin-bottom: 22px;
+  }
+
+  .led {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--text-dim);
+  }
+
+  .led.on {
+    background: var(--accent);
+    box-shadow: 0 0 8px 1px var(--accent-ring);
+    animation: blink 2.6s ease-in-out infinite;
+  }
+  .led.on:nth-child(2) { animation-delay: .5s; }
+  .led.on:nth-child(4) { background: var(--amber); box-shadow: 0 0 8px 1px rgba(245,166,35,.35); animation-delay: 1.1s; }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: .35; }
+  }
+
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    letter-spacing: .06em;
+    color: var(--text-dim);
+    margin-bottom: 14px;
+  }
+
+  h1 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(28px, 4vw, 42px);
+    line-height: 1.15;
+    margin: 0 0 14px;
+    letter-spacing: -0.01em;
+  }
+
+  h1 .accent { color: var(--accent); }
+
+  header p {
+    color: var(--text-secondary);
+    font-size: 16px;
+    max-width: 620px;
+    margin: 0;
+  }
+
+  /* ---------- Layout ---------- */
+
+  .grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 28px;
+    align-items: start;
+  }
+
+  @media (max-width: 880px) {
+    .grid { grid-template-columns: 1fr; }
+  }
+
+  /* ---------- Form panel ---------- */
+
+  .panel {
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 28px;
+  }
+
+  fieldset {
+    border: 0;
+    margin: 0 0 26px;
+    padding: 0;
+  }
+  fieldset:last-of-type { margin-bottom: 0; }
+
+  legend {
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--accent);
+    padding: 0 0 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+  }
+
+  legend::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--border-soft);
+  }
+
+  .field-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .field {
+    margin-bottom: 14px;
+  }
+  .field:last-child { margin-bottom: 0; }
+
+  label {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
+  }
+
+  label .hint {
+    font-weight: 400;
+    color: var(--text-dim);
+  }
+
+  input[type="text"], input[type="password"] {
+    width: 100%;
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    color: var(--text-primary);
+    font-family: var(--font-mono);
+    font-size: 13.5px;
+    padding: 10px 12px;
+    border-radius: var(--radius);
+    transition: border-color .15s ease, box-shadow .15s ease;
+  }
+
+  input[type="text"]:focus, input[type="password"]:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+    outline: none;
+  }
+
+  input::placeholder { color: var(--text-dim); }
+
+  .checkbox-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 12px;
+  }
+
+  .checkbox-row input { margin-top: 3px; accent-color: var(--accent); }
+
+  .checkbox-row .cb-text { font-size: 13px; color: var(--text-secondary); }
+  .checkbox-row .cb-text strong { color: var(--text-primary); font-weight: 500; }
+
+  /* ---------- Output panel ---------- */
+
+  .output-col { position: sticky; top: 24px; }
+
+  .terminal {
+    background: var(--mono-bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+  }
+
+  .term-bar {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 16px;
+    background: var(--bg-panel-2);
+    border-bottom: 1px solid var(--border-soft);
+  }
+
+  .dots { display: flex; gap: 6px; }
+  .dots span { width: 10px; height: 10px; border-radius: 50%; display: block; }
+  .dots span:nth-child(1) { background: #E5484D; }
+  .dots span:nth-child(2) { background: #F5A623; }
+  .dots span:nth-child(3) { background: #3DDC84; }
+
+  .term-filename {
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    color: var(--text-dim);
+  }
+
+  .term-body {
+    padding: 20px;
+    max-height: 620px;
+    overflow: auto;
+  }
+
+  #output {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    line-height: 1.65;
+    white-space: pre;
+    margin: 0;
+    color: #C9E8D3;
+  }
+
+  #output .c { color: var(--text-dim); }
+  #output .k { color: var(--accent); }
+  #output .v { color: #A9C4FF; }
+
+  .cursor {
+    display: inline-block;
+    width: 7px;
+    height: 14px;
+    background: var(--accent);
+    vertical-align: text-bottom;
+    animation: caret 1s steps(1) infinite;
+  }
+  @keyframes caret { 50% { opacity: 0; } }
+
+  .term-actions {
+    display: flex;
+    gap: 10px;
+    padding: 14px 16px;
+    border-top: 1px solid var(--border-soft);
+    background: var(--bg-panel-2);
+  }
+
+  button {
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 600;
+    padding: 10px 16px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: border-color .15s ease, background .15s ease, transform .05s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  button:hover { border-color: var(--accent); }
+  button:active { transform: translateY(1px); }
+
+  button.primary {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #06210F;
+  }
+  button.primary:hover { background: #34C976; }
+
+  button.copied { background: var(--accent); border-color: var(--accent); color: #06210F; }
+
+  /* ---------- About / content section ---------- */
+
+  .about {
+    margin-top: 64px;
+    padding-top: 40px;
+    border-top: 1px solid var(--border-soft);
+  }
+
+  .about h2 {
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 600;
+    margin: 0 0 18px;
+  }
+
+  .about-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin: 24px 0 32px;
+  }
+
+  @media (max-width: 780px) {
+    .about-grid { grid-template-columns: 1fr; }
+  }
+
+  .about-card {
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px;
+  }
+
+  .about-card .tag {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: .05em;
+  }
+
+  .about-card p {
+    font-size: 13.5px;
+    color: var(--text-secondary);
+    margin: 8px 0 0;
+  }
+
+  .about p.lead {
+    color: var(--text-secondary);
+    font-size: 15px;
+    max-width: 760px;
+  }
+
+  .note {
+    margin-top: 28px;
+    padding: 16px 18px;
+    background: rgba(245, 166, 35, 0.07);
+    border: 1px solid rgba(245, 166, 35, 0.25);
+    border-radius: var(--radius);
+    font-size: 13.5px;
+    color: var(--text-secondary);
+  }
+  .note strong { color: var(--amber); }
+
+  footer {
+    margin-top: 56px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border-soft);
+    color: var(--text-dim);
+    font-size: 12.5px;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <header>
+    <div class="leds">
+      <span class="led on"></span>
+      <span class="led on"></span>
+      <span class="led"></span>
+      <span class="led on"></span>
+      <span class="led"></span>
+    </div>
+    <div class="eyebrow">/interface pppoe-server &nbsp;→&nbsp; RouterOS config generator</div>
+    <h1>MikroTik <span class="accent">PPPoE Server</span><br>+ RADIUS Generator</h1>
+    <p>Fill in your router's interfaces and RADIUS details on the left. A ready-to-import RouterOS script builds itself on the right as you type — copy it or download it as a <code>.rsc</code> file.</p>
+  </header>
+
+  <div class="grid">
+
+    <!-- FORM -->
+    <div class="panel">
+      <form id="cfgForm">
+
+        <fieldset>
+          <legend>Interfaces</legend>
+          <div class="field-row">
+            <div class="field">
+              <label for="wan">WAN interface</label>
+              <input type="text" id="wan" value="ether1">
+            </div>
+            <div class="field">
+              <label for="lan">Subscriber-side interface</label>
+              <input type="text" id="lan" value="ether2">
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Subscriber addressing</legend>
+          <div class="field-row">
+            <div class="field">
+              <label for="gwip">Router gateway IP <span class="hint">(local-address)</span></label>
+              <input type="text" id="gwip" value="10.10.10.1">
+            </div>
+            <div class="field">
+              <label for="pool">Client pool range <span class="hint">(fallback)</span></label>
+              <input type="text" id="pool" value="10.10.10.2-10.10.10.254">
+            </div>
+          </div>
+          <div class="field">
+            <label for="dns">DNS servers <span class="hint">(comma separated)</span></label>
+            <input type="text" id="dns" value="8.8.8.8,1.1.1.1">
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>RADIUS (SAS4 / any RFC-2865 server)</legend>
+          <div class="field-row">
+            <div class="field">
+              <label for="radiusIp">RADIUS server IP</label>
+              <input type="text" id="radiusIp" placeholder="192.168.88.10">
+            </div>
+            <div class="field">
+              <label for="radiusSecret">Shared secret</label>
+              <input type="password" id="radiusSecret" placeholder="••••••••">
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>PPPoE service &amp; default profile</legend>
+          <div class="field-row">
+            <div class="field">
+              <label for="svcname">Service name</label>
+              <input type="text" id="svcname" value="isp-pppoe">
+            </div>
+            <div class="field">
+              <label for="profname">Profile name</label>
+              <input type="text" id="profname" value="default-radius">
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label for="upload">Upload limit <span class="hint">(per subscriber)</span></label>
+              <input type="text" id="upload" value="5M">
+            </div>
+            <div class="field">
+              <label for="download">Download limit <span class="hint">(per subscriber)</span></label>
+              <input type="text" id="download" value="10M">
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Hardening</legend>
+          <label class="checkbox-row" for="harden">
+            <input type="checkbox" id="harden" checked>
+            <span class="cb-text"><strong>Block Winbox &amp; Telnet from the WAN interface.</strong> Recommended for any router with a public-facing WAN port.</span>
+          </label>
+        </fieldset>
+
+      </form>
+    </div>
+
+    <!-- OUTPUT -->
+    <div class="output-col">
+      <div class="terminal">
+        <div class="term-bar">
+          <div class="dots"><span></span><span></span><span></span></div>
+          <div class="term-filename">pppoe-config.rsc</div>
+        </div>
+        <div class="term-body">
+          <pre id="output"></pre>
+        </div>
+        <div class="term-actions">
+          <button class="primary" id="copyBtn">Copy script</button>
+          <button id="downloadBtn">Download .rsc</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="about">
+    <h2>What this script sets up</h2>
+    <p class="lead">Five RouterOS building blocks, generated together so they actually reference each other correctly — the part that's easy to get wrong when copying commands from five different forum threads.</p>
+
+    <div class="about-grid">
+      <div class="about-card">
+        <div class="tag">01 · NAT</div>
+        <p>A single masquerade rule on the WAN interface so every PPPoE client can reach the internet through one public IP.</p>
+      </div>
+      <div class="about-card">
+        <div class="tag">02 · RADIUS</div>
+        <p>Registers your RADIUS server for PPP and turns on accounting with a 5-minute interim update — what billing platforms like SAS4 expect for live session data.</p>
+      </div>
+      <div class="about-card">
+        <div class="tag">03 · Profile</div>
+        <p>A default PPP profile carrying your DNS servers and a rate-limit built from the upload/download fields — RouterOS reads this as rx-rate/tx-rate.</p>
+      </div>
+      <div class="about-card">
+        <div class="tag">04 · PPPoE server</div>
+        <p>Binds the service to your subscriber-facing interface, one session per host, MTU/MRU tuned for PPPoE overhead.</p>
+      </div>
+      <div class="about-card">
+        <div class="tag">05 · Firewall</div>
+        <p>Baseline input/forward rules: drop invalid connections, and optionally close Winbox and Telnet to anyone sitting on the WAN side.</p>
+      </div>
+      <div class="about-card">
+        <div class="tag">Import</div>
+        <p>Download the <code>.rsc</code> file, copy it to the router with Winbox's file manager, then run <code>/import pppoe-config.rsc</code>.</p>
+      </div>
+    </div>
+
+    <div class="note"><strong>Before you deploy:</strong> this is a starting template, not a certified fit for every topology. Review the pool range and gateway IP against your real addressing, and test on a router you can reach out-of-band before relying on it in production.</div>
+  </div>
+
+  <footer>
+    <span>Built for WISP &amp; ISP operators running MikroTik + RADIUS</span>
+    <span>No data leaves your browser — everything above runs client-side</span>
+  </footer>
+
+</div>
+
+<script>
+  const ids = ['wan','lan','gwip','pool','dns','radiusIp','radiusSecret','svcname','profname','upload','download','harden'];
+  const els = Object.fromEntries(ids.map(id => [id, document.getElementById(id)]));
+  const output = document.getElementById('output');
+
+  function esc(s) {
+    return (s || '').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+
+  function line(comment) {
+    return `<span class="c"># ${esc(comment)}</span>`;
+  }
+
+  function cmd(path) {
+    return `<span class="k">${esc(path)}</span>`;
+  }
+
+  function val(v) {
+    return `<span class="v">${esc(v)}</span>`;
+  }
+
+  function build() {
+    const wan = els.wan.value.trim() || 'ether1';
+    const lan = els.lan.value.trim() || 'ether2';
+    const gwip = els.gwip.value.trim() || '10.10.10.1';
+    const pool = els.pool.value.trim() || '10.10.10.2-10.10.10.254';
+    const dns = els.dns.value.trim() || '8.8.8.8,1.1.1.1';
+    const radiusIp = els.radiusIp.value.trim() || '<radius-server-ip>';
+    const radiusSecret = els.radiusSecret.value.trim() || '<shared-secret>';
+    const svcname = els.svcname.value.trim() || 'isp-pppoe';
+    const profname = els.profname.value.trim() || 'default-radius';
+    const upload = els.upload.value.trim() || '5M';
+    const download = els.download.value.trim() || '10M';
+    const harden = els.harden.checked;
+
+    const rows = [];
+
+    rows.push(line('=================================================='));
+    rows.push(line('RouterOS — PPPoE Server + RADIUS  (generated)'));
+    rows.push(line('=================================================='));
+    rows.push('');
+
+    rows.push(line('NAT — masquerade subscriber traffic out the WAN'));
+    rows.push(cmd('/ip firewall nat'));
+    rows.push(`add chain=srcnat out-interface=${val(wan)} action=masquerade comment="WAN masquerade"`);
+    rows.push('');
+
+    rows.push(line('RADIUS — authentication + accounting'));
+    rows.push(cmd('/radius'));
+    rows.push(`add service=ppp address=${val(radiusIp)} secret=${val(radiusSecret)} authentication-port=1812 accounting-port=1813`);
+    rows.push('');
+    rows.push(cmd('/ppp aaa'));
+    rows.push('set use-radius=yes accounting=yes interim-update=5m');
+    rows.push('');
+
+    rows.push(line('Fallback pool — used only if RADIUS omits Framed-IP-Address'));
+    rows.push(cmd('/ip pool'));
+    rows.push(`add name=pppoe-pool ranges=${val(pool)}`);
+    rows.push('');
+
+    rows.push(line('Default profile — DNS + per-subscriber rate limit (rx/tx)'));
+    rows.push(cmd('/ppp profile'));
+    rows.push(`add name=${val(profname)} local-address=${val(gwip)} dns-server=${val(dns)} rate-limit=${val(upload + '/' + download)} only-one=yes`);
+    rows.push('');
+
+    rows.push(line('PPPoE server'));
+    rows.push(cmd('/interface pppoe-server server'));
+    rows.push(`add service-name=${val(svcname)} interface=${val(lan)} default-profile=${val(profname)} one-session-per-host=yes max-mtu=1480 max-mru=1480`);
+    rows.push('');
+
+    if (harden) {
+      rows.push(line('Firewall — baseline hardening'));
+      rows.push(cmd('/ip firewall filter'));
+      rows.push('add chain=input connection-state=established,related action=accept comment="Accept established/related"');
+      rows.push('add chain=input connection-state=invalid action=drop comment="Drop invalid"');
+      rows.push(`add chain=input in-interface=${val(wan)} protocol=tcp dst-port=8291 action=drop comment="Block Winbox from WAN"`);
+      rows.push(`add chain=input in-interface=${val(wan)} protocol=tcp dst-port=23 action=drop comment="Block Telnet from WAN"`);
+      rows.push('add chain=forward connection-state=established,related action=accept comment="Accept established/related"');
+      rows.push('add chain=forward connection-state=invalid action=drop comment="Drop invalid"');
+      rows.push('');
+    }
+
+    output.innerHTML = rows.join('\n') + '<span class="cursor"></span>';
+  }
+
+  ids.forEach(id => {
+    els[id].addEventListener('input', build);
+  });
+
+  function plainScript() {
+    return output.innerText.replace(/\u200b/g, '');
+  }
+
+  document.getElementById('copyBtn').addEventListener('click', async () => {
+    const btn = document.getElementById('copyBtn');
+    try {
+      await navigator.clipboard.writeText(plainScript());
+    } catch (e) {
+      const ta = document.createElement('textarea');
+      ta.value = plainScript();
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+    }
+    const original = btn.textContent;
+    btn.textContent = 'Copied ✓';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = original; btn.classList.remove('copied'); }, 1600);
+  });
+
+  document.getElementById('downloadBtn').addEventListener('click', () => {
+    const blob = new Blob([plainScript()], { type: 'text/plain' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'pppoe-config.rsc';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(a.href);
+  });
+
+  build();
+</script>
+
+</body>
+</html>

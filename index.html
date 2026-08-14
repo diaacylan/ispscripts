@@ -65,6 +65,45 @@
 
   /* ---------- Header ---------- */
 
+  .sitenav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 22px 0;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .sitenav .brand {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 15px;
+    color: var(--text-primary);
+    text-decoration: none;
+    letter-spacing: -0.01em;
+  }
+  .sitenav .brand .accent { color: var(--accent); }
+
+  .sitenav .navlinks { display: flex; gap: 22px; }
+
+  .sitenav .navlinks a {
+    font-family: var(--font-body);
+    font-size: 13.5px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    text-decoration: none;
+    padding-bottom: 3px;
+    border-bottom: 1px solid transparent;
+    transition: color .15s ease, border-color .15s ease;
+  }
+
+  .sitenav .navlinks a:hover { color: var(--text-primary); }
+
+  .sitenav .navlinks a.active {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+  }
+
   header {
     padding: 56px 0 40px;
     border-bottom: 1px solid var(--border-soft);
@@ -408,6 +447,14 @@
 
 <div class="wrap">
 
+  <nav class="sitenav">
+    <a href="index.html" class="brand">ispscripts<span class="accent">.</span>com</a>
+    <div class="navlinks">
+      <a href="index.html" class="active">PPPoE Generator</a>
+      <a href="guide.html">PPPoE + RADIUS Guide</a>
+    </div>
+  </nav>
+
   <header>
     <div class="leds">
       <span class="led on"></span>
@@ -559,6 +606,8 @@
     </div>
 
     <div class="note"><strong>Before you deploy:</strong> this is a starting template, not a certified fit for every topology. Review the pool range and gateway IP against your real addressing, and test on a router you can reach out-of-band before relying on it in production.</div>
+
+    <p style="margin-top:22px; font-size:14px; color:var(--text-secondary);">Want the reasoning behind each line, not just the script? Read the <a href="guide.html">full PPPoE + RADIUS setup guide</a> — covers why WISPs use PPPoE over static IPs, how RADIUS accounting actually works, and the MTU/CGNAT issues that trip people up.</p>
   </div>
 
   <footer>

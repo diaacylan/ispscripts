@@ -68,6 +68,8 @@
   .cta a.btn { display: inline-block; background: var(--accent); color: #06210F; font-weight: 600; font-size: 14px; text-decoration: none; padding: 11px 22px; border-radius: var(--radius); }
 
   footer { margin-top: 56px; padding-top: 24px; border-top: 1px solid var(--border-soft); color: var(--text-dim); font-size: 12.5px; }
+  .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 0 0 20px; }
+  .table-wrap table { margin: 0; min-width: 520px; }
   table { width: 100%; border-collapse: collapse; margin: 0 0 20px; font-size: 14px; }
   th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--border-soft); color: var(--text-secondary); }
   th { color: var(--text-primary); font-weight: 600; font-size: 12.5px; text-transform: uppercase; letter-spacing: .04em; }
@@ -121,6 +123,7 @@
     <p>In practice this is less of a problem than it sounds: modern phones and laptops run their own captive portal detection (a background probe to a known HTTP URL right after connecting) and pop the login page automatically. But on older devices, or if that detection fails, a subscriber staring at a browser that only opens HTTPS sites will never see the redirect. Printing "open any non-HTTPS site, or wait for the login popup" on the voucher card heads off a lot of support questions.</p>
 
     <h2>Reading the generated script</h2>
+    <div class="table-wrap">
     <table>
       <tr><th>Block</th><th>Purpose</th></tr>
       <tr><td><code>/ip pool</code></td><td>The address range handed to connecting clients.</td></tr>
@@ -130,6 +133,7 @@
       <tr><td><code>/ip hotspot</code></td><td>Binds the profile and pool to your access interface.</td></tr>
       <tr><td><code>/ip hotspot walled-garden</code></td><td>Optional — lets one domain (a payment page, for instance) load before login.</td></tr>
     </table>
+    </div>
 
     <div class="callout warn"><p><strong>Vouchers themselves aren't created here:</strong> this script only wires the router to your RADIUS platform. Actually generating and printing voucher batches happens in SAS4, GalaxyRAD, or whatever billing platform you're running.</p></div>
 

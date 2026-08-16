@@ -211,6 +211,8 @@
     font-size: 12.5px;
   }
 
+  .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 0 0 20px; }
+  .table-wrap table { margin: 0; min-width: 520px; }
   table { width: 100%; border-collapse: collapse; margin: 0 0 20px; font-size: 14px; }
   th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--border-soft); color: var(--text-secondary); }
   th { color: var(--text-primary); font-weight: 600; font-size: 12.5px; text-transform: uppercase; letter-spacing: .04em; }
@@ -262,6 +264,7 @@
     <h2>Reading the generated script</h2>
     <p>In order, here's what each block in the generator's output actually does and why it's in that order:</p>
 
+    <div class="table-wrap">
     <table>
       <tr><th>Block</th><th>Purpose</th></tr>
       <tr><td><code>/ip firewall nat</code></td><td>One masquerade rule — every subscriber shares the router's WAN IP going out.</td></tr>
@@ -272,6 +275,7 @@
       <tr><td><code>/interface pppoe-server server</code></td><td>Binds everything to your subscriber-facing interface.</td></tr>
       <tr><td><code>/ip firewall filter</code></td><td>Closes Winbox and Telnet on the WAN side — optional, but there's rarely a good reason to leave router management reachable from the public internet.</td></tr>
     </table>
+    </div>
 
     <h2>Where new deployments actually break</h2>
 

@@ -54,6 +54,8 @@
   li { margin-bottom: 8px; }
   li strong { color: var(--text-primary); }
 
+  .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 24px 0 32px; }
+  .table-wrap table { margin: 0; min-width: 560px; }
   table { width: 100%; border-collapse: collapse; margin: 24px 0 32px; font-size: 14px; }
   th, td { text-align: left; padding: 12px 14px; border-bottom: 1px solid var(--border-soft); color: var(--text-secondary); vertical-align: top; }
   th { color: var(--text-primary); font-weight: 600; font-size: 12.5px; text-transform: uppercase; letter-spacing: .04em; background: var(--bg-panel); }
@@ -101,6 +103,7 @@
     <p>The short answer: <strong>PPPoE for fixed, billed installations</strong> — a dish and an indoor unit at someone's house, paying monthly. <strong>Hotspot for walk-up, voucher-based access</strong> — no installation, no dedicated hardware at the subscriber's end, just a login page. Here's the reasoning, side by side.</p>
 
     <h2>Side-by-side</h2>
+    <div class="table-wrap">
     <table>
       <tr><th></th><th>PPPoE</th><th>Hotspot</th></tr>
       <tr><td>Best for</td><td>Fixed subscribers with installed equipment (dish, indoor router)</td><td>Walk-up access — cafés, hotels, prepaid card sales</td></tr>
@@ -111,6 +114,7 @@
       <tr><td>Session persistence</td><td>Stays connected until the router/link drops</td><td>Often re-prompts after a set time or when the device reconnects</td></tr>
       <tr><td>Typical failure point</td><td>MTU/MRU mismatch, CGNAT reachability</td><td>DNS resolution for the login page, HTTPS interception limits</td></tr>
     </table>
+    </div>
 
     <h2>When to use PPPoE</h2>
     <p>If a technician is physically installing a dish or indoor unit at a fixed address and the subscriber is paying a recurring bill, PPPoE is the right model almost every time. It ties a session to a real, billed account with no ambiguity, and the connection stays up continuously rather than needing repeated logins.</p>

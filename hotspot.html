@@ -76,6 +76,39 @@
   .sitenav .navlinks a:hover { color: var(--text-primary); }
   .sitenav .navlinks a.active { color: var(--accent); border-bottom-color: var(--accent); }
 
+  .navtoggle {
+    display: none;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-primary);
+    font-size: 17px;
+    line-height: 1;
+    padding: 7px 11px;
+    border-radius: var(--radius);
+    cursor: pointer;
+  }
+  .navtoggle:hover { border-color: var(--accent); }
+  @media (max-width: 720px) {
+    .sitenav { position: relative; }
+    .navtoggle { display: block; }
+    .navlinks {
+      display: none;
+      flex-direction: column;
+      width: 100%;
+      gap: 2px;
+      margin-top: 14px;
+    }
+    .navlinks.open { display: flex; }
+    .navlinks a {
+      padding: 12px 14px;
+      background: var(--bg-panel);
+      border: 1px solid var(--border-soft);
+      border-radius: var(--radius);
+      border-bottom: 1px solid var(--border-soft) !important;
+    }
+    .navlinks a.active { background: var(--accent-soft); }
+  }
+
   header { padding: 40px 0 40px; border-bottom: 1px solid var(--border-soft); margin-bottom: 40px; }
 
   .leds { display: flex; gap: 7px; margin-bottom: 22px; }
@@ -174,7 +207,8 @@
 
   <nav class="sitenav">
     <a href="index.html" class="brand">ispscripts<span class="accent">.</span>com</a>
-    <div class="navlinks">
+    <button class="navtoggle" id="navToggle" aria-label="Menu">&#9776;</button>
+    <div class="navlinks" id="navLinks">
       <a href="index.html">PPPoE Generator</a>
       <a href="hotspot.html" class="active">Hotspot Generator</a>
       <a href="mikrotik-nat-firewall-generator.html">NAT + Firewall Generator</a>
@@ -427,6 +461,10 @@
   });
 
   build();
+
+  document.getElementById('navToggle').addEventListener('click', function () {
+    document.getElementById('navLinks').classList.toggle('open');
+  });
 </script>
 
 </body>

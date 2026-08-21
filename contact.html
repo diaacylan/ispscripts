@@ -54,6 +54,7 @@
   }
   .nav-group:hover .nav-group-menu,
   .nav-group:focus-within .nav-group-menu { display: flex; }
+  .nav-group.open .nav-group-menu { display: flex; }
   .nav-group-menu a {
     padding: 8px 10px; border-radius: 6px; font-size: 13px;
     color: var(--text-secondary); text-decoration: none;
@@ -199,6 +200,19 @@
 <script>
   document.getElementById('navToggle').addEventListener('click', function () {
     document.getElementById('navLinks').classList.toggle('open');
+  });
+
+  document.querySelectorAll('.nav-group-toggle').forEach(function (btn) {
+    btn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      var group = btn.closest('.nav-group');
+      var wasOpen = group.classList.contains('open');
+      document.querySelectorAll('.nav-group.open').forEach(function (g) { g.classList.remove('open'); });
+      if (!wasOpen) group.classList.add('open');
+    });
+  });
+  document.addEventListener('click', function () {
+    document.querySelectorAll('.nav-group.open').forEach(function (g) { g.classList.remove('open'); });
   });
 </script>
 </body>

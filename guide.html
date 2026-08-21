@@ -77,6 +77,31 @@
   }
   .sitenav .brand .accent { color: var(--accent); }
   .sitenav .navlinks { display: flex; gap: 22px; }
+
+  .nav-group { position: relative; }
+  .nav-group-toggle {
+    background: none; border: none; cursor: pointer; font: inherit;
+    color: var(--text-secondary); font-size: 13.5px; font-weight: 500;
+    padding: 0; display: flex; align-items: center; gap: 4px;
+  }
+  .nav-group-toggle:hover { color: var(--text-primary); }
+  .nav-group-toggle::after { content: '\25be'; font-size: 9px; margin-top: 1px; }
+  .nav-group-toggle.active { color: var(--accent); }
+  .nav-group-menu {
+    display: none;
+    position: absolute; top: 100%; left: 0; margin-top: 12px;
+    background: var(--bg-panel); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 8px; min-width: 210px;
+    flex-direction: column; gap: 2px; z-index: 30;
+  }
+  .nav-group:hover .nav-group-menu,
+  .nav-group:focus-within .nav-group-menu { display: flex; }
+  .nav-group-menu a {
+    padding: 8px 10px; border-radius: 6px; font-size: 13px;
+    color: var(--text-secondary); text-decoration: none;
+  }
+  .nav-group-menu a:hover { background: var(--bg-input); color: var(--text-primary); }
+  .nav-group-menu a.active { color: var(--accent); }
   .sitenav .navlinks a {
     font-size: 13.5px;
     font-weight: 500;
@@ -119,6 +144,23 @@
       border-bottom: 1px solid var(--border-soft) !important;
     }
     .navlinks a.active { background: var(--accent-soft); }
+
+    .nav-group-toggle {
+      pointer-events: none;
+      color: var(--text-dim);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      padding: 10px 14px 4px;
+    }
+    .nav-group-toggle.active { color: var(--accent); }
+    .nav-group-toggle::after { display: none; }
+    .nav-group-menu {
+      display: flex !important;
+      position: static;
+      border: none; background: none; padding: 0; margin: 0;
+      flex-direction: column; gap: 2px;
+    }
   }
 
   article header {
@@ -198,6 +240,16 @@
   li { margin-bottom: 8px; }
   li strong { color: var(--text-primary); }
 
+  .diagram-wrap {
+    margin: 20px 0 32px;
+    padding: 16px;
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow-x: auto;
+  }
+  .diagram-wrap svg { display: block; min-width: 560px; width: 100%; height: auto; }
+
   .callout {
     margin: 28px 0;
     padding: 16px 18px;
@@ -261,13 +313,26 @@
     <a href="index.html" class="brand">ispscripts<span class="accent">.</span>com</a>
     <button class="navtoggle" id="navToggle" aria-label="Menu">&#9776;</button>
     <div class="navlinks" id="navLinks">
-      <a href="index.html">PPPoE Generator</a>
-      <a href="hotspot.html">Hotspot Generator</a>
-      <a href="mikrotik-nat-firewall-generator.html">NAT + Firewall Generator</a>
-      <a href="guide.html" class="active">PPPoE + RADIUS Guide</a>
-      <a href="hotspot-guide.html">Hotspot + RADIUS Guide</a>
-      <a href="pppoe-vs-hotspot.html">PPPoE vs Hotspot</a>
+      <div class="nav-group">
+        <button type="button" class="nav-group-toggle">Generators</button>
+        <div class="nav-group-menu">
+          <a href="index.html">PPPoE + RADIUS</a>
+          <a href="hotspot.html">Hotspot + RADIUS</a>
+          <a href="mikrotik-nat-firewall-generator.html">NAT + Firewall</a>
+        </div>
+      </div>
+      <div class="nav-group">
+        <button type="button" class="nav-group-toggle active">Guides</button>
+        <div class="nav-group-menu">
+          <a href="guide.html" class="active">PPPoE + RADIUS Guide</a>
+          <a href="hotspot-guide.html">Hotspot + RADIUS Guide</a>
+          <a href="nat-firewall-guide.html">NAT + Firewall Guide</a>
+          <a href="pppoe-vs-hotspot.html">PPPoE vs Hotspot</a>
+        </div>
+      </div>
       <a href="blog.html">Blog</a>
+      <a href="about.html">About</a>
+      <a href="contact.html">Contact</a>
     </div>
   </nav>
 
@@ -296,6 +361,56 @@
     <p>This is the part people skip and then wonder why their billing platform shows no usage data. The line <code>set use-radius=yes accounting=yes interim-update=5m</code> tells RouterOS to send accounting packets to the RADIUS server: a Start packet when the session begins, Interim-Update packets every 5 minutes with live byte counts, and a Stop packet with the final total when it ends. Without <code>accounting=yes</code>, your billing platform has no idea how much data anyone used.</p>
 
     <div class="callout tip"><p><strong>Why 5 minutes specifically:</strong> shorter intervals (1–2 min) give more real-time-looking usage graphs but add router and RADIUS server load across hundreds of sessions. Longer intervals (15m+) mean a router crash between updates loses more unaccounted usage. 5 minutes is the balance most SAS4/GalaxyRAD deployments settle on.</p></div>
+
+    <h3>The full exchange, step by step</h3>
+    <div class="diagram-wrap">
+    <svg viewBox="0 0 700 470" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Sequence diagram of PPPoE and RADIUS authentication and accounting between a subscriber, the MikroTik router, and the RADIUS server">
+      <defs>
+        <marker id="arrow" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto">
+          <path d="M0,0 L7,3 L0,6 Z" fill="#3DDC84"/>
+        </marker>
+      </defs>
+      <rect x="0" y="0" width="700" height="470" fill="#0E1420"/>
+
+      <rect x="20" y="18" width="150" height="42" rx="8" fill="#161D2B" stroke="#2A3448"/>
+      <text x="95" y="44" text-anchor="middle" fill="#E8ECF4" font-family="Space Grotesk, sans-serif" font-size="13" font-weight="600">Subscriber</text>
+
+      <rect x="275" y="18" width="150" height="42" rx="8" fill="#161D2B" stroke="#3DDC84" stroke-width="1.5"/>
+      <text x="350" y="44" text-anchor="middle" fill="#E8ECF4" font-family="Space Grotesk, sans-serif" font-size="13" font-weight="600">MikroTik Router</text>
+
+      <rect x="530" y="18" width="150" height="42" rx="8" fill="#161D2B" stroke="#2A3448"/>
+      <text x="605" y="44" text-anchor="middle" fill="#E8ECF4" font-family="Space Grotesk, sans-serif" font-size="13" font-weight="600">RADIUS Server</text>
+
+      <line x1="95" y1="60" x2="95" y2="450" stroke="#2A3448" stroke-dasharray="3,4"/>
+      <line x1="350" y1="60" x2="350" y2="450" stroke="#2A3448" stroke-dasharray="3,4"/>
+      <line x1="605" y1="60" x2="605" y2="450" stroke="#2A3448" stroke-dasharray="3,4"/>
+
+      <line x1="95" y1="95" x2="345" y2="95" stroke="#96A1B8" marker-end="url(#arrow)"/>
+      <text x="220" y="86" text-anchor="middle" fill="#96A1B8" font-family="JetBrains Mono, monospace" font-size="11">1. PPPoE login (user/pass)</text>
+
+      <line x1="350" y1="140" x2="600" y2="140" stroke="#96A1B8" marker-end="url(#arrow)"/>
+      <text x="475" y="131" text-anchor="middle" fill="#96A1B8" font-family="JetBrains Mono, monospace" font-size="11">2. Access-Request</text>
+
+      <line x1="605" y1="185" x2="355" y2="185" stroke="#3DDC84" marker-end="url(#arrow)"/>
+      <text x="475" y="176" text-anchor="middle" fill="#3DDC84" font-family="JetBrains Mono, monospace" font-size="11">3. Access-Accept + attributes</text>
+
+      <line x1="350" y1="230" x2="100" y2="230" stroke="#3DDC84" marker-end="url(#arrow)"/>
+      <text x="220" y="221" text-anchor="middle" fill="#3DDC84" font-family="JetBrains Mono, monospace" font-size="11">4. Session established</text>
+
+      <line x1="350" y1="285" x2="600" y2="285" stroke="#96A1B8" marker-end="url(#arrow)"/>
+      <text x="475" y="276" text-anchor="middle" fill="#96A1B8" font-family="JetBrains Mono, monospace" font-size="11">5. Accounting-Start</text>
+
+      <line x1="350" y1="335" x2="600" y2="335" stroke="#96A1B8" stroke-dasharray="5,4" marker-end="url(#arrow)"/>
+      <text x="475" y="326" text-anchor="middle" fill="#96A1B8" font-family="JetBrains Mono, monospace" font-size="11">6. Interim-Update (every 5m)</text>
+
+      <line x1="350" y1="385" x2="600" y2="385" stroke="#F5A623" marker-end="url(#arrow)"/>
+      <text x="475" y="376" text-anchor="middle" fill="#F5A623" font-family="JetBrains Mono, monospace" font-size="11">7. Accounting-Stop (session ends)</text>
+
+      <text x="95" y="440" text-anchor="middle" fill="#5B6479" font-family="Inter, sans-serif" font-size="10.5">Never sees the RADIUS secret</text>
+      <text x="350" y="440" text-anchor="middle" fill="#5B6479" font-family="Inter, sans-serif" font-size="10.5">Forwards, doesn't store passwords</text>
+      <text x="605" y="440" text-anchor="middle" fill="#5B6479" font-family="Inter, sans-serif" font-size="10.5">Owns the subscriber database</text>
+    </svg>
+    </div>
 
     <h2>Reading the generated script</h2>
     <p>In order, here's what each block in the generator's output actually does and why it's in that order:</p>
@@ -326,13 +441,73 @@
 
     <div class="callout warn"><p><strong>Test before you trust it:</strong> after importing any generated script, connect one test subscriber first — not your whole base. Confirm the session actually shows up in your RADIUS platform's accounting logs with a nonzero byte count before rolling it out further.</p></div>
 
+    <h2>Every parameter, explained</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>Field</th><th>Accepts</th><th>Default</th><th>Notes</th></tr>
+      <tr><td>WAN interface</td><td>Interface name (e.g. <code>ether1</code>)</td><td><code>ether1</code></td><td>Must face your uplink, not subscribers. Required.</td></tr>
+      <tr><td>Subscriber-side interface</td><td>Interface name (e.g. <code>ether2</code>)</td><td><code>ether2</code></td><td>Must be different from the WAN interface. Required.</td></tr>
+      <tr><td>Router gateway IP</td><td>IPv4 address</td><td><code>10.10.10.1</code></td><td>Becomes <code>local-address</code> in the PPP profile — the router's own IP inside the subscriber subnet.</td></tr>
+      <tr><td>Client pool range</td><td>Two IPv4 addresses, <code>start-end</code></td><td><code>10.10.10.2-10.10.10.254</code></td><td>Fallback only — used when RADIUS doesn't return <code>Framed-IP-Address</code>. Should share the gateway IP's subnet.</td></tr>
+      <tr><td>DNS servers</td><td>Comma-separated IPv4 addresses</td><td><code>8.8.8.8,1.1.1.1</code></td><td>Pushed to subscribers via the PPP profile.</td></tr>
+      <tr><td>RADIUS server IP</td><td>IPv4 address</td><td>none — placeholder if blank</td><td>Required for a working config. No sensible default exists.</td></tr>
+      <tr><td>Shared secret</td><td>Text</td><td>none — placeholder if blank</td><td>Must match the secret configured on your RADIUS server exactly. Required.</td></tr>
+      <tr><td>Service name</td><td>Text, no spaces</td><td><code>isp-pppoe</code></td><td>Cosmetic — shown in <code>/interface pppoe-server server print</code>.</td></tr>
+      <tr><td>Profile name</td><td>Text, no spaces</td><td><code>default-radius</code></td><td>Referenced by both the PPP profile and the PPPoE server block — must match between the two, which the generator handles automatically.</td></tr>
+      <tr><td>Upload / Download limit</td><td>Number + optional K/M/G</td><td><code>5M</code> / <code>10M</code></td><td>Becomes <code>rx-rate/tx-rate</code> — from the router's perspective, so upload here is what the subscriber sends.</td></tr>
+    </table>
+    </div>
+
+    <h2>Full example: a 40-subscriber WISP on Starlink backhaul</h2>
+    <p>A realistic scenario end to end: a small WISP with a Starlink uplink on <code>ether1</code>, an antenna sector on <code>ether2</code>, and SAS4 as the RADIUS/billing platform running on a local VPS at <code>10.0.0.5</code>.</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>Field</th><th>Value used</th></tr>
+      <tr><td>WAN interface</td><td><code>ether1</code> (Starlink router in bridge mode, CGNAT — see the note below)</td></tr>
+      <tr><td>Subscriber-side interface</td><td><code>ether2</code> (sector antenna)</td></tr>
+      <tr><td>Router gateway IP</td><td><code>10.10.10.1</code></td></tr>
+      <tr><td>Client pool range</td><td><code>10.10.10.2-10.10.10.254</code> (fallback only — SAS4 assigns real IPs per plan)</td></tr>
+      <tr><td>RADIUS server IP</td><td><code>10.0.0.5</code> (SAS4 on a local VPS reachable from the router)</td></tr>
+      <tr><td>Upload / Download</td><td><code>5M</code> / <code>10M</code> default profile — SAS4 overrides per subscriber plan via RADIUS attributes</td></tr>
+    </table>
+    </div>
+    <p style="font-size:13.5px; color:var(--text-dim);">Because Starlink sits behind CGNAT, this router has no public IP on <code>ether1</code> — remote management goes through a WireGuard tunnel to the VPS running SAS4, not directly to the router. See <a href="securing-mikrotik-routers.html">the security guide</a> for that setup.</p>
+
+    <h2>Common mistakes and how to fix them</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>Symptom</th><th>Likely cause</th><th>Fix</th></tr>
+      <tr><td>Subscribers connect but RADIUS shows no accounting data</td><td><code>accounting=yes</code> missing from <code>/ppp aaa</code>, or RADIUS not listening on port 1813</td><td>Confirm <code>/ppp aaa print</code> shows <code>accounting=yes</code>; check the RADIUS server's accounting log for incoming packets</td></tr>
+      <tr><td>Logins fail with "no response from RADIUS"</td><td>Shared secret mismatch, or RADIUS server unreachable from the router</td><td>Re-check the secret matches exactly on both sides; <code>ping</code> the RADIUS IP from the router's terminal</td></tr>
+      <tr><td>Connection works but feels intermittently slow, images/video stall</td><td>MTU/MRU mismatch — PPPoE overhead not accounted for</td><td>Confirm <code>max-mtu=1480 max-mru=1480</code> in the PPPoE server config, not the Ethernet default of 1500</td></tr>
+      <tr><td>Upload and download speeds are swapped</td><td>Misreading <code>rate-limit=rx/tx</code> as download/upload</td><td>Remember rx is what the subscriber sends (upload), tx is what they receive (download) — from the router's point of view</td></tr>
+      <tr><td>Can't reach the router remotely after applying the firewall block</td><td>Managing the router through the same WAN interface the script just hardened</td><td>Set up a VPN tunnel (WireGuard) before hardening, or test the firewall rules on a device you can reach physically first</td></tr>
+    </table>
+    </div>
+
+    <h2>Best practices</h2>
+    <ul style="color:var(--text-secondary); font-size:15.5px; padding-left:22px; margin:0 0 20px;">
+      <li>Test every new script on one subscriber before rolling out to the rest of the network.</li>
+      <li>Keep a second <code>/radius</code> entry pointing at a backup server if your billing platform supports failover.</li>
+      <li>Never reuse the router's admin password as the RADIUS shared secret.</li>
+      <li>Document your actual interface names and IP scheme somewhere outside the router — a router that needs a factory reset shouldn't take your network map with it.</li>
+      <li>Re-check MTU/MRU first whenever a subscriber reports "slow but not disconnected" — it's the most common false lead in PPPoE troubleshooting.</li>
+    </ul>
+
+    <div class="note"><strong>RouterOS version:</strong> this generator's output is built and tested against RouterOS v7.x. It hasn't been separately verified against RouterOS v6.</div>
+
     <div class="cta">
       <h3>Ready to generate your config?</h3>
       <p>Fill in your interfaces and RADIUS details and get a ready-to-import <code>.rsc</code> file in seconds.</p>
       <a href="index.html" class="btn">Open the generator →</a>
     </div>
 
-    <footer>Written for WISP and ISP operators running MikroTik + RADIUS. Not affiliated with MikroTik or any RADIUS platform vendor.<br><a href="about.html" style="color:var(--text-dim)">About</a> · <a href="privacy.html" style="color:var(--text-dim)">Privacy</a> · <a href="contact.html" style="color:var(--text-dim)">Contact</a> · <a href="terms.html">Terms</a> · <a href="disclaimer.html">Disclaimer</a></footer>
+    <!-- AdSense: this page has substantial original content (600+ words) and
+       is safe for ad placement. Place ad units after the CTA / before the
+       footer, or between major sections — never inside a table, code block,
+       or right before/after a button a user needs to click. -->
+
+    <footer>Written for WISP and ISP operators running MikroTik + RADIUS. Not affiliated with MikroTik or any RADIUS platform vendor.<br><a href="about.html" style="color:var(--text-dim)">About</a> · <a href="privacy.html" style="color:var(--text-dim)">Privacy</a> · <a href="contact.html" style="color:var(--text-dim)">Contact</a> · <a href="changelog.html">Changelog</a> · <a href="https://github.com/diaacylan/ispscripts" target="_blank" rel="noopener">View source</a> · <a href="terms.html">Terms</a> · <a href="disclaimer.html">Disclaimer</a></footer>
   </article>
 
 </div>

@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-5GLVMBDCZ4"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-5GLVMBDCZ4');
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MikroTik NAT + Firewall Configuration: The Complete Guide</title>
+<link rel="canonical" href="https://ispscripts.com/nat-firewall-guide.html">
+<meta name="description" content="How MikroTik NAT and firewall rules actually work — masquerade scoping, WAN-side hardening, port forwarding risk, and brute-force protection explained.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0E1420;
+    --bg-panel: #161D2B;
+    --bg-panel-2: #1B2333;
+    --bg-input: #10161F;
+    --border: #2A3448;
+    --border-soft: #202940;
+    --text-primary: #E8ECF4;
+    --text-secondary: #96A1B8;
+    --text-dim: #5B6479;
+    --accent: #3DDC84;
+    --accent-soft: rgba(61, 220, 132, 0.13);
+    --amber: #F5A623;
+    --red: #E5484D;
+    --mono-bg: #090D14;
+    --font-display: 'Space Grotesk', sans-serif;
+    --font-body: 'Inter', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+    --radius: 8px;
+    --radius-lg: 12px;
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    margin: 0;
+    background:
+      radial-gradient(1100px 500px at 85% -10%, rgba(61,220,132,0.06), transparent 60%),
+      var(--bg);
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  a { color: var(--accent); }
+  ::selection { background: var(--accent-soft); color: var(--text-primary); }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+
+  .wrap { max-width: 780px; margin: 0 auto; padding: 0 24px 100px; }
+
+  .sitenav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 22px 0;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .sitenav .brand {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 15px;
+    color: var(--text-primary);
+    text-decoration: none;
+  }
+  .sitenav .brand .accent { color: var(--accent); }
+  .sitenav .navlinks { display: flex; gap: 22px; }
+
+  .nav-group { position: relative; }
+  .nav-group-toggle {
+    background: none; border: none; cursor: pointer; font: inherit;
+    color: var(--text-secondary); font-size: 13.5px; font-weight: 500;
+    padding: 0; display: flex; align-items: center; gap: 4px;
+  }
+  .nav-group-toggle:hover { color: var(--text-primary); }
+  .nav-group-toggle::after { content: '\25be'; font-size: 9px; margin-top: 1px; }
+  .nav-group-toggle.active { color: var(--accent); }
+  .nav-group-menu {
+    display: none;
+    position: absolute; top: 100%; left: 0; margin-top: 12px;
+    background: var(--bg-panel); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 8px; min-width: 210px;
+    flex-direction: column; gap: 2px; z-index: 30;
+  }
+  .nav-group:hover .nav-group-menu,
+  .nav-group:focus-within .nav-group-menu { display: flex; }
+  .nav-group-menu a {
+    padding: 8px 10px; border-radius: 6px; font-size: 13px;
+    color: var(--text-secondary); text-decoration: none;
+  }
+  .nav-group-menu a:hover { background: var(--bg-input); color: var(--text-primary); }
+  .nav-group-menu a.active { color: var(--accent); }
+  .sitenav .navlinks a {
+    font-size: 13.5px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    text-decoration: none;
+    padding-bottom: 3px;
+    border-bottom: 1px solid transparent;
+  }
+  .sitenav .navlinks a:hover { color: var(--text-primary); }
+  .sitenav .navlinks a.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+  .navtoggle {
+    display: none;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-primary);
+    font-size: 17px;
+    line-height: 1;
+    padding: 7px 11px;
+    border-radius: var(--radius);
+    cursor: pointer;
+  }
+  .navtoggle:hover { border-color: var(--accent); }
+  @media (max-width: 720px) {
+    .sitenav { position: relative; }
+    .navtoggle { display: block; }
+    .sitenav .navlinks {
+      display: none;
+      flex-direction: column;
+      width: 100%;
+      gap: 2px;
+      margin-top: 14px;
+    }
+    .sitenav .navlinks.open { display: flex; }
+    .navlinks a {
+      padding: 12px 14px;
+      background: var(--bg-panel);
+      border: 1px solid var(--border-soft);
+      border-radius: var(--radius);
+      border-bottom: 1px solid var(--border-soft) !important;
+    }
+    .navlinks a.active { background: var(--accent-soft); }
+
+    .nav-group-toggle {
+      pointer-events: none;
+      color: var(--text-dim);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      padding: 10px 14px 4px;
+    }
+    .nav-group-toggle.active { color: var(--accent); }
+    .nav-group-toggle::after { display: none; }
+    .nav-group-menu {
+      display: flex !important;
+      position: static;
+      border: none; background: none; padding: 0; margin: 0;
+      flex-direction: column; gap: 2px;
+    }
+  }
+
+  article header {
+    padding: 32px 0 40px;
+    border-bottom: 1px solid var(--border-soft);
+    margin-bottom: 40px;
+  }
+
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    letter-spacing: .06em;
+    color: var(--text-dim);
+    margin-bottom: 14px;
+  }
+
+  h1 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(28px, 4vw, 38px);
+    line-height: 1.2;
+    margin: 0 0 16px;
+    letter-spacing: -0.01em;
+  }
+
+  .dek {
+    color: var(--text-secondary);
+    font-size: 16.5px;
+    max-width: 620px;
+    margin: 0;
+  }
+
+  h2 {
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 600;
+    margin: 52px 0 18px;
+    letter-spacing: -0.005em;
+  }
+
+  h3 {
+    font-family: var(--font-display);
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 30px 0 12px;
+  }
+
+  p { font-size: 15.5px; color: var(--text-secondary); margin: 0 0 16px; }
+  p strong { color: var(--text-primary); font-weight: 600; }
+
+  code {
+    font-family: var(--font-mono);
+    font-size: 13.5px;
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: #A9C4FF;
+  }
+
+  pre {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    line-height: 1.65;
+    background: var(--mono-bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px 20px;
+    overflow-x: auto;
+    color: #C9E8D3;
+    margin: 0 0 20px;
+  }
+  pre code { background: none; border: none; padding: 0; color: inherit; }
+
+  ul, ol { color: var(--text-secondary); font-size: 15.5px; padding-left: 22px; margin: 0 0 20px; }
+  li { margin-bottom: 8px; }
+  li strong { color: var(--text-primary); }
+
+  .diagram-wrap {
+    margin: 20px 0 32px;
+    padding: 16px;
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow-x: auto;
+  }
+  .diagram-wrap svg { display: block; min-width: 560px; width: 100%; height: auto; }
+
+  .callout {
+    margin: 28px 0;
+    padding: 16px 18px;
+    border-radius: var(--radius);
+    font-size: 14px;
+  }
+  .callout.warn {
+    background: rgba(245, 166, 35, 0.07);
+    border: 1px solid rgba(245, 166, 35, 0.25);
+  }
+  .callout.warn strong { color: var(--amber); }
+  .callout.tip {
+    background: var(--accent-soft);
+    border: 1px solid rgba(61, 220, 132, 0.3);
+  }
+  .callout.tip strong { color: var(--accent); }
+  .callout p { margin: 0; color: var(--text-secondary); }
+
+  .cta {
+    margin-top: 60px;
+    padding: 28px;
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    text-align: center;
+  }
+  .cta h3 { margin-top: 0; }
+  .cta p { max-width: 480px; margin: 0 auto 18px; }
+  .cta a.btn {
+    display: inline-block;
+    background: var(--accent);
+    color: #06210F;
+    font-weight: 600;
+    font-size: 14px;
+    text-decoration: none;
+    padding: 11px 22px;
+    border-radius: var(--radius);
+  }
+
+  footer {
+    margin-top: 56px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border-soft);
+    color: var(--text-dim);
+    font-size: 12.5px;
+  }
+
+  .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 0 0 20px; }
+  .table-wrap table { margin: 0; min-width: 520px; }
+  table { width: 100%; border-collapse: collapse; margin: 0 0 20px; font-size: 14px; }
+  th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--border-soft); color: var(--text-secondary); }
+  th { color: var(--text-primary); font-weight: 600; font-size: 12.5px; text-transform: uppercase; letter-spacing: .04em; }
+  td code { font-size: 12.5px; }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <nav class="sitenav">
+    <a href="index.html" class="brand">ispscripts<span class="accent">.</span>com</a>
+    <button class="navtoggle" id="navToggle" aria-label="Menu">&#9776;</button>
+    <div class="navlinks" id="navLinks">
+      <div class="nav-group">
+        <button type="button" class="nav-group-toggle">Generators</button>
+        <div class="nav-group-menu">
+          <a href="index.html">PPPoE + RADIUS</a>
+          <a href="hotspot.html">Hotspot + RADIUS</a>
+          <a href="mikrotik-nat-firewall-generator.html">NAT + Firewall</a>
+        </div>
+      </div>
+      <div class="nav-group">
+        <button type="button" class="nav-group-toggle active">Guides</button>
+        <div class="nav-group-menu">
+          <a href="guide.html">PPPoE + RADIUS Guide</a>
+          <a href="hotspot-guide.html">Hotspot + RADIUS Guide</a>
+          <a href="nat-firewall-guide.html" class="active">NAT + Firewall Guide</a>
+          <a href="pppoe-vs-hotspot.html">PPPoE vs Hotspot</a>
+        </div>
+      </div>
+      <a href="blog.html">Blog</a>
+      <a href="about.html">About</a>
+      <a href="contact.html">Contact</a>
+    </div>
+  </nav>
+
+  <article>
+    <header>
+      <div class="eyebrow">Guide &nbsp;→&nbsp; NAT &amp; Firewall on RouterOS</div>
+      <h1>MikroTik NAT + Firewall: <br>the reasoning behind the script</h1>
+      <p class="dek">The <a href="mikrotik-nat-firewall-generator.html">generator</a> builds the config in seconds. This page covers why each rule exists — for any MikroTik gateway, not just PPPoE or Hotspot deployments.</p>
+    </header>
+
+    <h2>Why masquerade should be scoped to your LAN, not "all traffic"</h2>
+    <p>The simplest NAT rule on RouterOS is a masquerade with no source condition at all — translate everything going out the WAN interface, no exceptions. It works, but it's imprecise: if the router ever gets a second internal network added later (a management VLAN, a second office segment), that traffic gets silently masqueraded too, with no record of where it actually came from.</p>
+    <p><strong>Scoping the rule to your actual LAN subnet</strong> — <code>src-address=192.168.1.0/24</code> — means only traffic that's supposed to be there gets translated. It costs nothing in performance and saves a confusing debugging session six months later when a new subnet appears and traffic from it doesn't behave the way the untouched masquerade rule assumed.</p>
+
+    <h2>Which ports actually get scanned, and why it matters</h2>
+    <p>MikroTik routers with a public IP on the WAN interface get scanned constantly — not because anyone specifically targets a given router, but because RouterOS's management ports sit on the same well-known numbers on every deployment. Bots sweep public IP ranges looking for exactly these:</p>
+
+    <div class="table-wrap">
+    <table>
+      <tr><th>Port</th><th>Service</th><th>Why it's a target</th></tr>
+      <tr><td><code>8291</code></td><td>Winbox</td><td>Full GUI router management — the highest-value target if compromised.</td></tr>
+      <tr><td><code>23</code></td><td>Telnet</td><td>Unencrypted management — credentials visible to anyone on the path.</td></tr>
+      <tr><td><code>21</code></td><td>FTP</td><td>File access to the router's own filesystem.</td></tr>
+      <tr><td><code>8728</code> / <code>8729</code></td><td>API / API-SSL</td><td>Programmatic access — used by billing platforms, but only from your own IP, not the WAN.</td></tr>
+    </table>
+    </div>
+
+    <p>None of these need to be reachable from the public internet. You manage the router from the LAN, or through a VPN tunnel (WireGuard is the simplest option on modern RouterOS) if you need remote access. Closing them on the WAN interface specifically — not globally — keeps LAN-side management untouched.</p>
+
+    <div class="callout tip"><p><strong>SSH is a judgment call:</strong> unlike the ports above, SSH has legitimate remote-management use cases and is harder to brute-force meaningfully with a strong key-based login. The generator's hardening option treats it as optional rather than closing it by default.</p></div>
+
+    <h2>Port forwarding: the door you're choosing to open</h2>
+    <p>A <code>dst-nat</code> rule that forwards one external port to an internal device — a camera, a small web server — is sometimes necessary, but it's worth being deliberate about it. Every forwarded port is reachable from the entire public internet, not just from you. The generator's port-forwarding block is opt-in and scoped to exactly one port pair for this reason: it should be something you consciously add, not a default.</p>
+    <p>If you only need occasional access rather than an always-open port, a WireGuard tunnel or a reverse SSH connection is usually a better trade-off than a permanent forward.</p>
+
+    <h2>How brute-force protection actually works</h2>
+    <p>Closing management ports on the WAN stops most scanning cold, but it's still worth adding a second layer: an address-list rule that tracks repeated connection attempts to router services and temporarily blacklists the source. In RouterOS terms, this is usually two rules working together — one that adds an offending address to a list after repeated attempts, and one earlier in the chain that drops anything already on that list.</p>
+    <p>This catches what static port-closing alone doesn't: an address hammering a port left open for a legitimate reason (like SSH), or probing before a rule further down the chain would otherwise catch it.</p>
+
+    <h3>How a packet is actually evaluated</h3>
+    <div class="diagram-wrap">
+    <svg viewBox="0 0 700 480" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Flow diagram showing how a packet is evaluated through the input chain when destined for the router, and the forward chain plus NAT when destined for the LAN">
+      <defs>
+        <marker id="arrow3" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto">
+          <path d="M0,0 L7,3 L0,6 Z" fill="#3DDC84"/>
+        </marker>
+      </defs>
+      <rect x="0" y="0" width="700" height="480" fill="#0E1420"/>
+
+      <rect x="260" y="14" width="180" height="42" rx="8" fill="#161D2B" stroke="#3DDC84" stroke-width="1.5"/>
+      <text x="350" y="40" text-anchor="middle" fill="#E8ECF4" font-family="Space Grotesk, sans-serif" font-size="12.5" font-weight="600">Packet arrives on WAN</text>
+
+      <line x1="300" y1="56" x2="175" y2="90" stroke="#96A1B8" marker-end="url(#arrow3)"/>
+      <text x="200" y="76" text-anchor="middle" fill="#96A1B8" font-family="JetBrains Mono, monospace" font-size="10.5">To router</text>
+      <line x1="400" y1="56" x2="525" y2="90" stroke="#96A1B8" marker-end="url(#arrow3)"/>
+      <text x="500" y="76" text-anchor="middle" fill="#96A1B8" font-family="JetBrains Mono, monospace" font-size="10.5">To LAN</text>
+
+      <text x="175" y="102" text-anchor="middle" fill="#3DDC84" font-family="JetBrains Mono, monospace" font-size="11" font-weight="600">Input chain</text>
+      <text x="525" y="102" text-anchor="middle" fill="#3DDC84" font-family="JetBrains Mono, monospace" font-size="11" font-weight="600">Forward chain + NAT</text>
+
+      <rect x="55" y="112" width="240" height="38" rx="7" fill="#161D2B" stroke="#2A3448"/>
+      <text x="175" y="135" text-anchor="middle" fill="#E8ECF4" font-family="Inter, sans-serif" font-size="12">Accept established/related</text>
+      <line x1="175" y1="150" x2="175" y2="172" stroke="#96A1B8" marker-end="url(#arrow3)"/>
+
+      <rect x="55" y="174" width="240" height="38" rx="7" fill="#161D2B" stroke="#2A3448"/>
+      <text x="175" y="197" text-anchor="middle" fill="#E8ECF4" font-family="Inter, sans-serif" font-size="12">Drop invalid</text>
+      <line x1="175" y1="212" x2="175" y2="234" stroke="#96A1B8" marker-end="url(#arrow3)"/>
+
+      <rect x="55" y="236" width="240" height="38" rx="7" fill="#161D2B" stroke="#2A3448"/>
+      <text x="175" y="259" text-anchor="middle" fill="#E8ECF4" font-family="Inter, sans-serif" font-size="12">Drop WAN mgmt ports</text>
+      <line x1="175" y1="274" x2="175" y2="296" stroke="#96A1B8" marker-end="url(#arrow3)"/>
+
+      <rect x="55" y="298" width="240" height="38" rx="7" fill="#161D2B" stroke="#2A3448"/>
+      <text x="175" y="321" text-anchor="middle" fill="#E8ECF4" font-family="Inter, sans-serif" font-size="12">Brute-force blacklist check</text>
+      <line x1="175" y1="336" x2="175" y2="358" stroke="#3DDC84" marker-end="url(#arrow3)"/>
+
+      <rect x="55" y="360" width="240" height="38" rx="7" fill="#161D2B" stroke="#3DDC84" stroke-width="1.5"/>
+      <text x="175" y="383" text-anchor="middle" fill="#3DDC84" font-family="Inter, sans-serif" font-size="12" font-weight="600">Reaches router service</text>
+
+      <rect x="405" y="112" width="240" height="38" rx="7" fill="#161D2B" stroke="#2A3448"/>
+      <text x="525" y="135" text-anchor="middle" fill="#E8ECF4" font-family="Inter, sans-serif" font-size="12">Accept established/related</text>
+      <line x1="525" y1="150" x2="525" y2="172" stroke="#96A1B8" marker-end="url(#arrow3)"/>
+
+      <rect x="405" y="174" width="240" height="38" rx="7" fill="#161D2B" stroke="#2A3448"/>
+      <text x="525" y="197" text-anchor="middle" fill="#E8ECF4" font-family="Inter, sans-serif" font-size="12">Drop invalid</text>
+      <line x1="525" y1="212" x2="525" y2="234" stroke="#96A1B8" marker-end="url(#arrow3)"/>
+
+      <rect x="405" y="236" width="240" height="38" rx="7" fill="#161D2B" stroke="#2A3448"/>
+      <text x="525" y="259" text-anchor="middle" fill="#E8ECF4" font-family="Inter, sans-serif" font-size="12">dst-nat (if port forward on)</text>
+      <line x1="525" y1="274" x2="525" y2="296" stroke="#3DDC84" marker-end="url(#arrow3)"/>
+
+      <rect x="405" y="298" width="240" height="38" rx="7" fill="#161D2B" stroke="#3DDC84" stroke-width="1.5"/>
+      <text x="525" y="321" text-anchor="middle" fill="#3DDC84" font-family="Inter, sans-serif" font-size="12" font-weight="600">Delivered to internal device</text>
+
+      <rect x="230" y="410" width="240" height="42" rx="8" fill="#161D2B" stroke="#2A3448"/>
+      <text x="350" y="428" text-anchor="middle" fill="#E8ECF4" font-family="Space Grotesk, sans-serif" font-size="12.5" font-weight="600">LAN device sends a packet out</text>
+      <text x="350" y="444" text-anchor="middle" fill="#96A1B8" font-family="JetBrains Mono, monospace" font-size="10.5">Forward chain → src-nat masquerade → WAN</text>
+    </svg>
+    </div>
+
+    <h2>Reading the generated script</h2>
+    <p>In order, here's what each block in the generator's output does:</p>
+
+    <div class="table-wrap">
+    <table>
+      <tr><th>Block</th><th>Purpose</th></tr>
+      <tr><td><code>/ip firewall nat</code></td><td>Masquerade rule scoped to your LAN subnet, plus an optional <code>dst-nat</code> port-forward if enabled.</td></tr>
+      <tr><td><code>/ip firewall filter</code> (input)</td><td>Accept established/related, drop invalid, then drop the specific WAN-side management ports selected.</td></tr>
+      <tr><td>Brute-force block</td><td>Address-list rules that blacklist repeated connection attempts before they reach the login prompt.</td></tr>
+      <tr><td><code>/ip firewall filter</code> (forward)</td><td>Same established/related and invalid-drop baseline used in the PPPoE and Hotspot generators — applies regardless of which side traffic originates from.</td></tr>
+    </table>
+    </div>
+
+    <div class="callout warn"><p><strong>Test before you trust it:</strong> if you manage this router remotely, keep a Winbox or console session open while applying firewall changes for the first time — a misordered rule can lock you out of your own router. Test on a device you can reach physically before relying on this in production.</p></div>
+
+    <h2>This generator vs the PPPoE and Hotspot generators</h2>
+    <p>If you're already using the <a href="index.html">PPPoE generator</a> or <a href="hotspot.html">Hotspot generator</a>, note that both already include their own baseline firewall rules (established/related accept, invalid drop, optional Winbox/Telnet block). This NAT + Firewall generator is most useful for a standalone gateway that isn't running PPPoE or Hotspot at all, or when you want the extra layers this page covers — scoped masquerade, port forwarding, and brute-force protection — on top of what those two already set up.</p>
+
+    <h2>Every parameter, explained</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>Field</th><th>Accepts</th><th>Default</th><th>Notes</th></tr>
+      <tr><td>WAN interface</td><td>Interface name (e.g. <code>ether1</code>)</td><td><code>ether1</code></td><td>The masquerade and hardening rules apply to this interface specifically. Required.</td></tr>
+      <tr><td>LAN subnet</td><td>IPv4 CIDR block</td><td><code>192.168.1.0/24</code></td><td>Scopes the masquerade rule — only traffic from this subnet gets translated.</td></tr>
+      <tr><td>Port forwarding toggle</td><td>Checkbox</td><td>off</td><td>Enable only if a specific internal service needs to be reachable from the internet.</td></tr>
+      <tr><td>External / Internal port</td><td>Number, 1–65535</td><td><code>8080</code></td><td>The public-facing port and the port the internal device actually listens on — can differ.</td></tr>
+      <tr><td>Internal IP</td><td>IPv4 address</td><td><code>192.168.1.100</code></td><td>Should fall inside the LAN subnet above.</td></tr>
+      <tr><td>Block Winbox/Telnet/FTP/API</td><td>Checkbox</td><td>on</td><td>The single highest-impact hardening option — closes the most commonly scanned ports on the WAN.</td></tr>
+      <tr><td>Block SSH</td><td>Checkbox</td><td>on</td><td>Optional judgment call — SSH has legitimate remote-access uses, unlike the ports above.</td></tr>
+      <tr><td>Brute-force protection</td><td>Checkbox</td><td>on</td><td>Adds address-list rules that blacklist repeated connection attempts.</td></tr>
+    </table>
+    </div>
+
+    <h2>Full example: hardening a standalone gateway router</h2>
+    <p>A common scenario: a MikroTik router acting as a plain internet gateway for an office LAN, with one internal NVR that needs remote camera access.</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>Field</th><th>Value used</th></tr>
+      <tr><td>WAN interface</td><td><code>ether1</code></td></tr>
+      <tr><td>LAN subnet</td><td><code>192.168.1.0/24</code></td></tr>
+      <tr><td>Port forwarding</td><td>Enabled — TCP, external port <code>8080</code> → internal <code>192.168.1.100:8080</code> (the NVR)</td></tr>
+      <tr><td>Service hardening</td><td>Winbox/Telnet/FTP/API blocked, SSH blocked</td></tr>
+      <tr><td>Brute-force protection</td><td>Enabled</td></tr>
+    </table>
+    </div>
+    <p style="font-size:13.5px; color:var(--text-dim);">Everything on the router is managed from the LAN or through a WireGuard tunnel — the one forwarded port is deliberately the NVR's port and nothing else.</p>
+
+    <h2>Common mistakes and how to fix them</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>Symptom</th><th>Likely cause</th><th>Fix</th></tr>
+      <tr><td>Devices on the LAN lose internet after applying the script</td><td>Masquerade rule scoped to the wrong subnet — doesn't match actual LAN addressing</td><td>Confirm the LAN subnet field matches the router's real internal network exactly</td></tr>
+      <tr><td>Locked out of Winbox after running the script</td><td>Managing the router through the WAN interface the script just hardened</td><td>Reconnect from the LAN, or via a VPN tunnel set up before hardening — see the <a href="securing-mikrotik-routers.html">security guide</a></td></tr>
+      <tr><td>Forwarded service unreachable from outside</td><td>Internal IP or port typo, or the internal device's own firewall blocking the connection</td><td>Double-check the internal IP is correct and the device itself accepts connections on that port</td></tr>
+      <tr><td>Brute-force rule doesn't seem to block anything</td><td>Address-list timeout too short, or the rule order has the accept rule before the blacklist check</td><td>Confirm the blacklist-drop rule appears before any accept rule for the same port in <code>/ip firewall filter print</code></td></tr>
+    </table>
+    </div>
+
+    <h2>Best practices</h2>
+    <ul style="color:var(--text-secondary); font-size:15.5px; padding-left:22px; margin:0 0 20px;">
+      <li>Only forward ports you actually need — every forwarded port is reachable from the entire public internet.</li>
+      <li>Prefer a VPN tunnel over a permanent port forward for occasional remote access.</li>
+      <li>Test firewall changes on a device you can reach physically, or keep a console session open the first time.</li>
+      <li>Review the LAN subnet field whenever the network topology changes — a stale scope silently stops protecting new segments.</li>
+    </ul>
+
+    <div class="note"><strong>RouterOS version:</strong> this generator's output is built and tested against RouterOS v7.x. It hasn't been separately verified against RouterOS v6.</div>
+
+    <div class="cta">
+      <h3>Ready to generate your config?</h3>
+      <p>Fill in your WAN interface and LAN subnet and get a ready-to-import <code>.rsc</code> file in seconds.</p>
+      <a href="mikrotik-nat-firewall-generator.html" class="btn">Open the generator →</a>
+    </div>
+
+    <!-- AdSense: this page has substantial original content (600+ words) and
+       is safe for ad placement. Place ad units after the CTA / before the
+       footer, or between major sections — never inside a table, code block,
+       or right before/after a button a user needs to click. -->
+
+    <footer>Written for WISP and ISP operators running MikroTik + RADIUS. Not affiliated with MikroTik or any RADIUS platform vendor.<br><a href="about.html" style="color:var(--text-dim)">About</a> · <a href="privacy.html" style="color:var(--text-dim)">Privacy</a> · <a href="contact.html" style="color:var(--text-dim)">Contact</a> · <a href="changelog.html">Changelog</a> · <a href="https://github.com/diaacylan/ispscripts" target="_blank" rel="noopener">View source</a> · <a href="terms.html">Terms</a> · <a href="disclaimer.html">Disclaimer</a></footer>
+  </article>
+
+</div>
+
+<script>
+  document.getElementById('navToggle').addEventListener('click', function () {
+    document.getElementById('navLinks').classList.toggle('open');
+  });
+</script>
+</body>
+</html>

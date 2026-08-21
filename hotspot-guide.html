@@ -39,6 +39,31 @@
   .sitenav .brand { font-family: var(--font-display); font-weight: 600; font-size: 15px; color: var(--text-primary); text-decoration: none; }
   .sitenav .brand .accent { color: var(--accent); }
   .sitenav .navlinks { display: flex; gap: 20px; flex-wrap: wrap; }
+
+  .nav-group { position: relative; }
+  .nav-group-toggle {
+    background: none; border: none; cursor: pointer; font: inherit;
+    color: var(--text-secondary); font-size: 13.5px; font-weight: 500;
+    padding: 0; display: flex; align-items: center; gap: 4px;
+  }
+  .nav-group-toggle:hover { color: var(--text-primary); }
+  .nav-group-toggle::after { content: '\25be'; font-size: 9px; margin-top: 1px; }
+  .nav-group-toggle.active { color: var(--accent); }
+  .nav-group-menu {
+    display: none;
+    position: absolute; top: 100%; left: 0; margin-top: 12px;
+    background: var(--bg-panel); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 8px; min-width: 210px;
+    flex-direction: column; gap: 2px; z-index: 30;
+  }
+  .nav-group:hover .nav-group-menu,
+  .nav-group:focus-within .nav-group-menu { display: flex; }
+  .nav-group-menu a {
+    padding: 8px 10px; border-radius: 6px; font-size: 13px;
+    color: var(--text-secondary); text-decoration: none;
+  }
+  .nav-group-menu a:hover { background: var(--bg-input); color: var(--text-primary); }
+  .nav-group-menu a.active { color: var(--accent); }
   .sitenav .navlinks a { font-size: 13.5px; font-weight: 500; color: var(--text-secondary); text-decoration: none; padding-bottom: 3px; border-bottom: 1px solid transparent; }
   .sitenav .navlinks a:hover { color: var(--text-primary); }
   .sitenav .navlinks a.active { color: var(--accent); border-bottom-color: var(--accent); }
@@ -74,6 +99,23 @@
       border-bottom: 1px solid var(--border-soft) !important;
     }
     .navlinks a.active { background: var(--accent-soft); }
+
+    .nav-group-toggle {
+      pointer-events: none;
+      color: var(--text-dim);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      padding: 10px 14px 4px;
+    }
+    .nav-group-toggle.active { color: var(--accent); }
+    .nav-group-toggle::after { display: none; }
+    .nav-group-menu {
+      display: flex !important;
+      position: static;
+      border: none; background: none; padding: 0; margin: 0;
+      flex-direction: column; gap: 2px;
+    }
   }
 
   article header { padding: 32px 0 40px; border-bottom: 1px solid var(--border-soft); margin-bottom: 40px; }
@@ -88,6 +130,16 @@
   ul, ol { color: var(--text-secondary); font-size: 15.5px; padding-left: 22px; margin: 0 0 20px; }
   li { margin-bottom: 8px; }
   li strong { color: var(--text-primary); }
+
+  .diagram-wrap {
+    margin: 20px 0 32px;
+    padding: 16px;
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow-x: auto;
+  }
+  .diagram-wrap svg { display: block; min-width: 560px; width: 100%; height: auto; }
 
   .callout { margin: 28px 0; padding: 16px 18px; border-radius: var(--radius); font-size: 14px; }
   .callout.warn { background: rgba(245, 166, 35, 0.07); border: 1px solid rgba(245, 166, 35, 0.25); }
@@ -118,13 +170,26 @@
     <a href="index.html" class="brand">ispscripts<span class="accent">.</span>com</a>
     <button class="navtoggle" id="navToggle" aria-label="Menu">&#9776;</button>
     <div class="navlinks" id="navLinks">
-      <a href="index.html">PPPoE Generator</a>
-      <a href="hotspot.html">Hotspot Generator</a>
-      <a href="mikrotik-nat-firewall-generator.html">NAT + Firewall Generator</a>
-      <a href="guide.html">PPPoE + RADIUS Guide</a>
-      <a href="hotspot-guide.html" class="active">Hotspot + RADIUS Guide</a>
-      <a href="pppoe-vs-hotspot.html">PPPoE vs Hotspot</a>
+      <div class="nav-group">
+        <button type="button" class="nav-group-toggle">Generators</button>
+        <div class="nav-group-menu">
+          <a href="index.html">PPPoE + RADIUS</a>
+          <a href="hotspot.html">Hotspot + RADIUS</a>
+          <a href="mikrotik-nat-firewall-generator.html">NAT + Firewall</a>
+        </div>
+      </div>
+      <div class="nav-group">
+        <button type="button" class="nav-group-toggle active">Guides</button>
+        <div class="nav-group-menu">
+          <a href="guide.html">PPPoE + RADIUS Guide</a>
+          <a href="hotspot-guide.html" class="active">Hotspot + RADIUS Guide</a>
+          <a href="nat-firewall-guide.html">NAT + Firewall Guide</a>
+          <a href="pppoe-vs-hotspot.html">PPPoE vs Hotspot</a>
+        </div>
+      </div>
       <a href="blog.html">Blog</a>
+      <a href="about.html">About</a>
+      <a href="contact.html">Contact</a>
     </div>
   </nav>
 
@@ -147,6 +212,59 @@
       <li><strong>Login.</strong> The subscriber enters the voucher's username and password. RouterOS forwards this to RADIUS with <code>service=hotspot</code> — a separate service type from PPPoE's <code>service=ppp</code>, so the same RADIUS server can run both without conflict.</li>
       <li><strong>Accounting starts.</strong> Same as PPPoE — Start, Interim-Update every 5 minutes, Stop — so the voucher's remaining time or data balance can be tracked.</li>
     </ol>
+
+    <div class="diagram-wrap">
+    <svg viewBox="0 0 700 400" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Flow diagram of a device connecting to a MikroTik hotspot, being redirected to the login page, and authenticating through RADIUS">
+      <defs>
+        <marker id="arrow2" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto">
+          <path d="M0,0 L7,3 L0,6 Z" fill="#3DDC84"/>
+        </marker>
+      </defs>
+      <rect x="0" y="0" width="700" height="400" fill="#0E1420"/>
+
+      <rect x="20" y="30" width="150" height="46" rx="8" fill="#161D2B" stroke="#2A3448"/>
+      <text x="95" y="58" text-anchor="middle" fill="#E8ECF4" font-family="Space Grotesk, sans-serif" font-size="12.5" font-weight="600">Device joins Wi-Fi</text>
+
+      <line x1="95" y1="76" x2="95" y2="110" stroke="#96A1B8" marker-end="url(#arrow2)"/>
+      <text x="115" y="97" fill="#96A1B8" font-family="JetBrains Mono, monospace" font-size="10.5">DHCP</text>
+
+      <rect x="20" y="112" width="150" height="46" rx="8" fill="#161D2B" stroke="#2A3448"/>
+      <text x="95" y="136" text-anchor="middle" fill="#E8ECF4" font-family="Space Grotesk, sans-serif" font-size="12.5" font-weight="600">Gets IP address,</text>
+      <text x="95" y="150" text-anchor="middle" fill="#E8ECF4" font-family="Space Grotesk, sans-serif" font-size="12.5" font-weight="600">not authenticated</text>
+
+      <line x1="170" y1="135" x2="255" y2="135" stroke="#96A1B8" marker-end="url(#arrow2)"/>
+      <text x="212" y="126" text-anchor="middle" fill="#96A1B8" font-family="JetBrains Mono, monospace" font-size="10.5">First HTTP request</text>
+
+      <rect x="260" y="112" width="180" height="46" rx="8" fill="#161D2B" stroke="#3DDC84" stroke-width="1.5"/>
+      <text x="350" y="130" text-anchor="middle" fill="#E8ECF4" font-family="Space Grotesk, sans-serif" font-size="12.5" font-weight="600">Router intercepts,</text>
+      <text x="350" y="145" text-anchor="middle" fill="#E8ECF4" font-family="Space Grotesk, sans-serif" font-size="12.5" font-weight="600">redirects to login page</text>
+
+      <line x1="350" y1="158" x2="350" y2="192" stroke="#96A1B8" marker-end="url(#arrow2)"/>
+      <text x="370" y="179" fill="#96A1B8" font-family="JetBrains Mono, monospace" font-size="10.5">Voucher entered</text>
+
+      <rect x="260" y="194" width="180" height="46" rx="8" fill="#161D2B" stroke="#2A3448"/>
+      <text x="350" y="222" text-anchor="middle" fill="#E8ECF4" font-family="Space Grotesk, sans-serif" font-size="12.5" font-weight="600">Router asks RADIUS</text>
+
+      <line x1="440" y1="217" x2="525" y2="217" stroke="#96A1B8" marker-end="url(#arrow2)"/>
+      <text x="482" y="208" text-anchor="middle" fill="#96A1B8" font-family="JetBrains Mono, monospace" font-size="10.5">service=hotspot</text>
+
+      <rect x="530" y="194" width="150" height="46" rx="8" fill="#161D2B" stroke="#2A3448"/>
+      <text x="605" y="222" text-anchor="middle" fill="#E8ECF4" font-family="Space Grotesk, sans-serif" font-size="12.5" font-weight="600">RADIUS Server</text>
+
+      <line x1="530" y1="235" x2="445" y2="235" stroke="#3DDC84" marker-end="url(#arrow2)"/>
+      <text x="482" y="254" text-anchor="middle" fill="#3DDC84" font-family="JetBrains Mono, monospace" font-size="10.5">Accept / Reject</text>
+
+      <line x1="350" y1="240" x2="350" y2="274" stroke="#3DDC84" marker-end="url(#arrow2)"/>
+      <text x="370" y="261" fill="#3DDC84" font-family="JetBrains Mono, monospace" font-size="10.5">On accept</text>
+
+      <rect x="230" y="276" width="240" height="46" rx="8" fill="#161D2B" stroke="#3DDC84" stroke-width="1.5"/>
+      <text x="350" y="300" text-anchor="middle" fill="#3DDC84" font-family="Space Grotesk, sans-serif" font-size="12.5" font-weight="600">Session starts —</text>
+      <text x="350" y="315" text-anchor="middle" fill="#3DDC84" font-family="Space Grotesk, sans-serif" font-size="12.5" font-weight="600">accounting Start sent</text>
+
+      <text x="95" y="380" text-anchor="middle" fill="#5B6479" font-family="Inter, sans-serif" font-size="10.5">No software installed</text>
+      <text x="605" y="380" text-anchor="middle" fill="#5B6479" font-family="Inter, sans-serif" font-size="10.5">Owns voucher database</text>
+    </svg>
+    </div>
 
     <h2>The two things that actually break deployments</h2>
 
@@ -175,13 +293,70 @@
 
     <div class="callout tip"><p><strong>Test with one device on your own phone's hotspot first</strong> before connecting it to your live access point — it isolates whether an issue is the router config or the wireless setup itself.</p></div>
 
+    <h2>Every parameter, explained</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>Field</th><th>Accepts</th><th>Default</th><th>Notes</th></tr>
+      <tr><td>Hotspot interface</td><td>Interface name (e.g. <code>ether3</code>)</td><td><code>ether3</code></td><td>The interface your access points connect to. Required.</td></tr>
+      <tr><td>Router gateway IP</td><td>IPv4 address</td><td><code>10.20.20.1</code></td><td>Becomes <code>hotspot-address</code> — the router's own IP inside the hotspot subnet.</td></tr>
+      <tr><td>Network (CIDR)</td><td>IPv4 CIDR block</td><td><code>10.20.20.0/24</code></td><td>Should describe the same subnet as the gateway IP and pool.</td></tr>
+      <tr><td>Client pool range</td><td>Two IPv4 addresses, <code>start-end</code></td><td><code>10.20.20.10-10.20.20.254</code></td><td>Addresses actually handed to connecting devices via DHCP.</td></tr>
+      <tr><td>DNS servers</td><td>Comma-separated IPv4 addresses</td><td><code>8.8.8.8,1.1.1.1</code></td><td>Pushed via DHCP.</td></tr>
+      <tr><td>Login page hostname</td><td>Any text — doesn't need to be a real domain</td><td><code>login.mynetwork.com</code></td><td>Shown in the subscriber's browser during login.</td></tr>
+      <tr><td>Walled garden domain</td><td>Domain name</td><td>none</td><td>Optional — only needed if subscribers must reach a payment page before logging in.</td></tr>
+      <tr><td>RADIUS server IP</td><td>IPv4 address</td><td>none — placeholder if blank</td><td>Required for a working config.</td></tr>
+      <tr><td>Shared secret</td><td>Text</td><td>none — placeholder if blank</td><td>Must match the RADIUS server's configured secret exactly. Required.</td></tr>
+    </table>
+    </div>
+
+    <h2>Full example: a voucher hotspot at a shared compound</h2>
+    <p>A common scenario: a residential compound or small business area selling time-based vouchers, with SAS4 as the RADIUS platform on the same LAN as the router.</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>Field</th><th>Value used</th></tr>
+      <tr><td>Hotspot interface</td><td><code>ether3</code> (access point uplink)</td></tr>
+      <tr><td>Router gateway IP</td><td><code>10.20.20.1</code></td></tr>
+      <tr><td>Network</td><td><code>10.20.20.0/24</code></td></tr>
+      <tr><td>Client pool range</td><td><code>10.20.20.10-10.20.20.254</code></td></tr>
+      <tr><td>Login page hostname</td><td><code>login.mynetwork.com</code></td></tr>
+      <tr><td>Walled garden</td><td><code>payments.example.com</code> — so unpaid users can still reach the voucher purchase page</td></tr>
+      <tr><td>RADIUS server IP</td><td><code>192.168.88.10</code> (SAS4 on the same LAN)</td></tr>
+    </table>
+    </div>
+
+    <h2>Common mistakes and how to fix them</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>Symptom</th><th>Likely cause</th><th>Fix</th></tr>
+      <tr><td>Devices connect to WiFi but never see the login page</td><td>No DHCP server on the hotspot interface, so devices never get an IP</td><td>Confirm <code>/ip dhcp-server print</code> shows the hotspot interface enabled</td></tr>
+      <tr><td>Login page loads but voucher codes are always rejected</td><td>RADIUS registered with <code>service=ppp</code> instead of <code>service=hotspot</code></td><td>Check <code>/radius print</code> — the service field must say <code>hotspot</code> for this generator's output</td></tr>
+      <tr><td>Subscribers can't reach the payment page before logging in</td><td>Walled garden domain left blank or doesn't match the actual payment URL</td><td>Add the exact domain used by the payment page to the walled garden field</td></tr>
+      <tr><td>RADIUS accounting shows no usage data</td><td><code>radius-interim-update</code> missing or RADIUS not logging accounting packets</td><td>Confirm the hotspot profile has <code>radius-interim-update=5m</code> and the RADIUS server's accounting log is receiving packets on port 1813</td></tr>
+    </table>
+    </div>
+
+    <h2>Best practices</h2>
+    <ul style="color:var(--text-secondary); font-size:15.5px; padding-left:22px; margin:0 0 20px;">
+      <li>Size the client pool for peak concurrent devices, not just active subscribers — idle phones and routers often hold a lease.</li>
+      <li>Only add a walled garden entry if you're actually selling vouchers through a web page reachable before login.</li>
+      <li>Test one voucher end to end — purchase, login, session start — before printing a full batch.</li>
+      <li>Keep the login page hostname consistent across support documentation, since that's what subscribers will actually see and reference.</li>
+    </ul>
+
+    <div class="note"><strong>RouterOS version:</strong> this generator's output is built and tested against RouterOS v7.x. It hasn't been separately verified against RouterOS v6.</div>
+
     <div class="cta">
       <h3>Ready to generate your config?</h3>
       <p>Fill in your interface and RADIUS details and get a ready-to-import <code>.rsc</code> file in seconds.</p>
       <a href="hotspot.html" class="btn">Open the Hotspot generator →</a>
     </div>
 
-    <footer>Written for WISP and ISP operators running MikroTik + RADIUS. Not affiliated with MikroTik or any RADIUS platform vendor.<br><a href="about.html" style="color:var(--text-dim)">About</a> · <a href="privacy.html" style="color:var(--text-dim)">Privacy</a> · <a href="contact.html" style="color:var(--text-dim)">Contact</a> · <a href="terms.html">Terms</a> · <a href="disclaimer.html">Disclaimer</a></footer>
+    <!-- AdSense: this page has substantial original content (600+ words) and
+       is safe for ad placement. Place ad units after the CTA / before the
+       footer, or between major sections — never inside a table, code block,
+       or right before/after a button a user needs to click. -->
+
+    <footer>Written for WISP and ISP operators running MikroTik + RADIUS. Not affiliated with MikroTik or any RADIUS platform vendor.<br><a href="about.html" style="color:var(--text-dim)">About</a> · <a href="privacy.html" style="color:var(--text-dim)">Privacy</a> · <a href="contact.html" style="color:var(--text-dim)">Contact</a> · <a href="changelog.html">Changelog</a> · <a href="https://github.com/diaacylan/ispscripts" target="_blank" rel="noopener">View source</a> · <a href="terms.html">Terms</a> · <a href="disclaimer.html">Disclaimer</a></footer>
   </article>
 
 </div>

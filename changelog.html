@@ -11,9 +11,9 @@
 </script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Securing MikroTik Routers Against Common Attacks</title>
-<link rel="canonical" href="https://ispscripts.com/securing-mikrotik-routers.html">
-<meta name="description" content="A practical checklist for securing MikroTik RouterOS devices against brute-force attacks, WAN-side exposure, and common misconfigurations — written for WISP and ISP operators.">
+<title>Changelog — ispscripts.com</title>
+<link rel="canonical" href="https://ispscripts.com/changelog.html">
+<meta name="description" content="What's changed on ispscripts.com — new generators, guides, and site updates, in order.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -293,9 +293,22 @@
   th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--border-soft); color: var(--text-secondary); }
   th { color: var(--text-primary); font-weight: 600; font-size: 12.5px; text-transform: uppercase; letter-spacing: .04em; }
   td code { font-size: 12.5px; }
+
+  .changelog { list-style: none; padding: 0; margin: 0 0 32px; border-left: 2px solid var(--border-soft); }
+  .changelog li { position: relative; padding: 2px 0 22px 26px; }
+  .changelog li::before {
+    content: ''; position: absolute; left: -7px; top: 6px;
+    width: 12px; height: 12px; border-radius: 50%;
+    background: var(--bg); border: 2px solid var(--accent);
+  }
+  .changelog .date { font-family: var(--font-mono); font-size: 12px; color: var(--text-dim); margin-bottom: 4px; }
+  .changelog .entry-title { font-weight: 600; color: var(--text-primary); font-size: 15px; margin-bottom: 2px; }
+  .changelog .entry-desc { font-size: 14px; color: var(--text-secondary); }
 </style>
 </head>
 <body>
+<!-- AdSense: DO NOT place ads on this page. This is a running log, not prose content. Word count is borderline and the content is list-style, not something a visitor searches for. -->
+
 
 <div class="wrap">
 
@@ -320,7 +333,7 @@
           <a href="pppoe-vs-hotspot.html">PPPoE vs Hotspot</a>
         </div>
       </div>
-      <a href="blog.html" class="active">Blog</a>
+      <a href="blog.html">Blog</a>
       <a href="about.html">About</a>
       <a href="contact.html">Contact</a>
     </div>
@@ -328,56 +341,52 @@
 
   <article>
     <header>
-      <div class="eyebrow">Blog &nbsp;→&nbsp; Router Security</div>
-      <h1>Securing MikroTik Routers Against Common Attacks</h1>
-      <p class="dek">A practical checklist for closing the ports that get scanned constantly, plus the five changes that actually stop most compromises — written for operators running RouterOS on real subscriber-facing networks.</p>
+      <div class="eyebrow">Changelog</div>
+      <h1>What's changed</h1>
+      <p class="dek">A running record of what's been added to ispscripts.com, in order. No silent changes — if a generator's output logic changes, it's listed here.</p>
     </header>
 
-    <p>MikroTik routers get scanned constantly — not because anyone specifically targets you, but because RouterOS's management ports (Winbox, Telnet, the API, sometimes FTP) sit on the same well-known port numbers on every deployment. Bots sweep public IP ranges looking for exactly these ports, all day, every day. If your WAN interface has a public IP — including a Starlink or fiber setup with any reachable port — it's already being probed.</p>
-    <p>This isn't a theoretical risk. Compromised MikroTik routers have been used in real botnets, mostly through two mistakes: <strong>default or weak passwords</strong>, and <strong>management ports left open on the WAN side</strong>. Both are fixable in a few minutes.</p>
+    <ul class="changelog">
+      <li>
+        <div class="date">Latest update</div>
+        <div class="entry-title">Homepage messaging refresh</div>
+        <div class="entry-desc">Rewrote the headline on all three generator pages to lead with what you get, added "Free · Runs in your browser · Tested on RouterOS v7.x" trust badges, and linked the public source repo from every page.</div>
+      </li>
+      <li>
+        <div class="date">Recent</div>
+        <div class="entry-title">Compliance pages expanded</div>
+        <div class="entry-desc">About page now covers why the site exists and who it's for. Contact page clarifies why there's no contact form. Privacy policy states plainly that there's no backend server for the generators to send data to.</div>
+      </li>
+      <li>
+        <div class="date">Recent</div>
+        <div class="entry-title">Blog section launched</div>
+        <div class="entry-desc">Added a blog index and the first article, "Securing MikroTik Routers Against Common Attacks." Also added beginner-friendly explanations under each config block on all three generator pages.</div>
+      </li>
+      <li>
+        <div class="entry-title">PPPoE vs Hotspot comparison added</div>
+        <div class="entry-desc">A side-by-side article to help operators pick the right subscriber access model.</div>
+      </li>
+      <li>
+        <div class="entry-title">NAT + Firewall Generator added</div>
+        <div class="entry-desc">A third generator for any MikroTik gateway — masquerade, optional port forwarding, WAN-side service hardening, and brute-force protection.</div>
+      </li>
+      <li>
+        <div class="entry-title">Trust pages added</div>
+        <div class="entry-desc">About, Privacy Policy, and Contact pages published.</div>
+      </li>
+      <li>
+        <div class="entry-title">Hotspot + RADIUS Generator added</div>
+        <div class="entry-desc">Second generator, for voucher/card-based captive portal access, with its own setup guide.</div>
+      </li>
+      <li>
+        <div class="entry-title">Site launched</div>
+        <div class="entry-desc">First generator published: PPPoE + RADIUS config generator, with an in-depth setup guide.</div>
+      </li>
+    </ul>
 
-    <h2>The five things that actually matter</h2>
-
-    <h3>1. Close Winbox, Telnet, FTP, and the API on the WAN interface</h3>
-    <p>This is the single highest-impact change you can make. None of these services need to be reachable from the public internet — you manage the router from your LAN, or through a VPN if you need remote access. The <a href="mikrotik-nat-firewall-generator.html">NAT + Firewall Generator</a> on this site builds this rule for you automatically.</p>
-    <div class="callout tip"><p><strong>Need remote management?</strong> Don't leave Winbox open — set up a WireGuard tunnel instead and manage the router as if you were on the LAN.</p></div>
-
-    <h3>2. Change every default password, including the RADIUS shared secret</h3>
-    <p>The <code>admin</code> account with no password, or a weak one, is still the #1 way MikroTik routers get compromised. Use a long, random password for the router itself, and a separate strong shared secret for RADIUS — never reuse the router's admin password there.</p>
-
-    <h3>3. Rate-limit connection attempts to router services</h3>
-    <p>Even with management ports closed on the WAN, it's worth adding a rule that temporarily blacklists any address making repeated connection attempts to router services — a basic defense against brute-force scanning before it even gets to the login prompt. This is a checkbox option in the <a href="mikrotik-nat-firewall-generator.html">NAT + Firewall generator</a>.</p>
-
-    <h3>4. Keep RouterOS updated — but test before rolling out fleet-wide</h3>
-    <p>MikroTik ships security patches regularly. Running years-old RouterOS versions on subscriber-facing routers is a common way vulnerabilities stay open long after they're publicly known. That said, don't push an update to your whole network at once — test on one router first, since RouterOS updates occasionally change default behavior.</p>
-
-    <h3>5. Don't trust the LAN side either</h3>
-    <p>A firewall rule set that only hardens the WAN interface still leaves the router open to anything already on your network — a compromised subscriber device, a misconfigured access point. The forward-chain rules in both the <a href="index.html">PPPoE</a> and <a href="hotspot.html">Hotspot</a> generators on this site (drop invalid connections, accept established/related) apply regardless of which side traffic comes from.</p>
-
-    <h2>Quick checklist</h2>
-    <div class="table-wrap">
-    <table>
-      <tr><th>Item</th><th>Why it matters</th></tr>
-      <tr><td>Winbox, Telnet, FTP, API closed on WAN</td><td>Removes the ports bots scan for first.</td></tr>
-      <tr><td>SSH closed on WAN unless needed</td><td>Same exposure risk as Winbox/Telnet.</td></tr>
-      <tr><td>Strong, unique admin password</td><td>Still the most common way routers get taken over.</td></tr>
-      <tr><td>Strong, unique RADIUS shared secret</td><td>Never reuse the router's admin password here.</td></tr>
-      <tr><td>Brute-force rate-limiting enabled</td><td>Blocks repeated login attempts automatically.</td></tr>
-      <tr><td>RouterOS version current, tested first</td><td>Closes known vulnerabilities without breaking your fleet.</td></tr>
-      <tr><td>Remote management via VPN, not exposed Winbox</td><td>Keeps management traffic off the public internet entirely.</td></tr>
-    </table>
+    <div class="panel" style="background: var(--bg-panel); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 22px 24px;">
+      <p style="margin:0;">Every generator's output is reviewed against a real RouterOS v7.x device before publishing. If a script ever produces invalid syntax on your version, <a href="contact.html">let me know</a> — that's exactly what this changelog and the contact page are for.</p>
     </div>
-
-    <div class="cta">
-      <h3>Generate a hardened config now</h3>
-      <p>The NAT + Firewall Generator builds all of the WAN-side hardening above into one script, ready to import.</p>
-      <a href="mikrotik-nat-firewall-generator.html" class="btn">Open the NAT + Firewall Generator →</a>
-    </div>
-
-    <!-- AdSense: this page has substantial original content (600+ words) and
-       is safe for ad placement. Place ad units after the CTA / before the
-       footer, or between major sections — never inside a table, code block,
-       or right before/after a button a user needs to click. -->
 
     <footer>Written for WISP and ISP operators running MikroTik + RADIUS. Not affiliated with MikroTik or any RADIUS platform vendor.<br><a href="about.html" style="color:var(--text-dim)">About</a> · <a href="privacy.html" style="color:var(--text-dim)">Privacy</a> · <a href="contact.html" style="color:var(--text-dim)">Contact</a> · <a href="changelog.html">Changelog</a> · <a href="https://github.com/diaacylan/ispscripts" target="_blank" rel="noopener">View source</a> · <a href="terms.html">Terms</a> · <a href="disclaimer.html">Disclaimer</a></footer>
   </article>

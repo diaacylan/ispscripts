@@ -77,6 +77,31 @@
   }
   .sitenav .brand .accent { color: var(--accent); }
   .sitenav .navlinks { display: flex; gap: 22px; }
+
+  .nav-group { position: relative; }
+  .nav-group-toggle {
+    background: none; border: none; cursor: pointer; font: inherit;
+    color: var(--text-secondary); font-size: 13.5px; font-weight: 500;
+    padding: 0; display: flex; align-items: center; gap: 4px;
+  }
+  .nav-group-toggle:hover { color: var(--text-primary); }
+  .nav-group-toggle::after { content: '\25be'; font-size: 9px; margin-top: 1px; }
+  .nav-group-toggle.active { color: var(--accent); }
+  .nav-group-menu {
+    display: none;
+    position: absolute; top: 100%; left: 0; margin-top: 12px;
+    background: var(--bg-panel); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 8px; min-width: 210px;
+    flex-direction: column; gap: 2px; z-index: 30;
+  }
+  .nav-group:hover .nav-group-menu,
+  .nav-group:focus-within .nav-group-menu { display: flex; }
+  .nav-group-menu a {
+    padding: 8px 10px; border-radius: 6px; font-size: 13px;
+    color: var(--text-secondary); text-decoration: none;
+  }
+  .nav-group-menu a:hover { background: var(--bg-input); color: var(--text-primary); }
+  .nav-group-menu a.active { color: var(--accent); }
   .sitenav .navlinks a {
     font-size: 13.5px;
     font-weight: 500;
@@ -119,6 +144,23 @@
       border-bottom: 1px solid var(--border-soft) !important;
     }
     .navlinks a.active { background: var(--accent-soft); }
+
+    .nav-group-toggle {
+      pointer-events: none;
+      color: var(--text-dim);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      padding: 10px 14px 4px;
+    }
+    .nav-group-toggle.active { color: var(--accent); }
+    .nav-group-toggle::after { display: none; }
+    .nav-group-menu {
+      display: flex !important;
+      position: static;
+      border: none; background: none; padding: 0; margin: 0;
+      flex-direction: column; gap: 2px;
+    }
   }
 
   article header {
@@ -284,6 +326,8 @@
 </style>
 </head>
 <body>
+<!-- AdSense: DO NOT place ads on this page. The blog index has real content mixed with placeholder 'Coming soon' cards for unpublished articles. Do not run ads here until those are replaced with real published posts — AdSense treats stub/placeholder content as a policy risk. -->
+
 
 <div class="wrap">
 
@@ -291,13 +335,26 @@
     <a href="index.html" class="brand">ispscripts<span class="accent">.</span>com</a>
     <button class="navtoggle" id="navToggle" aria-label="Menu">&#9776;</button>
     <div class="navlinks" id="navLinks">
-      <a href="index.html">PPPoE Generator</a>
-      <a href="hotspot.html">Hotspot Generator</a>
-      <a href="mikrotik-nat-firewall-generator.html">NAT + Firewall Generator</a>
-      <a href="guide.html">PPPoE + RADIUS Guide</a>
-      <a href="hotspot-guide.html">Hotspot + RADIUS Guide</a>
-      <a href="pppoe-vs-hotspot.html">PPPoE vs Hotspot</a>
+      <div class="nav-group">
+        <button type="button" class="nav-group-toggle">Generators</button>
+        <div class="nav-group-menu">
+          <a href="index.html">PPPoE + RADIUS</a>
+          <a href="hotspot.html">Hotspot + RADIUS</a>
+          <a href="mikrotik-nat-firewall-generator.html">NAT + Firewall</a>
+        </div>
+      </div>
+      <div class="nav-group">
+        <button type="button" class="nav-group-toggle">Guides</button>
+        <div class="nav-group-menu">
+          <a href="guide.html">PPPoE + RADIUS Guide</a>
+          <a href="hotspot-guide.html">Hotspot + RADIUS Guide</a>
+          <a href="nat-firewall-guide.html">NAT + Firewall Guide</a>
+          <a href="pppoe-vs-hotspot.html">PPPoE vs Hotspot</a>
+        </div>
+      </div>
       <a href="blog.html" class="active">Blog</a>
+      <a href="about.html">About</a>
+      <a href="contact.html">Contact</a>
     </div>
   </nav>
 
@@ -340,7 +397,7 @@
       </li>
     </ul>
 
-    <footer>Written for WISP and ISP operators running MikroTik + RADIUS. Not affiliated with MikroTik or any RADIUS platform vendor.<br><a href="about.html" style="color:var(--text-dim)">About</a> · <a href="privacy.html" style="color:var(--text-dim)">Privacy</a> · <a href="contact.html" style="color:var(--text-dim)">Contact</a> · <a href="terms.html">Terms</a> · <a href="disclaimer.html">Disclaimer</a></footer>
+    <footer>Written for WISP and ISP operators running MikroTik + RADIUS. Not affiliated with MikroTik or any RADIUS platform vendor.<br><a href="about.html" style="color:var(--text-dim)">About</a> · <a href="privacy.html" style="color:var(--text-dim)">Privacy</a> · <a href="contact.html" style="color:var(--text-dim)">Contact</a> · <a href="changelog.html">Changelog</a> · <a href="https://github.com/diaacylan/ispscripts" target="_blank" rel="noopener">View source</a> · <a href="terms.html">Terms</a> · <a href="disclaimer.html">Disclaimer</a></footer>
   </article>
 
 </div>

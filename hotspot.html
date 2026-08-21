@@ -14,6 +14,46 @@
 <title>MikroTik Hotspot + RADIUS Generator — Voucher-Based RouterOS Config</title>
 <link rel="canonical" href="https://ispscripts.com/hotspot.html">
 <meta name="description" content="Generate a ready-to-import RouterOS Hotspot config with RADIUS authentication and accounting — for voucher and card-based wireless ISP billing.">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How do I configure a Hotspot on MikroTik with voucher login?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Fill in the hotspot interface, network, and RADIUS server details in the generator on this page. It builds the DHCP server, IP pool, RADIUS registration, and hotspot profile together, ready to download as a .rsc file. Voucher codes are created on your RADIUS platform, not in this script."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What's a walled garden and do I need one?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "A walled garden lets a specific domain, usually a payment page, load before a subscriber logs in. Without it a subscriber can't reach a payment page at all, since the router blocks everything until login."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Hotspot vs PPPoE on MikroTik — which should I use?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Hotspot suits walk-up, voucher-based, or public access where subscribers don't have fixed accounts. PPPoE suits fixed monthly subscribers with a dedicated login."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does this tool send my router's configuration anywhere?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. Everything runs in the browser with plain JavaScript — nothing typed into the form is transmitted to any server."
+      }
+    }
+  ]
+}
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -73,6 +113,31 @@
   .sitenav .brand { font-family: var(--font-display); font-weight: 600; font-size: 15px; color: var(--text-primary); text-decoration: none; }
   .sitenav .brand .accent { color: var(--accent); }
   .sitenav .navlinks { display: flex; gap: 22px; flex-wrap: wrap; }
+
+  .nav-group { position: relative; }
+  .nav-group-toggle {
+    background: none; border: none; cursor: pointer; font: inherit;
+    color: var(--text-secondary); font-size: 13.5px; font-weight: 500;
+    padding: 0; display: flex; align-items: center; gap: 4px;
+  }
+  .nav-group-toggle:hover { color: var(--text-primary); }
+  .nav-group-toggle::after { content: '\25be'; font-size: 9px; margin-top: 1px; }
+  .nav-group-toggle.active { color: var(--accent); }
+  .nav-group-menu {
+    display: none;
+    position: absolute; top: 100%; left: 0; margin-top: 12px;
+    background: var(--bg-panel); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 8px; min-width: 210px;
+    flex-direction: column; gap: 2px; z-index: 30;
+  }
+  .nav-group:hover .nav-group-menu,
+  .nav-group:focus-within .nav-group-menu { display: flex; }
+  .nav-group-menu a {
+    padding: 8px 10px; border-radius: 6px; font-size: 13px;
+    color: var(--text-secondary); text-decoration: none;
+  }
+  .nav-group-menu a:hover { background: var(--bg-input); color: var(--text-primary); }
+  .nav-group-menu a.active { color: var(--accent); }
   .sitenav .navlinks a { font-size: 13.5px; font-weight: 500; color: var(--text-secondary); text-decoration: none; padding-bottom: 3px; border-bottom: 1px solid transparent; }
   .sitenav .navlinks a:hover { color: var(--text-primary); }
   .sitenav .navlinks a.active { color: var(--accent); border-bottom-color: var(--accent); }
@@ -108,6 +173,23 @@
       border-bottom: 1px solid var(--border-soft) !important;
     }
     .navlinks a.active { background: var(--accent-soft); }
+
+    .nav-group-toggle {
+      pointer-events: none;
+      color: var(--text-dim);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      padding: 10px 14px 4px;
+    }
+    .nav-group-toggle.active { color: var(--accent); }
+    .nav-group-toggle::after { display: none; }
+    .nav-group-menu {
+      display: flex !important;
+      position: static;
+      border: none; background: none; padding: 0; margin: 0;
+      flex-direction: column; gap: 2px;
+    }
   }
 
   .toolbanner {
@@ -169,6 +251,33 @@
   .checkbox-row .cb-text { font-size: 13px; color: var(--text-secondary); }
   .checkbox-row .cb-text strong { color: var(--text-primary); font-weight: 500; }
 
+  .badge {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+    padding: 2px 7px;
+    border-radius: 999px;
+    margin-left: 7px;
+    vertical-align: middle;
+    font-weight: 600;
+  }
+  .badge-req { background: rgba(229, 72, 77, 0.12); color: var(--red); border: 1px solid rgba(229, 72, 77, 0.35); }
+  .badge-opt { background: var(--bg-input); color: var(--text-dim); border: 1px solid var(--border); }
+
+  .field-msg {
+    font-size: 12px;
+    margin-top: 6px;
+    line-height: 1.4;
+    display: none;
+  }
+  .field-msg.show { display: block; }
+  .field-msg.err { color: var(--red); }
+  .field-msg.warn { color: var(--amber); }
+
+  input.field-err { border-color: var(--red) !important; box-shadow: 0 0 0 3px rgba(229, 72, 77, 0.15) !important; }
+  input.field-warn { border-color: var(--amber) !important; box-shadow: 0 0 0 3px rgba(245, 166, 35, 0.15) !important; }
+
   .output-col { position: sticky; top: 24px; min-width: 0; }
   .terminal { background: var(--mono-bg); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; }
   .term-bar { display: flex; align-items: center; gap: 14px; padding: 12px 16px; background: var(--bg-panel-2); border-bottom: 1px solid var(--border-soft); }
@@ -206,6 +315,27 @@
   .about-card { background: var(--bg-panel); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px; }
   .about-card .tag { font-family: var(--font-mono); font-size: 11px; color: var(--accent); letter-spacing: .05em; }
   .about-card p { font-size: 13.5px; color: var(--text-secondary); margin: 8px 0 0; }
+
+  .faq { max-width: 760px; }
+  .faq details {
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 18px;
+    margin-bottom: 10px;
+  }
+  .faq summary {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 15px;
+    color: var(--text-primary);
+    cursor: pointer;
+    list-style: none;
+  }
+  .faq summary::-webkit-details-marker { display: none; }
+  .faq summary::before { content: '+ '; color: var(--accent); font-weight: 700; }
+  .faq details[open] summary::before { content: '– '; }
+  .faq p { font-size: 14px; color: var(--text-secondary); margin: 10px 0 0; }
   .about p.lead { color: var(--text-secondary); font-size: 15px; max-width: 760px; }
 
   .note { margin-top: 28px; padding: 16px 18px; background: rgba(245, 166, 35, 0.07); border: 1px solid rgba(245, 166, 35, 0.25); border-radius: var(--radius); font-size: 13.5px; color: var(--text-secondary); }
@@ -239,13 +369,26 @@
     <a href="index.html" class="brand">ispscripts<span class="accent">.</span>com</a>
     <button class="navtoggle" id="navToggle" aria-label="Menu">&#9776;</button>
     <div class="navlinks" id="navLinks">
-      <a href="index.html">PPPoE Generator</a>
-      <a href="hotspot.html" class="active">Hotspot Generator</a>
-      <a href="mikrotik-nat-firewall-generator.html">NAT + Firewall Generator</a>
-      <a href="guide.html">PPPoE + RADIUS Guide</a>
-      <a href="hotspot-guide.html">Hotspot + RADIUS Guide</a>
-      <a href="pppoe-vs-hotspot.html">PPPoE vs Hotspot</a>
+      <div class="nav-group">
+        <button type="button" class="nav-group-toggle active">Generators</button>
+        <div class="nav-group-menu">
+          <a href="index.html">PPPoE + RADIUS</a>
+          <a href="hotspot.html" class="active">Hotspot + RADIUS</a>
+          <a href="mikrotik-nat-firewall-generator.html">NAT + Firewall</a>
+        </div>
+      </div>
+      <div class="nav-group">
+        <button type="button" class="nav-group-toggle">Guides</button>
+        <div class="nav-group-menu">
+          <a href="guide.html">PPPoE + RADIUS Guide</a>
+          <a href="hotspot-guide.html">Hotspot + RADIUS Guide</a>
+          <a href="nat-firewall-guide.html">NAT + Firewall Guide</a>
+          <a href="pppoe-vs-hotspot.html">PPPoE vs Hotspot</a>
+        </div>
+      </div>
       <a href="blog.html">Blog</a>
+      <a href="about.html">About</a>
+      <a href="contact.html">Contact</a>
     </div>
   </nav>
 
@@ -260,8 +403,14 @@
       <span class="led"></span>
     </div>
     <div class="eyebrow">/ip hotspot &nbsp;→&nbsp; RouterOS config generator</div>
-    <h1>MikroTik <span class="accent">Hotspot</span> + RADIUS Generator</h1>
+    <h1>Generate a production-ready <span class="accent">Hotspot config</span><br>in seconds</h1>
     <p>For voucher and card-based access — captive portal login instead of PPPoE dial-in. Fill in your network and RADIUS details on the left, get a ready-to-import script on the right.</p>
+    <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:16px;">
+      <span style="font-size:12.5px; font-family:var(--font-mono); color:var(--text-secondary); background:var(--bg-panel); border:1px solid var(--border); border-radius:999px; padding:5px 12px;">Free, no signup</span>
+      <span style="font-size:12.5px; font-family:var(--font-mono); color:var(--text-secondary); background:var(--bg-panel); border:1px solid var(--border); border-radius:999px; padding:5px 12px;">Runs 100% in your browser</span>
+      <span style="font-size:12.5px; font-family:var(--font-mono); color:var(--text-secondary); background:var(--bg-panel); border:1px solid var(--border); border-radius:999px; padding:5px 12px;">Nothing you type is sent anywhere</span>
+      <span style="font-size:12.5px; font-family:var(--font-mono); color:var(--text-secondary); background:var(--bg-panel); border:1px solid var(--border); border-radius:999px; padding:5px 12px;">Tested on RouterOS v7.x</span>
+    </div>
   </header>
 
   <div class="grid">
@@ -273,38 +422,43 @@
           <legend>Interface &amp; addressing</legend>
           <div class="field-row">
             <div class="field">
-              <label for="iface">Hotspot interface</label>
+              <label for="iface">Hotspot interface <span class="badge badge-req">Required</span></label>
               <input type="text" id="iface" value="ether3">
             </div>
             <div class="field">
-              <label for="gwip">Router gateway IP</label>
+              <label for="gwip">Router gateway IP <span class="badge badge-opt">Optional</span></label>
               <input type="text" id="gwip" value="10.20.20.1">
+              <div class="field-msg" id="msg-gwip"></div>
             </div>
           </div>
           <div class="field-row">
             <div class="field">
-              <label for="netcidr">Network <span class="hint">(CIDR)</span></label>
+              <label for="netcidr">Network <span class="hint">(CIDR)</span> <span class="badge badge-opt">Optional</span></label>
               <input type="text" id="netcidr" value="10.20.20.0/24">
+              <div class="field-msg" id="msg-netcidr"></div>
             </div>
             <div class="field">
-              <label for="pool">Client pool range</label>
+              <label for="pool">Client pool range <span class="badge badge-opt">Optional</span></label>
               <input type="text" id="pool" value="10.20.20.10-10.20.20.254">
+              <div class="field-msg" id="msg-pool"></div>
             </div>
           </div>
+          <p style="font-size:12.5px; color:var(--text-dim); margin:4px 0 12px;">Gateway IP, network, and pool should all describe the same subnet — the pool is the range of addresses actually handed out inside that network.</p>
           <div class="field">
-            <label for="dns">DNS servers <span class="hint">(comma separated)</span></label>
+            <label for="dns">DNS servers <span class="hint">(comma separated)</span> <span class="badge badge-opt">Optional</span></label>
             <input type="text" id="dns" value="8.8.8.8,1.1.1.1">
+            <div class="field-msg" id="msg-dns"></div>
           </div>
         </fieldset>
 
         <fieldset>
           <legend>Captive portal</legend>
           <div class="field">
-            <label for="dnsname">Login page hostname <span class="hint">(shown to subscribers)</span></label>
+            <label for="dnsname">Login page hostname <span class="hint">(shown to subscribers)</span> <span class="badge badge-opt">Optional</span></label>
             <input type="text" id="dnsname" value="login.mynetwork.com">
           </div>
           <div class="field">
-            <label for="walledgarden">Walled garden domain <span class="hint">(optional — reachable before login)</span></label>
+            <label for="walledgarden">Walled garden domain <span class="hint">(optional — reachable before login)</span> <span class="badge badge-opt">Optional</span></label>
             <input type="text" id="walledgarden" placeholder="payments.example.com">
           </div>
         </fieldset>
@@ -313,14 +467,17 @@
           <legend>RADIUS (SAS4 / any RFC-2865 server)</legend>
           <div class="field-row">
             <div class="field">
-              <label for="radiusIp">RADIUS server IP</label>
+              <label for="radiusIp">RADIUS server IP <span class="badge badge-req">Required</span></label>
               <input type="text" id="radiusIp" placeholder="192.168.88.10">
+              <div class="field-msg" id="msg-radiusIp"></div>
             </div>
             <div class="field">
-              <label for="radiusSecret">Shared secret</label>
+              <label for="radiusSecret">Shared secret <span class="badge badge-req">Required</span></label>
               <input type="password" id="radiusSecret" placeholder="••••••••">
+              <div class="field-msg" id="msg-radiusSecret"></div>
             </div>
           </div>
+          <p style="font-size:12.5px; color:var(--text-dim); margin:4px 0 0;">Leave these blank and the script will contain placeholder text instead of a real address — safe to copy for review, but voucher logins won't authenticate until you fill these in.</p>
         </fieldset>
 
         <fieldset>
@@ -378,6 +535,54 @@
     </div>
 
     <div class="note"><strong>Before you deploy:</strong> this is a starting template. Voucher/user creation itself happens on your RADIUS platform (SAS4, etc.), not in this script — this only wires the router to talk to it. Test with one voucher before rolling out further.</div>
+
+    <h2 style="margin-top:48px;">Example output</h2>
+    <p class="lead">What the generator produces with the default values shown above — a full RouterOS Hotspot + RADIUS configuration, ready to import.</p>
+    <div class="terminal" style="max-width:640px;">
+      <div class="term-bar">
+        <div class="dots"><span></span><span></span><span></span></div>
+        <div class="term-filename">hotspot-config.rsc — example</div>
+      </div>
+      <div class="term-body">
+        <pre style="white-space:pre-wrap;"><span class="c"># IP pool — handed out to connecting clients</span>
+<span class="k">/ip pool</span>
+add name=hs-pool ranges=<span class="v">10.20.20.10-10.20.20.254</span>
+
+<span class="c"># DHCP server on the hotspot interface</span>
+<span class="k">/ip dhcp-server</span>
+add interface=<span class="v">ether3</span> address-pool=hs-pool name=hs-dhcp disabled=no
+<span class="k">/ip dhcp-server network</span>
+add address=<span class="v">10.20.20.0/24</span> gateway=<span class="v">10.20.20.1</span> dns-server=<span class="v">8.8.8.8,1.1.1.1</span>
+
+<span class="c"># RADIUS — authentication + accounting for hotspot service</span>
+<span class="k">/radius</span>
+add service=hotspot address=<span class="v">192.168.88.10</span> secret=<span class="v">••••••••</span> authentication-port=1812 accounting-port=1813
+
+<span class="c"># Hotspot profile — login page + RADIUS</span>
+<span class="k">/ip hotspot profile</span>
+add name=<span class="v">hs-profile</span> hotspot-address=<span class="v">10.20.20.1</span> dns-name=<span class="v">login.mynetwork.com</span> login-by=http-chap,http-pap use-radius=yes radius-interim-update=5m</pre>
+      </div>
+    </div>
+
+    <h2 style="margin-top:48px;">Frequently asked questions</h2>
+    <div class="faq">
+      <details>
+        <summary>How do I configure a Hotspot on MikroTik with voucher login?</summary>
+        <p>Fill in your hotspot interface, network, and RADIUS server details in the generator on this page. It builds the DHCP server, IP pool, RADIUS registration, and hotspot profile together, ready to download as a <code>.rsc</code> file. Voucher codes themselves are created on your RADIUS platform (SAS4, GalaxyRAD, etc.) — this script only tells the router where to check them. See the <a href="hotspot-guide.html">full setup guide</a> for how captive portal login actually works.</p>
+      </details>
+      <details>
+        <summary>What's a walled garden and do I need one?</summary>
+        <p>A walled garden lets a specific domain — usually a payment page — load before a subscriber logs in. Without it, a subscriber can't reach your payment page at all, since the router blocks everything until login. Only fill this in if you're selling vouchers online.</p>
+      </details>
+      <details>
+        <summary>Hotspot vs PPPoE — which should I use?</summary>
+        <p>Hotspot suits walk-up, voucher-based, or public access where subscribers don't have fixed accounts. PPPoE suits fixed monthly subscribers with a dedicated login. See the full <a href="pppoe-vs-hotspot.html">PPPoE vs Hotspot comparison</a> for a detailed breakdown.</p>
+      </details>
+      <details>
+        <summary>Does this tool send my router's configuration anywhere?</summary>
+        <p>No. Everything runs in the browser with plain JavaScript — nothing typed into this form is transmitted to any server. See the <a href="privacy.html">privacy policy</a> for details.</p>
+      </details>
+    </div>
   </div>
 
   <!-- AdSense safe zone: place ad units here or below. Do NOT place ads inside
@@ -387,7 +592,7 @@
 
   <footer>
     <span>Built for WISP &amp; ISP operators running MikroTik + RADIUS · No data leaves your browser</span>
-    <span><a href="about.html" style="color:var(--text-dim)">About</a> · <a href="privacy.html" style="color:var(--text-dim)">Privacy</a> · <a href="contact.html" style="color:var(--text-dim)">Contact</a></span> · <a href="terms.html">Terms</a> · <a href="disclaimer.html">Disclaimer</a></footer>
+    <span><a href="about.html" style="color:var(--text-dim)">About</a> · <a href="privacy.html" style="color:var(--text-dim)">Privacy</a> · <a href="contact.html" style="color:var(--text-dim)">Contact</a></span> · <a href="changelog.html">Changelog</a> · <a href="https://github.com/diaacylan/ispscripts" target="_blank" rel="noopener">View source</a> · <a href="terms.html">Terms</a> · <a href="disclaimer.html">Disclaimer</a></footer>
 
 </div>
 
@@ -395,6 +600,95 @@
   const ids = ['iface','gwip','netcidr','pool','dns','dnsname','walledgarden','radiusIp','radiusSecret','svcname','profname','harden'];
   const els = Object.fromEntries(ids.map(id => [id, document.getElementById(id)]));
   const output = document.getElementById('output');
+
+  // ---------- Validation helpers ----------
+  function isValidIPv4(str) {
+    const parts = (str || '').trim().split('.');
+    if (parts.length !== 4) return false;
+    return parts.every(p => /^\d{1,3}$/.test(p) && Number(p) >= 0 && Number(p) <= 255);
+  }
+  function subnet24(ip) { return ip.split('.').slice(0, 3).join('.'); }
+  function isValidCIDR(str) {
+    const m = (str || '').trim().match(/^(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\/(\d{1,2})$/);
+    if (!m) return false;
+    return isValidIPv4(m[1]) && Number(m[2]) >= 0 && Number(m[2]) <= 32;
+  }
+
+  function setMsg(id, text, level) {
+    const msgEl = document.getElementById('msg-' + id);
+    const inputEl = els[id];
+    if (!msgEl) return;
+    inputEl.classList.remove('field-err', 'field-warn');
+    if (!text) {
+      msgEl.classList.remove('show', 'err', 'warn');
+      msgEl.textContent = '';
+      return;
+    }
+    msgEl.textContent = text;
+    msgEl.classList.add('show', level === 'err' ? 'err' : 'warn');
+    msgEl.classList.remove(level === 'err' ? 'warn' : 'err');
+    inputEl.classList.add(level === 'err' ? 'field-err' : 'field-warn');
+  }
+
+  function validate() {
+    const gwipVal = els.gwip.value.trim();
+    if (gwipVal && !isValidIPv4(gwipVal)) {
+      setMsg('gwip', 'Not a valid IPv4 address, e.g. 10.20.20.1', 'err');
+    } else {
+      setMsg('gwip', '', null);
+    }
+
+    const netcidrVal = els.netcidr.value.trim();
+    if (netcidrVal && !isValidCIDR(netcidrVal)) {
+      setMsg('netcidr', 'Expected CIDR format, e.g. 10.20.20.0/24', 'err');
+    } else if (netcidrVal && gwipVal && isValidIPv4(gwipVal) && isValidCIDR(netcidrVal) && subnet24(netcidrVal.split('/')[0]) !== subnet24(gwipVal)) {
+      setMsg('netcidr', `This network doesn't match the gateway IP's subnet (${subnet24(gwipVal)}.0/24). Double check this is intentional.`, 'warn');
+    } else {
+      setMsg('netcidr', '', null);
+    }
+
+    const poolVal = els.pool.value.trim();
+    if (poolVal) {
+      const poolParts = poolVal.split('-').map(p => p.trim());
+      if (poolParts.length !== 2 || !isValidIPv4(poolParts[0]) || !isValidIPv4(poolParts[1])) {
+        setMsg('pool', 'Expected format: 10.20.20.10-10.20.20.254 — two valid IPv4 addresses separated by a dash.', 'err');
+      } else if (gwipVal && isValidIPv4(gwipVal) && subnet24(poolParts[0]) !== subnet24(gwipVal)) {
+        setMsg('pool', `This range is outside ${subnet24(gwipVal)}.0/24 — the gateway IP's subnet. Double check this is intentional.`, 'warn');
+      } else {
+        setMsg('pool', '', null);
+      }
+    } else {
+      setMsg('pool', '', null);
+    }
+
+    const dnsVal = els.dns.value.trim();
+    if (dnsVal) {
+      const bad = dnsVal.split(',').map(s => s.trim()).filter(s => s && !isValidIPv4(s));
+      if (bad.length) {
+        setMsg('dns', `Not a valid IPv4 address: ${bad.join(', ')}`, 'err');
+      } else {
+        setMsg('dns', '', null);
+      }
+    } else {
+      setMsg('dns', '', null);
+    }
+
+    const radiusIpVal = els.radiusIp.value.trim();
+    if (!radiusIpVal) {
+      setMsg('radiusIp', 'Required for a working config — currently left blank, so the script below has a placeholder here.', 'warn');
+    } else if (!isValidIPv4(radiusIpVal)) {
+      setMsg('radiusIp', 'Not a valid IPv4 address, e.g. 192.168.88.10', 'err');
+    } else {
+      setMsg('radiusIp', '', null);
+    }
+
+    if (!els.radiusSecret.value.trim()) {
+      setMsg('radiusSecret', 'Required for a working config — currently left blank, so the script below has a placeholder here.', 'warn');
+    } else {
+      setMsg('radiusSecret', '', null);
+    }
+  }
+
 
   function esc(s) { return (s || '').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
   function line(c) { return `<span class="c"># ${esc(c)}</span>`; }
@@ -468,7 +762,7 @@
     output.innerHTML = rows.join('\n') + '<span class="cursor"></span>';
   }
 
-  ids.forEach(id => { els[id].addEventListener('input', build); });
+  ids.forEach(id => { els[id].addEventListener('input', () => { validate(); build(); }); });
 
   function plainScript() { return output.innerText.replace(/\u200b/g, ''); }
 
@@ -497,6 +791,7 @@
     URL.revokeObjectURL(a.href);
   });
 
+  validate();
   build();
 
   document.getElementById('navToggle').addEventListener('click', function () {

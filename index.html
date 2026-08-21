@@ -14,6 +14,54 @@
 <title>MikroTik PPPoE Server Generator — RouterOS Config with RADIUS</title>
 <link rel="canonical" href="https://ispscripts.com/">
 <meta name="description" content="Generate a MikroTik RouterOS PPPoE server configuration with RADIUS, NAT, firewall, IP pools, and rate limits. Free ISP/WISP configuration tool.">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How do I configure PPPoE on a MikroTik router?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Fill in your WAN interface, subscriber-facing interface, and RADIUS server details in the generator on this page. It builds the full /ip firewall nat, /radius, /ppp profile, and /interface pppoe-server server configuration for you, ready to download as a .rsc file and import with /import pppoe-config.rsc."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What's the difference between PPPoE and RADIUS on MikroTik?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "PPPoE is the connection protocol that authenticates a subscriber and hands them an IP address. RADIUS is a separate server the router queries to validate logins and apply the correct plan, instead of storing every subscriber's password directly on the router."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Why isn't my RADIUS accounting showing usage data?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "This usually means accounting=yes is missing from /ppp aaa, or the RADIUS server isn't logging accounting packets on port 1813. The generator sets this automatically with a 5-minute interim update."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I use this generator for a full WISP setup, or just PPPoE?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "This page covers PPPoE + RADIUS. For voucher-based access use the Hotspot + RADIUS generator, and for baseline NAT and firewall hardening on any MikroTik gateway use the NAT + Firewall generator — most WISPs use all three together."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does this tool send my router's configuration anywhere?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. Everything runs in the browser with plain JavaScript — the interface names, IPs, and RADIUS secret entered are never transmitted to any server."
+      }
+    }
+  ]
+}
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -96,6 +144,31 @@
 
   .sitenav .navlinks { display: flex; gap: 22px; }
 
+  .nav-group { position: relative; }
+  .nav-group-toggle {
+    background: none; border: none; cursor: pointer; font: inherit;
+    color: var(--text-secondary); font-size: 13.5px; font-weight: 500;
+    padding: 0; display: flex; align-items: center; gap: 4px;
+  }
+  .nav-group-toggle:hover { color: var(--text-primary); }
+  .nav-group-toggle::after { content: '\25be'; font-size: 9px; margin-top: 1px; }
+  .nav-group-toggle.active { color: var(--accent); }
+  .nav-group-menu {
+    display: none;
+    position: absolute; top: 100%; left: 0; margin-top: 12px;
+    background: var(--bg-panel); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 8px; min-width: 210px;
+    flex-direction: column; gap: 2px; z-index: 30;
+  }
+  .nav-group:hover .nav-group-menu,
+  .nav-group:focus-within .nav-group-menu { display: flex; }
+  .nav-group-menu a {
+    padding: 8px 10px; border-radius: 6px; font-size: 13px;
+    color: var(--text-secondary); text-decoration: none;
+  }
+  .nav-group-menu a:hover { background: var(--bg-input); color: var(--text-primary); }
+  .nav-group-menu a.active { color: var(--accent); }
+
   .sitenav .navlinks a {
     font-family: var(--font-body);
     font-size: 13.5px;
@@ -145,6 +218,23 @@
       border-bottom: 1px solid var(--border-soft) !important;
     }
     .navlinks a.active { background: var(--accent-soft); }
+
+    .nav-group-toggle {
+      pointer-events: none;
+      color: var(--text-dim);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      padding: 10px 14px 4px;
+    }
+    .nav-group-toggle.active { color: var(--accent); }
+    .nav-group-toggle::after { display: none; }
+    .nav-group-menu {
+      display: flex !important;
+      position: static;
+      border: none; background: none; padding: 0; margin: 0;
+      flex-direction: column; gap: 2px;
+    }
   }
 
   .toolbanner {
@@ -328,6 +418,33 @@
   .checkbox-row .cb-text { font-size: 13px; color: var(--text-secondary); }
   .checkbox-row .cb-text strong { color: var(--text-primary); font-weight: 500; }
 
+  .badge {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+    padding: 2px 7px;
+    border-radius: 999px;
+    margin-left: 7px;
+    vertical-align: middle;
+    font-weight: 600;
+  }
+  .badge-req { background: rgba(229, 72, 77, 0.12); color: var(--red); border: 1px solid rgba(229, 72, 77, 0.35); }
+  .badge-opt { background: var(--bg-input); color: var(--text-dim); border: 1px solid var(--border); }
+
+  .field-msg {
+    font-size: 12px;
+    margin-top: 6px;
+    line-height: 1.4;
+    display: none;
+  }
+  .field-msg.show { display: block; }
+  .field-msg.err { color: var(--red); }
+  .field-msg.warn { color: var(--amber); }
+
+  input.field-err { border-color: var(--red) !important; box-shadow: 0 0 0 3px rgba(229, 72, 77, 0.15) !important; }
+  input.field-warn { border-color: var(--amber) !important; box-shadow: 0 0 0 3px rgba(245, 166, 35, 0.15) !important; }
+
   /* ---------- Output panel ---------- */
 
   .output-col { position: sticky; top: 24px; min-width: 0; }
@@ -486,6 +603,31 @@
     font-size: 13.5px;
     color: var(--text-secondary);
   }
+
+  .faq { max-width: 760px; }
+  .faq details {
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 18px;
+    margin-bottom: 10px;
+  }
+  .faq summary {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 15px;
+    color: var(--text-primary);
+    cursor: pointer;
+    list-style: none;
+  }
+  .faq summary::-webkit-details-marker { display: none; }
+  .faq summary::before { content: '+ '; color: var(--accent); font-weight: 700; }
+  .faq details[open] summary::before { content: '– '; }
+  .faq p {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin: 10px 0 0;
+  }
   .note strong { color: var(--amber); }
 
   footer {
@@ -526,13 +668,26 @@
     <a href="index.html" class="brand">ispscripts<span class="accent">.</span>com</a>
     <button class="navtoggle" id="navToggle" aria-label="Menu">&#9776;</button>
     <div class="navlinks" id="navLinks">
-      <a href="index.html" class="active">PPPoE Generator</a>
-      <a href="hotspot.html">Hotspot Generator</a>
-      <a href="mikrotik-nat-firewall-generator.html">NAT + Firewall Generator</a>
-      <a href="guide.html">PPPoE + RADIUS Guide</a>
-      <a href="hotspot-guide.html">Hotspot + RADIUS Guide</a>
-      <a href="pppoe-vs-hotspot.html">PPPoE vs Hotspot</a>
+      <div class="nav-group">
+        <button type="button" class="nav-group-toggle active">Generators</button>
+        <div class="nav-group-menu">
+          <a href="index.html" class="active">PPPoE + RADIUS</a>
+          <a href="hotspot.html">Hotspot + RADIUS</a>
+          <a href="mikrotik-nat-firewall-generator.html">NAT + Firewall</a>
+        </div>
+      </div>
+      <div class="nav-group">
+        <button type="button" class="nav-group-toggle">Guides</button>
+        <div class="nav-group-menu">
+          <a href="guide.html">PPPoE + RADIUS Guide</a>
+          <a href="hotspot-guide.html">Hotspot + RADIUS Guide</a>
+          <a href="nat-firewall-guide.html">NAT + Firewall Guide</a>
+          <a href="pppoe-vs-hotspot.html">PPPoE vs Hotspot</a>
+        </div>
+      </div>
       <a href="blog.html">Blog</a>
+      <a href="about.html">About</a>
+      <a href="contact.html">Contact</a>
     </div>
   </nav>
 
@@ -547,8 +702,14 @@
       <span class="led"></span>
     </div>
     <div class="eyebrow">/interface pppoe-server &nbsp;→&nbsp; RouterOS config generator</div>
-    <h1>MikroTik <span class="accent">PPPoE Server</span><br>+ RADIUS Generator</h1>
-    <p>Fill in your router's interfaces and RADIUS details on the left. A ready-to-import RouterOS script builds itself on the right as you type — copy it or download it as a <code>.rsc</code> file.</p>
+    <h1>Generate production-ready <span class="accent">MikroTik configs</span><br>in seconds</h1>
+    <p>Fill in your router's interfaces and RADIUS details on the left. A ready-to-import PPPoE + RADIUS script builds itself on the right as you type — copy it or download it as a <code>.rsc</code> file.</p>
+    <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:16px;">
+      <span style="font-size:12.5px; font-family:var(--font-mono); color:var(--text-secondary); background:var(--bg-panel); border:1px solid var(--border); border-radius:999px; padding:5px 12px;">Free, no signup</span>
+      <span style="font-size:12.5px; font-family:var(--font-mono); color:var(--text-secondary); background:var(--bg-panel); border:1px solid var(--border); border-radius:999px; padding:5px 12px;">Runs 100% in your browser</span>
+      <span style="font-size:12.5px; font-family:var(--font-mono); color:var(--text-secondary); background:var(--bg-panel); border:1px solid var(--border); border-radius:999px; padding:5px 12px;">Nothing you type is sent anywhere</span>
+      <span style="font-size:12.5px; font-family:var(--font-mono); color:var(--text-secondary); background:var(--bg-panel); border:1px solid var(--border); border-radius:999px; padding:5px 12px;">Tested on RouterOS v7.x</span>
+    </div>
   </header>
 
   <div class="grid">
@@ -561,31 +722,38 @@
           <legend>Interfaces</legend>
           <div class="field-row">
             <div class="field">
-              <label for="wan">WAN interface</label>
+              <label for="wan">WAN interface <span class="badge badge-req">Required</span></label>
               <input type="text" id="wan" value="ether1">
+              <div class="field-msg" id="msg-wan"></div>
             </div>
             <div class="field">
-              <label for="lan">Subscriber-side interface</label>
+              <label for="lan">Subscriber-side interface <span class="badge badge-req">Required</span></label>
               <input type="text" id="lan" value="ether2">
+              <div class="field-msg" id="msg-lan"></div>
             </div>
           </div>
+          <p style="font-size:12.5px; color:var(--text-dim); margin:4px 0 0;">The WAN interface faces your uplink (Starlink, fiber, upstream router). The subscriber-side interface faces your antennas or access points — they must be two different physical or virtual interfaces on the router.</p>
         </fieldset>
 
         <fieldset>
           <legend>Subscriber addressing</legend>
           <div class="field-row">
             <div class="field">
-              <label for="gwip">Router gateway IP <span class="hint">(local-address)</span></label>
+              <label for="gwip">Router gateway IP <span class="hint">(local-address)</span> <span class="badge badge-opt">Optional</span></label>
               <input type="text" id="gwip" value="10.10.10.1">
+              <div class="field-msg" id="msg-gwip"></div>
             </div>
             <div class="field">
-              <label for="pool">Client pool range <span class="hint">(fallback)</span></label>
+              <label for="pool">Client pool range <span class="hint">(fallback)</span> <span class="badge badge-opt">Optional</span></label>
               <input type="text" id="pool" value="10.10.10.2-10.10.10.254">
+              <div class="field-msg" id="msg-pool"></div>
             </div>
           </div>
+          <p style="font-size:12.5px; color:var(--text-dim); margin:4px 0 12px;">This pool is only used as a fallback if your RADIUS server doesn't return a <code>Framed-IP-Address</code> for a session — it should normally sit in the same subnet as the gateway IP above.</p>
           <div class="field">
-            <label for="dns">DNS servers <span class="hint">(comma separated)</span></label>
+            <label for="dns">DNS servers <span class="hint">(comma separated)</span> <span class="badge badge-opt">Optional</span></label>
             <input type="text" id="dns" value="8.8.8.8,1.1.1.1">
+            <div class="field-msg" id="msg-dns"></div>
           </div>
         </fieldset>
 
@@ -593,38 +761,44 @@
           <legend>RADIUS (SAS4 / any RFC-2865 server)</legend>
           <div class="field-row">
             <div class="field">
-              <label for="radiusIp">RADIUS server IP</label>
+              <label for="radiusIp">RADIUS server IP <span class="badge badge-req">Required</span></label>
               <input type="text" id="radiusIp" placeholder="192.168.88.10">
+              <div class="field-msg" id="msg-radiusIp"></div>
             </div>
             <div class="field">
-              <label for="radiusSecret">Shared secret</label>
+              <label for="radiusSecret">Shared secret <span class="badge badge-req">Required</span></label>
               <input type="password" id="radiusSecret" placeholder="••••••••">
+              <div class="field-msg" id="msg-radiusSecret"></div>
             </div>
           </div>
+          <p style="font-size:12.5px; color:var(--text-dim); margin:4px 0 0;">Leave these blank and the script will contain placeholder text instead of a real address — safe to copy for review, but it won't authenticate anything until you fill these in.</p>
         </fieldset>
 
         <fieldset>
           <legend>PPPoE service &amp; default profile</legend>
           <div class="field-row">
             <div class="field">
-              <label for="svcname">Service name</label>
+              <label for="svcname">Service name <span class="badge badge-opt">Optional</span></label>
               <input type="text" id="svcname" value="isp-pppoe">
             </div>
             <div class="field">
-              <label for="profname">Profile name</label>
+              <label for="profname">Profile name <span class="badge badge-opt">Optional</span></label>
               <input type="text" id="profname" value="default-radius">
             </div>
           </div>
           <div class="field-row">
             <div class="field">
-              <label for="upload">Upload limit <span class="hint">(per subscriber)</span></label>
+              <label for="upload">Upload limit <span class="hint">(per subscriber)</span> <span class="badge badge-opt">Optional</span></label>
               <input type="text" id="upload" value="5M">
+              <div class="field-msg" id="msg-upload"></div>
             </div>
             <div class="field">
-              <label for="download">Download limit <span class="hint">(per subscriber)</span></label>
+              <label for="download">Download limit <span class="hint">(per subscriber)</span> <span class="badge badge-opt">Optional</span></label>
               <input type="text" id="download" value="10M">
+              <div class="field-msg" id="msg-download"></div>
             </div>
           </div>
+          <p style="font-size:12.5px; color:var(--text-dim); margin:4px 0 0;">Use a plain number with an optional K/M/G suffix, e.g. <code>512k</code> or <code>5M</code> — these become the <code>rx-rate/tx-rate</code> RouterOS reads from the router's own perspective (upload here is what the subscriber sends).</p>
         </fieldset>
 
         <fieldset>
@@ -696,6 +870,60 @@
     <div class="note"><strong>Before you deploy:</strong> this is a starting template, not a certified fit for every topology. Review the pool range and gateway IP against your real addressing, and test on a router you can reach out-of-band before relying on it in production.</div>
 
     <p style="margin-top:22px; font-size:14px; color:var(--text-secondary);">Want the reasoning behind each line, not just the script? Read the <a href="guide.html">full PPPoE + RADIUS setup guide</a> — covers why WISPs use PPPoE over static IPs, how RADIUS accounting actually works, and the MTU/CGNAT issues that trip people up.</p>
+
+    <h2 style="margin-top:48px;">Example output</h2>
+    <p class="lead">What the generator produces with the default values shown above — a full RouterOS PPPoE + RADIUS configuration, ready to import.</p>
+    <div class="terminal" style="max-width:640px;">
+      <div class="term-bar">
+        <div class="dots"><span></span><span></span><span></span></div>
+        <div class="term-filename">pppoe-config.rsc — example</div>
+      </div>
+      <div class="term-body">
+        <pre style="white-space:pre-wrap;"><span class="c"># NAT — masquerade subscriber traffic out the WAN</span>
+<span class="k">/ip firewall nat</span>
+add chain=srcnat out-interface=<span class="v">ether1</span> action=masquerade comment="WAN masquerade"
+
+<span class="c"># RADIUS — authentication + accounting</span>
+<span class="k">/radius</span>
+add service=ppp address=<span class="v">192.168.88.10</span> secret=<span class="v">••••••••</span> authentication-port=1812 accounting-port=1813
+
+<span class="k">/ppp aaa</span>
+set use-radius=yes accounting=yes interim-update=5m
+
+<span class="c"># Default profile — DNS + per-subscriber rate limit</span>
+<span class="k">/ppp profile</span>
+add name=<span class="v">default-radius</span> local-address=<span class="v">10.10.10.1</span> dns-server=<span class="v">8.8.8.8,1.1.1.1</span> rate-limit=<span class="v">5M/10M</span> only-one=yes
+
+<span class="c"># PPPoE server</span>
+<span class="k">/interface pppoe-server server</span>
+add service-name=<span class="v">isp-pppoe</span> interface=<span class="v">ether2</span> default-profile=<span class="v">default-radius</span> one-session-per-host=yes max-mtu=1480 max-mru=1480</pre>
+      </div>
+    </div>
+
+    <h2 style="margin-top:48px;">Frequently asked questions</h2>
+    <div class="faq">
+      <details>
+        <summary>How do I configure PPPoE on a MikroTik router?</summary>
+        <p>Fill in your WAN interface, subscriber-facing interface, and RADIUS server details in the form above — the generator builds the full <code>/ip firewall nat</code>, <code>/radius</code>, <code>/ppp profile</code>, and <code>/interface pppoe-server server</code> configuration for you. Download it as a <code>.rsc</code> file, copy it to the router, and run <code>/import pppoe-config.rsc</code> from the terminal. See the <a href="guide.html">full setup guide</a> for the reasoning behind each block.</p>
+      </details>
+      <details>
+        <summary>What's the difference between PPPoE and RADIUS on MikroTik?</summary>
+        <p>PPPoE is the connection protocol that authenticates a subscriber and hands them an IP address. RADIUS is a separate server your router asks "is this login valid, and what plan do they have?" — instead of storing every subscriber's password directly on the router. Most WISPs use both together: PPPoE for the connection, RADIUS for centralized authentication and usage billing.</p>
+      </details>
+      <details>
+        <summary>Why isn't my RADIUS accounting showing usage data?</summary>
+        <p>This almost always means <code>accounting=yes</code> is missing from <code>/ppp aaa</code>, or the RADIUS server isn't set up to log accounting packets on port 1813. The generator above sets this automatically with a 5-minute interim update, which is what platforms like SAS4 and GalaxyRAD expect.</p>
+      </details>
+      <details>
+        <summary>Can I use this generator for a full WISP setup, or just PPPoE?</summary>
+        <p>This page covers PPPoE + RADIUS specifically. For voucher/card-based access, use the <a href="hotspot.html">Hotspot + RADIUS generator</a> instead. For baseline NAT and firewall hardening on any MikroTik gateway — including ones that aren't running PPPoE or Hotspot at all — use the <a href="mikrotik-nat-firewall-generator.html">NAT + Firewall generator</a>. Most WISPs end up using all three on the same router.</p>
+      </details>
+      <details>
+        <summary>Does this tool send my router's configuration anywhere?</summary>
+        <p>No. Everything runs in your browser with plain JavaScript — the interface names, IPs, and RADIUS secret you type in are never transmitted to any server. See the <a href="privacy.html">privacy policy</a> for details.</p>
+      </details>
+    </div>
+
   </div>
 
   <!-- AdSense safe zone: place ad units here or below. Do NOT place ads inside
@@ -705,7 +933,7 @@
 
   <footer>
     <span>Built for WISP &amp; ISP operators running MikroTik + RADIUS · No data leaves your browser</span>
-    <span><a href="about.html" style="color:var(--text-dim)">About</a> · <a href="privacy.html" style="color:var(--text-dim)">Privacy</a> · <a href="contact.html" style="color:var(--text-dim)">Contact</a></span> · <a href="terms.html">Terms</a> · <a href="disclaimer.html">Disclaimer</a></footer>
+    <span><a href="about.html" style="color:var(--text-dim)">About</a> · <a href="privacy.html" style="color:var(--text-dim)">Privacy</a> · <a href="contact.html" style="color:var(--text-dim)">Contact</a></span> · <a href="changelog.html">Changelog</a> · <a href="https://github.com/diaacylan/ispscripts" target="_blank" rel="noopener">View source</a> · <a href="terms.html">Terms</a> · <a href="disclaimer.html">Disclaimer</a></footer>
 
 </div>
 
@@ -713,6 +941,117 @@
   const ids = ['wan','lan','gwip','pool','dns','radiusIp','radiusSecret','svcname','profname','upload','download','harden'];
   const els = Object.fromEntries(ids.map(id => [id, document.getElementById(id)]));
   const output = document.getElementById('output');
+
+  // ---------- Validation helpers ----------
+  function isValidIPv4(str) {
+    const parts = (str || '').trim().split('.');
+    if (parts.length !== 4) return false;
+    return parts.every(p => /^\d{1,3}$/.test(p) && Number(p) >= 0 && Number(p) <= 255);
+  }
+
+  function subnet24(ip) {
+    return ip.split('.').slice(0, 3).join('.');
+  }
+
+  function isValidRate(str) {
+    return /^\d+(\.\d+)?\s*[kKmMgG]?$/.test((str || '').trim());
+  }
+
+  function setMsg(id, text, level) {
+    const msgEl = document.getElementById('msg-' + id);
+    const inputEl = els[id];
+    if (!msgEl) return;
+    inputEl.classList.remove('field-err', 'field-warn');
+    if (!text) {
+      msgEl.classList.remove('show', 'err', 'warn');
+      msgEl.textContent = '';
+      return;
+    }
+    msgEl.textContent = text;
+    msgEl.classList.add('show', level === 'err' ? 'err' : 'warn');
+    msgEl.classList.remove(level === 'err' ? 'warn' : 'err');
+    inputEl.classList.add(level === 'err' ? 'field-err' : 'field-warn');
+  }
+
+  function validate() {
+    // WAN vs subscriber interface conflict
+    const wanVal = els.wan.value.trim().toLowerCase();
+    const lanVal = els.lan.value.trim().toLowerCase();
+    if (wanVal && lanVal && wanVal === lanVal) {
+      setMsg('lan', 'This matches your WAN interface. Your router needs two separate interfaces here — using the same one will break routing.', 'err');
+    } else {
+      setMsg('lan', '', null);
+    }
+    setMsg('wan', '', null);
+
+    // Gateway IP format
+    const gwipVal = els.gwip.value.trim();
+    if (gwipVal && !isValidIPv4(gwipVal)) {
+      setMsg('gwip', 'Not a valid IPv4 address, e.g. 10.10.10.1', 'err');
+    } else {
+      setMsg('gwip', '', null);
+    }
+
+    // Pool range format + subnet match with gateway
+    const poolVal = els.pool.value.trim();
+    if (poolVal) {
+      const poolParts = poolVal.split('-').map(p => p.trim());
+      if (poolParts.length !== 2 || !isValidIPv4(poolParts[0]) || !isValidIPv4(poolParts[1])) {
+        setMsg('pool', 'Expected format: 10.10.10.2-10.10.10.254 — two valid IPv4 addresses separated by a dash.', 'err');
+      } else if (gwipVal && isValidIPv4(gwipVal) && subnet24(poolParts[0]) !== subnet24(gwipVal)) {
+        setMsg('pool', `This range is outside ${subnet24(gwipVal)}.0/24 — the gateway IP's subnet. Double check this is intentional.`, 'warn');
+      } else {
+        setMsg('pool', '', null);
+      }
+    } else {
+      setMsg('pool', '', null);
+    }
+
+    // DNS servers
+    const dnsVal = els.dns.value.trim();
+    if (dnsVal) {
+      const bad = dnsVal.split(',').map(s => s.trim()).filter(s => s && !isValidIPv4(s));
+      if (bad.length) {
+        setMsg('dns', `Not a valid IPv4 address: ${bad.join(', ')}`, 'err');
+      } else {
+        setMsg('dns', '', null);
+      }
+    } else {
+      setMsg('dns', '', null);
+    }
+
+    // RADIUS IP — required
+    const radiusIpVal = els.radiusIp.value.trim();
+    if (!radiusIpVal) {
+      setMsg('radiusIp', 'Required for a working config — currently left blank, so the script below has a placeholder here.', 'warn');
+    } else if (!isValidIPv4(radiusIpVal)) {
+      setMsg('radiusIp', 'Not a valid IPv4 address, e.g. 192.168.88.10', 'err');
+    } else {
+      setMsg('radiusIp', '', null);
+    }
+
+    // RADIUS secret — required
+    if (!els.radiusSecret.value.trim()) {
+      setMsg('radiusSecret', 'Required for a working config — currently left blank, so the script below has a placeholder here.', 'warn');
+    } else {
+      setMsg('radiusSecret', '', null);
+    }
+
+    // Upload / download rate format
+    const uploadVal = els.upload.value.trim();
+    if (uploadVal && !isValidRate(uploadVal)) {
+      setMsg('upload', 'Use a number with an optional K/M/G suffix, e.g. 5M or 512k.', 'err');
+    } else {
+      setMsg('upload', '', null);
+    }
+    const downloadVal = els.download.value.trim();
+    if (downloadVal && !isValidRate(downloadVal)) {
+      setMsg('download', 'Use a number with an optional K/M/G suffix, e.g. 10M or 1024k.', 'err');
+    } else {
+      setMsg('download', '', null);
+    }
+  }
+
 
   function esc(s) {
     return (s || '').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -795,7 +1134,7 @@
   }
 
   ids.forEach(id => {
-    els[id].addEventListener('input', build);
+    els[id].addEventListener('input', () => { validate(); build(); });
   });
 
   function plainScript() {
@@ -831,6 +1170,7 @@
     URL.revokeObjectURL(a.href);
   });
 
+  validate();
   build();
 
   document.getElementById('navToggle').addEventListener('click', function () {

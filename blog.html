@@ -11,9 +11,9 @@
 </script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PPPoE + RADIUS on MikroTik: The Complete Setup Guide</title>
-<link rel="canonical" href="https://ispscripts.com/guide.html">
-<meta name="description" content="Why WISPs use PPPoE over static IPs, how RADIUS authentication and accounting actually work, and the MTU and CGNAT issues that break new deployments.">
+<title>Networking Blog — MikroTik, RADIUS & WISP Guides | ispscripts.com</title>
+<link rel="canonical" href="https://ispscripts.com/blog.html">
+<meta name="description" content="Technical articles for WISP and ISP operators running MikroTik: router security, IP planning, RADIUS billing, and lessons from real deployments.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -251,6 +251,36 @@
   th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--border-soft); color: var(--text-secondary); }
   th { color: var(--text-primary); font-weight: 600; font-size: 12.5px; text-transform: uppercase; letter-spacing: .04em; }
   td code { font-size: 12.5px; }
+
+  .post-list { list-style: none; padding: 0; margin: 0; }
+  .post-card {
+    display: block;
+    padding: 22px 24px;
+    margin-bottom: 14px;
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    text-decoration: none;
+    transition: border-color .15s ease;
+  }
+  .post-card:hover { border-color: var(--accent); }
+  .post-card .post-tag {
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    letter-spacing: .05em;
+    color: var(--accent);
+    margin-bottom: 8px;
+  }
+  .post-card h2 {
+    margin: 0 0 8px;
+    font-size: 19px;
+  }
+  .post-card p {
+    margin: 0;
+    font-size: 14.5px;
+  }
+  .post-card.soon { opacity: .55; pointer-events: none; }
+  .post-card.soon .post-tag { color: var(--text-dim); }
 </style>
 </head>
 <body>
@@ -264,73 +294,51 @@
       <a href="index.html">PPPoE Generator</a>
       <a href="hotspot.html">Hotspot Generator</a>
       <a href="mikrotik-nat-firewall-generator.html">NAT + Firewall Generator</a>
-      <a href="guide.html" class="active">PPPoE + RADIUS Guide</a>
+      <a href="guide.html">PPPoE + RADIUS Guide</a>
       <a href="hotspot-guide.html">Hotspot + RADIUS Guide</a>
       <a href="pppoe-vs-hotspot.html">PPPoE vs Hotspot</a>
-      <a href="blog.html">Blog</a>
+      <a href="blog.html" class="active">Blog</a>
     </div>
   </nav>
 
   <article>
     <header>
-      <div class="eyebrow">Guide &nbsp;→&nbsp; PPPoE &amp; RADIUS on RouterOS</div>
-      <h1>PPPoE + RADIUS on MikroTik: <br>the reasoning behind the script</h1>
-      <p class="dek">The <a href="index.html">generator</a> builds the config in seconds. This page covers the part that actually matters if you're running a WISP: why each piece exists, and where new deployments usually break.</p>
+      <div class="eyebrow">Blog &nbsp;→&nbsp; Networking articles for WISP &amp; ISP operators</div>
+      <h1>Notes from running a MikroTik network</h1>
+      <p class="dek">Deeper dives that don't fit inside a generator page or a setup guide — security, IP planning, RADIUS, and the operational lessons that show up once you're past a handful of subscribers.</p>
     </header>
 
-    <h2>Why PPPoE instead of static IPs or plain DHCP</h2>
-    <p>A wireless ISP connects and disconnects subscribers constantly — someone stops paying, moves, or gets a plan upgrade. Static IP assignment means manually tracking every lease by hand, and plain DHCP gives you no clean way to authenticate a subscriber before handing them a connection at all.</p>
-    <p><strong>PPPoE solves both problems at once.</strong> Every session starts with a login (username and password), so a subscriber literally cannot get an IP address without authenticating first. When their session ends — router reboot, someone unplugs the antenna, they stop paying — the IP and the rate-limit profile attached to it are released automatically. There's no lease to clean up and no orphaned static route sitting on your router six months later.</p>
-    <p>The trade-off is a small amount of protocol overhead per packet, which is exactly why the MTU/MRU settings in the generated script matter — more on that below.</p>
-
-    <h2>What RADIUS is actually doing</h2>
-    <p>RADIUS is an <strong>AAA protocol</strong> — Authentication, Authorization, Accounting. RouterOS can authenticate PPPoE logins against a local list of secrets, but that doesn't scale past a handful of subscribers, and it gives you no usage data. RADIUS moves all three jobs off the router and onto a server built for it — SAS4, GalaxyRAD, or anything else that speaks RFC 2865.</p>
-
-    <h3>Authentication</h3>
-    <p>When a subscriber's PPPoE client sends a username and password, RouterOS forwards it to the RADIUS server named in <code>/radius</code>. The server checks it against its own subscriber database and replies accept or reject — RouterOS never needs to know the password itself.</p>
-
-    <h3>Authorization</h3>
-    <p>On accept, the RADIUS server can hand back attributes — which profile to apply, what static IP to assign via <code>Framed-IP-Address</code>, session timeout limits. This is how a billing platform pushes a "10 Mbps package" or "expired, redirect to payment page" decision onto the router without anyone touching RouterOS directly.</p>
-
-    <h3>Accounting</h3>
-    <p>This is the part people skip and then wonder why their billing platform shows no usage data. The line <code>set use-radius=yes accounting=yes interim-update=5m</code> tells RouterOS to send accounting packets to the RADIUS server: a Start packet when the session begins, Interim-Update packets every 5 minutes with live byte counts, and a Stop packet with the final total when it ends. Without <code>accounting=yes</code>, your billing platform has no idea how much data anyone used.</p>
-
-    <div class="callout tip"><p><strong>Why 5 minutes specifically:</strong> shorter intervals (1–2 min) give more real-time-looking usage graphs but add router and RADIUS server load across hundreds of sessions. Longer intervals (15m+) mean a router crash between updates loses more unaccounted usage. 5 minutes is the balance most SAS4/GalaxyRAD deployments settle on.</p></div>
-
-    <h2>Reading the generated script</h2>
-    <p>In order, here's what each block in the generator's output actually does and why it's in that order:</p>
-
-    <div class="table-wrap">
-    <table>
-      <tr><th>Block</th><th>Purpose</th></tr>
-      <tr><td><code>/ip firewall nat</code></td><td>One masquerade rule — every subscriber shares the router's WAN IP going out.</td></tr>
-      <tr><td><code>/radius</code></td><td>Registers the AAA server and its shared secret, on the standard 1812/1813 ports.</td></tr>
-      <tr><td><code>/ppp aaa</code></td><td>The switch that actually turns on RADIUS for PPP — easy to forget, and the #1 reason "I added RADIUS but it's not authenticating."</td></tr>
-      <tr><td><code>/ip pool</code></td><td>A fallback IP range, used only if RADIUS doesn't return a <code>Framed-IP-Address</code> for a session.</td></tr>
-      <tr><td><code>/ppp profile</code></td><td>DNS servers and the rate-limit, formatted <code>rx-rate/tx-rate</code> — from the router's perspective, so rx is upload from the subscriber and tx is download to them.</td></tr>
-      <tr><td><code>/interface pppoe-server server</code></td><td>Binds everything to your subscriber-facing interface.</td></tr>
-      <tr><td><code>/ip firewall filter</code></td><td>Closes Winbox and Telnet on the WAN side — optional, but there's rarely a good reason to leave router management reachable from the public internet.</td></tr>
-    </table>
-    </div>
-
-    <h2>Where new deployments actually break</h2>
-
-    <h3>MTU and MRU</h3>
-    <p>PPPoE adds 8 bytes of overhead to every packet. If <code>max-mtu</code> and <code>max-mru</code> aren't set to <strong>1480</strong> (down from Ethernet's standard 1500), subscribers get intermittent issues that look like a bad connection but are actually packet fragmentation — sites that load fine but images or video randomly stall. This is one of the most common "why does my PPPoE feel flaky" support tickets, and it's a one-line fix.</p>
-
-    <h3>CGNAT on the WAN side</h3>
-    <p>If your uplink is Starlink or any other connection behind Carrier-Grade NAT, you don't get a public IP on the WAN interface at all — which means you can't reach the router remotely for monitoring or emergency changes without a separate tunnel (a VPS-hosted VPN, a reverse SSH tunnel, or a paid static-IP add-on if your provider offers one). This has nothing to do with the PPPoE/RADIUS config itself, but it's worth planning for before you have 40 subscribers and a router you can't reach at 2am.</p>
-
-    <h3>RADIUS timeout with no fallback</h3>
-    <p>If the RADIUS server is unreachable, new sessions fail to authenticate — existing sessions keep running, but nobody new can log in until it's back. Some operators add a second <code>/radius</code> entry pointing at a backup server for exactly this reason; RouterOS will fail over automatically if the first one stops responding.</p>
-
-    <div class="callout warn"><p><strong>Test before you trust it:</strong> after importing any generated script, connect one test subscriber first — not your whole base. Confirm the session actually shows up in your RADIUS platform's accounting logs with a nonzero byte count before rolling it out further.</p></div>
-
-    <div class="cta">
-      <h3>Ready to generate your config?</h3>
-      <p>Fill in your interfaces and RADIUS details and get a ready-to-import <code>.rsc</code> file in seconds.</p>
-      <a href="index.html" class="btn">Open the generator →</a>
-    </div>
+    <ul class="post-list">
+      <li>
+        <a class="post-card" href="securing-mikrotik-routers.html">
+          <div class="post-tag">SECURITY</div>
+          <h2>Securing MikroTik Routers Against Common Attacks</h2>
+          <p>A practical checklist for closing the ports that get scanned constantly, plus the five changes that actually stop most compromises.</p>
+        </a>
+      </li>
+      <li>
+        <a class="post-card" href="pppoe-vs-hotspot.html">
+          <div class="post-tag">COMPARISON</div>
+          <h2>PPPoE vs Hotspot: Which Should Your WISP Use?</h2>
+          <p>A side-by-side comparison to help you pick the right subscriber access model.</p>
+        </a>
+      </li>
+      <li class="post-card soon">
+        <div class="post-tag">COMING SOON</div>
+        <h2>IP Address Planning for a Growing WISP</h2>
+        <p>How to lay out subnets, pools, and CGNAT ranges before running out of room.</p>
+      </li>
+      <li class="post-card soon">
+        <div class="post-tag">COMING SOON</div>
+        <h2>RADIUS Explained for ISP Operators</h2>
+        <p>SAS4, GalaxyRAD, and freeRADIUS — what each does differently, and how to choose.</p>
+      </li>
+      <li class="post-card soon">
+        <div class="post-tag">COMING SOON</div>
+        <h2>Starlink as WISP Backhaul: Living With CGNAT</h2>
+        <p>What Carrier-Grade NAT means for remote management, and how to work around it.</p>
+      </li>
+    </ul>
 
     <footer>Written for WISP and ISP operators running MikroTik + RADIUS. Not affiliated with MikroTik or any RADIUS platform vendor.<br><a href="about.html" style="color:var(--text-dim)">About</a> · <a href="privacy.html" style="color:var(--text-dim)">Privacy</a> · <a href="contact.html" style="color:var(--text-dim)">Contact</a> · <a href="terms.html">Terms</a> · <a href="disclaimer.html">Disclaimer</a></footer>
   </article>

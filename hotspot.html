@@ -245,6 +245,7 @@
       <a href="guide.html">PPPoE + RADIUS Guide</a>
       <a href="hotspot-guide.html">Hotspot + RADIUS Guide</a>
       <a href="pppoe-vs-hotspot.html">PPPoE vs Hotspot</a>
+      <a href="blog.html">Blog</a>
     </div>
   </nav>
 
@@ -368,16 +369,21 @@
     <p class="lead">Hotspot login is a different access model from PPPoE — clients get a DHCP lease first, then get redirected to a login page before they're allowed out. Six pieces, wired together correctly.</p>
 
     <div class="about-grid">
-      <div class="about-card"><div class="tag">01 · DHCP</div><p>A DHCP server on the hotspot interface — clients need an IP before they can even see the login page.</p></div>
-      <div class="about-card"><div class="tag">02 · IP pool</div><p>The address range handed out to connecting devices, shared between DHCP and the hotspot server.</p></div>
-      <div class="about-card"><div class="tag">03 · RADIUS</div><p>Registered with <code>service=hotspot</code> (not <code>ppp</code>) — authentication and accounting for voucher logins.</p></div>
-      <div class="about-card"><div class="tag">04 · Hotspot profile</div><p>Carries the login page hostname and turns on RADIUS with a 5-minute interim update for live usage data.</p></div>
-      <div class="about-card"><div class="tag">05 · Walled garden</div><p>Optional — lets a specific domain (like a payment page) load before the subscriber logs in.</p></div>
-      <div class="about-card"><div class="tag">06 · Firewall</div><p>Same WAN-side Winbox/Telnet hardening as the PPPoE generator.</p></div>
+      <div class="about-card"><div class="tag">01 · DHCP</div><p>A DHCP server on the hotspot interface — clients need an IP before they can even see the login page.</p><p style="margin-top:8px; font-size:13px; color:var(--text-dim);">For beginners: this is the step before authentication. A hotspot client gets an IP the moment it connects to your wireless network — the login page only appears when it tries to browse. No DHCP server here means no IP, and no client ever reaches the login screen at all.</p></div>
+      <div class="about-card"><div class="tag">02 · IP pool</div><p>The address range handed out to connecting devices, shared between DHCP and the hotspot server.</p><p style="margin-top:8px; font-size:13px; color:var(--text-dim);">For beginners: size this range for how many devices could realistically be connected at once, not just active subscribers — phones and routers often hold a lease even when idle.</p></div>
+      <div class="about-card"><div class="tag">03 · RADIUS</div><p>Registered with <code>service=hotspot</code> (not <code>ppp</code>) — authentication and accounting for voucher logins.</p><p style="margin-top:8px; font-size:13px; color:var(--text-dim);">For beginners: this is the same RADIUS server concept as the PPPoE generator, but tagged for hotspot traffic specifically. Voucher codes themselves live on your RADIUS platform — this script only tells the router where to check them.</p></div>
+      <div class="about-card"><div class="tag">04 · Hotspot profile</div><p>Carries the login page hostname and turns on RADIUS with a 5-minute interim update for live usage data.</p><p style="margin-top:8px; font-size:13px; color:var(--text-dim);">For beginners: the hostname here is what shows in the subscriber's browser address bar during login — it doesn't need to be a real registered domain, just something consistent you can reference in support.</p></div>
+      <div class="about-card"><div class="tag">05 · Walled garden</div><p>Optional — lets a specific domain (like a payment page) load before the subscriber logs in.</p><p style="margin-top:8px; font-size:13px; color:var(--text-dim);">For beginners: without a walled garden entry, a subscriber can't even reach your payment page to buy a voucher, because the router blocks everything until login — this is the one deliberate exception.</p></div>
+      <div class="about-card"><div class="tag">06 · Firewall</div><p>Same WAN-side Winbox/Telnet hardening as the PPPoE generator.</p><p style="margin-top:8px; font-size:13px; color:var(--text-dim);">For beginners: this closes router management ports to the public internet, not to your hotspot clients — see the <a href="securing-mikrotik-routers.html">router security guide</a> for the full reasoning.</p></div>
     </div>
 
     <div class="note"><strong>Before you deploy:</strong> this is a starting template. Voucher/user creation itself happens on your RADIUS platform (SAS4, etc.), not in this script — this only wires the router to talk to it. Test with one voucher before rolling out further.</div>
   </div>
+
+  <!-- AdSense safe zone: place ad units here or below. Do NOT place ads inside
+       .grid, .terminal, or near #copyBtn/#downloadBtn — those must stay
+       uninterrupted per AdSense's policy against ads that interfere with
+       site functionality. -->
 
   <footer>
     <span>Built for WISP &amp; ISP operators running MikroTik + RADIUS · No data leaves your browser</span>

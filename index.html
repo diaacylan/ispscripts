@@ -532,6 +532,7 @@
       <a href="guide.html">PPPoE + RADIUS Guide</a>
       <a href="hotspot-guide.html">Hotspot + RADIUS Guide</a>
       <a href="pppoe-vs-hotspot.html">PPPoE vs Hotspot</a>
+      <a href="blog.html">Blog</a>
     </div>
   </nav>
 
@@ -664,22 +665,27 @@
       <div class="about-card">
         <div class="tag">01 · NAT</div>
         <p>A single masquerade rule on the WAN interface so every PPPoE client can reach the internet through one public IP.</p>
+        <p style="margin-top:8px; font-size:13px; color:var(--text-dim);">For beginners: your router has one public IP (or a private one behind CGNAT on Starlink), but dozens of subscribers behind it. NAT rewrites every outgoing packet so it looks like it came from the router, then rewrites the reply back to the right subscriber. Without this line, subscribers can't reach the internet at all.</p>
       </div>
       <div class="about-card">
         <div class="tag">02 · RADIUS</div>
         <p>Registers your RADIUS server for PPP and turns on accounting with a 5-minute interim update — what billing platforms like SAS4 expect for live session data.</p>
+        <p style="margin-top:8px; font-size:13px; color:var(--text-dim);">For beginners: this block doesn't create subscriber accounts — it tells the router "ask this server when someone logs in." Usernames and passwords live on your RADIUS platform, not the router. Skip <code>accounting=yes</code> and logins still work, but your billing platform shows zero usage.</p>
       </div>
       <div class="about-card">
         <div class="tag">03 · Profile</div>
         <p>A default PPP profile carrying your DNS servers and a rate-limit built from the upload/download fields — RouterOS reads this as rx-rate/tx-rate.</p>
+        <p style="margin-top:8px; font-size:13px; color:var(--text-dim);">For beginners: rx-rate/tx-rate is from the router's point of view, so rx (receive) is what the subscriber uploads, and tx (transmit) is what they download. If a subscriber's speeds look reversed, this is almost always why.</p>
       </div>
       <div class="about-card">
         <div class="tag">04 · PPPoE server</div>
         <p>Binds the service to your subscriber-facing interface, one session per host, MTU/MRU tuned for PPPoE overhead.</p>
+        <p style="margin-top:8px; font-size:13px; color:var(--text-dim);">For beginners: this is the part that actually listens for login attempts on your antenna-side interface, not the WAN. "One session per host" stops a subscriber from opening multiple logins with the same credentials at once.</p>
       </div>
       <div class="about-card">
         <div class="tag">05 · Firewall</div>
         <p>Baseline input/forward rules: drop invalid connections, and optionally close Winbox and Telnet to anyone sitting on the WAN side.</p>
+        <p style="margin-top:8px; font-size:13px; color:var(--text-dim);">For beginners: even after NAT works, an open router still answers management requests from anyone who can reach it. This closes Winbox and Telnet specifically on the WAN — your LAN-side access is untouched. See the <a href="securing-mikrotik-routers.html">router security guide</a> for the full picture.</p>
       </div>
       <div class="about-card">
         <div class="tag">Import</div>
@@ -691,6 +697,11 @@
 
     <p style="margin-top:22px; font-size:14px; color:var(--text-secondary);">Want the reasoning behind each line, not just the script? Read the <a href="guide.html">full PPPoE + RADIUS setup guide</a> — covers why WISPs use PPPoE over static IPs, how RADIUS accounting actually works, and the MTU/CGNAT issues that trip people up.</p>
   </div>
+
+  <!-- AdSense safe zone: place ad units here or below. Do NOT place ads inside
+       .grid, .terminal, or near #copyBtn/#downloadBtn — those must stay
+       uninterrupted per AdSense's policy against ads that interfere with
+       site functionality. -->
 
   <footer>
     <span>Built for WISP &amp; ISP operators running MikroTik + RADIUS · No data leaves your browser</span>

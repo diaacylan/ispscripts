@@ -11,9 +11,9 @@
 </script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PPPoE + RADIUS on MikroTik: The Complete Setup Guide</title>
-<link rel="canonical" href="https://ispscripts.com/guide.html">
-<meta name="description" content="Why WISPs use PPPoE over static IPs, how RADIUS authentication and accounting actually work, and the MTU and CGNAT issues that break new deployments.">
+<title>Securing MikroTik Routers Against Common Attacks</title>
+<link rel="canonical" href="https://ispscripts.com/securing-mikrotik-routers.html">
+<meta name="description" content="A practical checklist for securing MikroTik RouterOS devices against brute-force attacks, WAN-side exposure, and common misconfigurations — written for WISP and ISP operators.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -264,72 +264,59 @@
       <a href="index.html">PPPoE Generator</a>
       <a href="hotspot.html">Hotspot Generator</a>
       <a href="mikrotik-nat-firewall-generator.html">NAT + Firewall Generator</a>
-      <a href="guide.html" class="active">PPPoE + RADIUS Guide</a>
+      <a href="guide.html">PPPoE + RADIUS Guide</a>
       <a href="hotspot-guide.html">Hotspot + RADIUS Guide</a>
       <a href="pppoe-vs-hotspot.html">PPPoE vs Hotspot</a>
-      <a href="blog.html">Blog</a>
+      <a href="blog.html" class="active">Blog</a>
     </div>
   </nav>
 
   <article>
     <header>
-      <div class="eyebrow">Guide &nbsp;→&nbsp; PPPoE &amp; RADIUS on RouterOS</div>
-      <h1>PPPoE + RADIUS on MikroTik: <br>the reasoning behind the script</h1>
-      <p class="dek">The <a href="index.html">generator</a> builds the config in seconds. This page covers the part that actually matters if you're running a WISP: why each piece exists, and where new deployments usually break.</p>
+      <div class="eyebrow">Blog &nbsp;→&nbsp; Router Security</div>
+      <h1>Securing MikroTik Routers Against Common Attacks</h1>
+      <p class="dek">A practical checklist for closing the ports that get scanned constantly, plus the five changes that actually stop most compromises — written for operators running RouterOS on real subscriber-facing networks.</p>
     </header>
 
-    <h2>Why PPPoE instead of static IPs or plain DHCP</h2>
-    <p>A wireless ISP connects and disconnects subscribers constantly — someone stops paying, moves, or gets a plan upgrade. Static IP assignment means manually tracking every lease by hand, and plain DHCP gives you no clean way to authenticate a subscriber before handing them a connection at all.</p>
-    <p><strong>PPPoE solves both problems at once.</strong> Every session starts with a login (username and password), so a subscriber literally cannot get an IP address without authenticating first. When their session ends — router reboot, someone unplugs the antenna, they stop paying — the IP and the rate-limit profile attached to it are released automatically. There's no lease to clean up and no orphaned static route sitting on your router six months later.</p>
-    <p>The trade-off is a small amount of protocol overhead per packet, which is exactly why the MTU/MRU settings in the generated script matter — more on that below.</p>
+    <p>MikroTik routers get scanned constantly — not because anyone specifically targets you, but because RouterOS's management ports (Winbox, Telnet, the API, sometimes FTP) sit on the same well-known port numbers on every deployment. Bots sweep public IP ranges looking for exactly these ports, all day, every day. If your WAN interface has a public IP — including a Starlink or fiber setup with any reachable port — it's already being probed.</p>
+    <p>This isn't a theoretical risk. Compromised MikroTik routers have been used in real botnets, mostly through two mistakes: <strong>default or weak passwords</strong>, and <strong>management ports left open on the WAN side</strong>. Both are fixable in a few minutes.</p>
 
-    <h2>What RADIUS is actually doing</h2>
-    <p>RADIUS is an <strong>AAA protocol</strong> — Authentication, Authorization, Accounting. RouterOS can authenticate PPPoE logins against a local list of secrets, but that doesn't scale past a handful of subscribers, and it gives you no usage data. RADIUS moves all three jobs off the router and onto a server built for it — SAS4, GalaxyRAD, or anything else that speaks RFC 2865.</p>
+    <h2>The five things that actually matter</h2>
 
-    <h3>Authentication</h3>
-    <p>When a subscriber's PPPoE client sends a username and password, RouterOS forwards it to the RADIUS server named in <code>/radius</code>. The server checks it against its own subscriber database and replies accept or reject — RouterOS never needs to know the password itself.</p>
+    <h3>1. Close Winbox, Telnet, FTP, and the API on the WAN interface</h3>
+    <p>This is the single highest-impact change you can make. None of these services need to be reachable from the public internet — you manage the router from your LAN, or through a VPN if you need remote access. The <a href="mikrotik-nat-firewall-generator.html">NAT + Firewall Generator</a> on this site builds this rule for you automatically.</p>
+    <div class="callout tip"><p><strong>Need remote management?</strong> Don't leave Winbox open — set up a WireGuard tunnel instead and manage the router as if you were on the LAN.</p></div>
 
-    <h3>Authorization</h3>
-    <p>On accept, the RADIUS server can hand back attributes — which profile to apply, what static IP to assign via <code>Framed-IP-Address</code>, session timeout limits. This is how a billing platform pushes a "10 Mbps package" or "expired, redirect to payment page" decision onto the router without anyone touching RouterOS directly.</p>
+    <h3>2. Change every default password, including the RADIUS shared secret</h3>
+    <p>The <code>admin</code> account with no password, or a weak one, is still the #1 way MikroTik routers get compromised. Use a long, random password for the router itself, and a separate strong shared secret for RADIUS — never reuse the router's admin password there.</p>
 
-    <h3>Accounting</h3>
-    <p>This is the part people skip and then wonder why their billing platform shows no usage data. The line <code>set use-radius=yes accounting=yes interim-update=5m</code> tells RouterOS to send accounting packets to the RADIUS server: a Start packet when the session begins, Interim-Update packets every 5 minutes with live byte counts, and a Stop packet with the final total when it ends. Without <code>accounting=yes</code>, your billing platform has no idea how much data anyone used.</p>
+    <h3>3. Rate-limit connection attempts to router services</h3>
+    <p>Even with management ports closed on the WAN, it's worth adding a rule that temporarily blacklists any address making repeated connection attempts to router services — a basic defense against brute-force scanning before it even gets to the login prompt. This is a checkbox option in the <a href="mikrotik-nat-firewall-generator.html">NAT + Firewall generator</a>.</p>
 
-    <div class="callout tip"><p><strong>Why 5 minutes specifically:</strong> shorter intervals (1–2 min) give more real-time-looking usage graphs but add router and RADIUS server load across hundreds of sessions. Longer intervals (15m+) mean a router crash between updates loses more unaccounted usage. 5 minutes is the balance most SAS4/GalaxyRAD deployments settle on.</p></div>
+    <h3>4. Keep RouterOS updated — but test before rolling out fleet-wide</h3>
+    <p>MikroTik ships security patches regularly. Running years-old RouterOS versions on subscriber-facing routers is a common way vulnerabilities stay open long after they're publicly known. That said, don't push an update to your whole network at once — test on one router first, since RouterOS updates occasionally change default behavior.</p>
 
-    <h2>Reading the generated script</h2>
-    <p>In order, here's what each block in the generator's output actually does and why it's in that order:</p>
+    <h3>5. Don't trust the LAN side either</h3>
+    <p>A firewall rule set that only hardens the WAN interface still leaves the router open to anything already on your network — a compromised subscriber device, a misconfigured access point. The forward-chain rules in both the <a href="index.html">PPPoE</a> and <a href="hotspot.html">Hotspot</a> generators on this site (drop invalid connections, accept established/related) apply regardless of which side traffic comes from.</p>
 
+    <h2>Quick checklist</h2>
     <div class="table-wrap">
     <table>
-      <tr><th>Block</th><th>Purpose</th></tr>
-      <tr><td><code>/ip firewall nat</code></td><td>One masquerade rule — every subscriber shares the router's WAN IP going out.</td></tr>
-      <tr><td><code>/radius</code></td><td>Registers the AAA server and its shared secret, on the standard 1812/1813 ports.</td></tr>
-      <tr><td><code>/ppp aaa</code></td><td>The switch that actually turns on RADIUS for PPP — easy to forget, and the #1 reason "I added RADIUS but it's not authenticating."</td></tr>
-      <tr><td><code>/ip pool</code></td><td>A fallback IP range, used only if RADIUS doesn't return a <code>Framed-IP-Address</code> for a session.</td></tr>
-      <tr><td><code>/ppp profile</code></td><td>DNS servers and the rate-limit, formatted <code>rx-rate/tx-rate</code> — from the router's perspective, so rx is upload from the subscriber and tx is download to them.</td></tr>
-      <tr><td><code>/interface pppoe-server server</code></td><td>Binds everything to your subscriber-facing interface.</td></tr>
-      <tr><td><code>/ip firewall filter</code></td><td>Closes Winbox and Telnet on the WAN side — optional, but there's rarely a good reason to leave router management reachable from the public internet.</td></tr>
+      <tr><th>Item</th><th>Why it matters</th></tr>
+      <tr><td>Winbox, Telnet, FTP, API closed on WAN</td><td>Removes the ports bots scan for first.</td></tr>
+      <tr><td>SSH closed on WAN unless needed</td><td>Same exposure risk as Winbox/Telnet.</td></tr>
+      <tr><td>Strong, unique admin password</td><td>Still the most common way routers get taken over.</td></tr>
+      <tr><td>Strong, unique RADIUS shared secret</td><td>Never reuse the router's admin password here.</td></tr>
+      <tr><td>Brute-force rate-limiting enabled</td><td>Blocks repeated login attempts automatically.</td></tr>
+      <tr><td>RouterOS version current, tested first</td><td>Closes known vulnerabilities without breaking your fleet.</td></tr>
+      <tr><td>Remote management via VPN, not exposed Winbox</td><td>Keeps management traffic off the public internet entirely.</td></tr>
     </table>
     </div>
 
-    <h2>Where new deployments actually break</h2>
-
-    <h3>MTU and MRU</h3>
-    <p>PPPoE adds 8 bytes of overhead to every packet. If <code>max-mtu</code> and <code>max-mru</code> aren't set to <strong>1480</strong> (down from Ethernet's standard 1500), subscribers get intermittent issues that look like a bad connection but are actually packet fragmentation — sites that load fine but images or video randomly stall. This is one of the most common "why does my PPPoE feel flaky" support tickets, and it's a one-line fix.</p>
-
-    <h3>CGNAT on the WAN side</h3>
-    <p>If your uplink is Starlink or any other connection behind Carrier-Grade NAT, you don't get a public IP on the WAN interface at all — which means you can't reach the router remotely for monitoring or emergency changes without a separate tunnel (a VPS-hosted VPN, a reverse SSH tunnel, or a paid static-IP add-on if your provider offers one). This has nothing to do with the PPPoE/RADIUS config itself, but it's worth planning for before you have 40 subscribers and a router you can't reach at 2am.</p>
-
-    <h3>RADIUS timeout with no fallback</h3>
-    <p>If the RADIUS server is unreachable, new sessions fail to authenticate — existing sessions keep running, but nobody new can log in until it's back. Some operators add a second <code>/radius</code> entry pointing at a backup server for exactly this reason; RouterOS will fail over automatically if the first one stops responding.</p>
-
-    <div class="callout warn"><p><strong>Test before you trust it:</strong> after importing any generated script, connect one test subscriber first — not your whole base. Confirm the session actually shows up in your RADIUS platform's accounting logs with a nonzero byte count before rolling it out further.</p></div>
-
     <div class="cta">
-      <h3>Ready to generate your config?</h3>
-      <p>Fill in your interfaces and RADIUS details and get a ready-to-import <code>.rsc</code> file in seconds.</p>
-      <a href="index.html" class="btn">Open the generator →</a>
+      <h3>Generate a hardened config now</h3>
+      <p>The NAT + Firewall Generator builds all of the WAN-side hardening above into one script, ready to import.</p>
+      <a href="mikrotik-nat-firewall-generator.html" class="btn">Open the NAT + Firewall Generator →</a>
     </div>
 
     <footer>Written for WISP and ISP operators running MikroTik + RADIUS. Not affiliated with MikroTik or any RADIUS platform vendor.<br><a href="about.html" style="color:var(--text-dim)">About</a> · <a href="privacy.html" style="color:var(--text-dim)">Privacy</a> · <a href="contact.html" style="color:var(--text-dim)">Contact</a> · <a href="terms.html">Terms</a> · <a href="disclaimer.html">Disclaimer</a></footer>

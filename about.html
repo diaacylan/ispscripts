@@ -103,6 +103,7 @@
       <a href="guide.html">PPPoE Guide</a>
       <a href="hotspot-guide.html">Hotspot Guide</a>
       <a href="pppoe-vs-hotspot.html">PPPoE vs Hotspot</a>
+      <a href="blog.html">Blog</a>
     </div>
   </nav>
 
@@ -115,6 +116,19 @@
 
   <p>Every generator on this site starts from a real configuration task, not a hypothetical one. The PPPoE + RADIUS generator and the Hotspot + RADIUS generator both reflect setups actually used to bring subscribers online, and the guides that go with them cover the failure modes that show up in practice — MTU mismatches, CGNAT reachability, DNS resolution for captive portals — not just the happy path.</p>
 
+  <h2>Why this site exists</h2>
+  <p>Most RouterOS configuration guidance online is scattered across forum threads, YouTube walkthroughs, and Telegram groups — often years out of date, missing steps, or copied from one setup into a completely different topology without adjustment. Getting PPPoE, RADIUS, and firewall rules to reference each other correctly by hand means stitching together commands from five different sources and hoping nothing was missed.</p>
+  <p>ispscripts.com exists to remove that friction: fill in your actual interface names and RADIUS details once, and get a script where every block — NAT, RADIUS, profile, server, firewall — is generated together and already consistent with the others. The guides and blog articles exist for the same reason the generators do: so the reasoning behind each line is available in one place, not spread across a dozen open browser tabs.</p>
+
+  <h2>Who this is for</h2>
+  <p>This site is built for people actually running networks, not for RouterOS beginners looking for a general tutorial:</p>
+  <ul>
+    <li><strong>WISP operators</strong> distributing internet over wireless links to subscribers — the original use case for every generator here.</li>
+    <li><strong>Small ISPs and network technicians</strong> managing MikroTik gateways, whether or not RADIUS billing is involved.</li>
+    <li><strong>IT staff</strong> who inherited a MikroTik router and need a hardened baseline configuration quickly.</li>
+  </ul>
+  <p>If you're brand new to RouterOS, the guides are written to be followable without prior RADIUS experience — but the generators themselves assume you know your own network's addressing and interfaces.</p>
+
   <h2>What's here</h2>
   <ul>
     <li><a href="index.html">PPPoE + RADIUS Generator</a> — RouterOS config for dial-in subscriber access with RADIUS authentication and accounting.</li>
@@ -123,6 +137,7 @@
     <li><a href="guide.html">PPPoE + RADIUS Guide</a> — why each part of the PPPoE config exists and where deployments break.</li>
     <li><a href="hotspot-guide.html">Hotspot + RADIUS Guide</a> — how captive portal login actually works, and the DNS/HTTPS issues that trip people up.</li>
     <li><a href="pppoe-vs-hotspot.html">PPPoE vs Hotspot</a> — a side-by-side comparison to help you pick the right one.</li>
+    <li><a href="blog.html">Blog</a> — technical articles on router security, IP planning, and RADIUS billing for WISP operators.</li>
   </ul>
 
   <div class="panel">

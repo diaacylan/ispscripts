@@ -190,6 +190,7 @@
       <a href="guide.html">PPPoE Guide</a>
       <a href="hotspot-guide.html">Hotspot Guide</a>
       <a href="pppoe-vs-hotspot.html">PPPoE vs Hotspot</a>
+      <a href="blog.html">Blog</a>
     </div>
   </nav>
 
@@ -296,16 +297,21 @@
     <p class="lead">Unlike the PPPoE and Hotspot generators, this one isn't tied to subscriber access at all — it's the baseline every internet-facing MikroTik router should have, regardless of what else runs on it.</p>
 
     <div class="about-grid">
-      <div class="about-card"><div class="tag">01 · NAT</div><p>Masquerade scoped to your actual LAN subnet, not the whole router — tighter than a blanket rule.</p></div>
-      <div class="about-card"><div class="tag">02 · Port forward</div><p>Optional dst-nat rule for exposing one internal service (a camera, a server) without opening the whole LAN.</p></div>
-      <div class="about-card"><div class="tag">03 · Service hardening</div><p>Closes Winbox, Telnet, FTP, API, and optionally SSH to anyone on the WAN side.</p></div>
-      <div class="about-card"><div class="tag">04 · Brute-force protection</div><p>New connection attempts to router services beyond a threshold get temporarily blacklisted via address-list.</p></div>
-      <div class="about-card"><div class="tag">05 · Forward chain</div><p>Standard established/related accept plus invalid drop — same baseline as the PPPoE and Hotspot generators.</p></div>
+      <div class="about-card"><div class="tag">01 · NAT</div><p>Masquerade scoped to your actual LAN subnet, not the whole router — tighter than a blanket rule.</p><p style="margin-top:8px; font-size:13px; color:var(--text-dim);">For beginners: scoping the rule to your LAN subnet (instead of "all traffic") means only your own devices get translated — if the router ever has a second internal network added later, it won't silently get masqueraded too.</p></div>
+      <div class="about-card"><div class="tag">02 · Port forward</div><p>Optional dst-nat rule for exposing one internal service (a camera, a server) without opening the whole LAN.</p><p style="margin-top:8px; font-size:13px; color:var(--text-dim);">For beginners: only forward the specific port you actually need. Every forwarded port is a door into your LAN from the public internet — the fewer you open, the smaller your exposure.</p></div>
+      <div class="about-card"><div class="tag">03 · Service hardening</div><p>Closes Winbox, Telnet, FTP, API, and optionally SSH to anyone on the WAN side.</p><p style="margin-top:8px; font-size:13px; color:var(--text-dim);">For beginners: this is the single highest-impact rule on this page. See the <a href="securing-mikrotik-routers.html">router security guide</a> for why these specific ports matter and what gets scanned first.</p></div>
+      <div class="about-card"><div class="tag">04 · Brute-force protection</div><p>New connection attempts to router services beyond a threshold get temporarily blacklisted via address-list.</p><p style="margin-top:8px; font-size:13px; color:var(--text-dim);">For beginners: this catches what service hardening alone doesn't — an address hammering your router with login attempts gets auto-blocked for a period, even on ports you didn't explicitly close.</p></div>
+      <div class="about-card"><div class="tag">05 · Forward chain</div><p>Standard established/related accept plus invalid drop — same baseline as the PPPoE and Hotspot generators.</p><p style="margin-top:8px; font-size:13px; color:var(--text-dim);">For beginners: "invalid" connections are malformed or out-of-sequence packets that don't belong to any real session — dropping them is a near-zero-risk way to filter out a lot of scanning noise.</p></div>
       <div class="about-card"><div class="tag">Import</div><p>Download the <code>.rsc</code> file and run <code>/import nat-firewall-config.rsc</code> from Winbox's terminal.</p></div>
     </div>
 
     <div class="note"><strong>Before you deploy:</strong> if you manage this router remotely, keep a Winbox/console session open while testing — a misordered firewall rule can lock you out of your own router. Test on a device you can reach physically before relying on this in production.</div>
   </div>
+
+  <!-- AdSense safe zone: place ad units here or below. Do NOT place ads inside
+       .grid, .terminal, or near #copyBtn/#downloadBtn — those must stay
+       uninterrupted per AdSense's policy against ads that interfere with
+       site functionality. -->
 
   <footer>
     <span>Built for WISP &amp; ISP operators running MikroTik + RADIUS · No data leaves your browser</span>

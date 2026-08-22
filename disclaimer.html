@@ -13,10 +13,69 @@
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#0E1420;--panel:#161D2B;--border:#2A3448;--text:#E8ECF4;--muted:#96A1B8;--dim:#5B6479;--accent:#3DDC84;--amber:#F5A623}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,sans-serif;line-height:1.7}.wrap{max-width:900px;margin:auto;padding:0 24px 70px}nav{display:flex;justify-content:space-between;align-items:center;padding:22px 0;border-bottom:1px solid #202940}nav a{color:var(--text);text-decoration:none;font-family:'Space Grotesk',sans-serif;font-weight:600}nav a span{color:var(--accent)}nav .links{display:flex;gap:16px;flex-wrap:wrap}nav .links a{font-family:Inter,sans-serif;font-size:13px;color:var(--muted);font-weight:500}header{padding:55px 0 30px}h1,h2{font-family:'Space Grotesk',sans-serif}h1{font-size:clamp(30px,5vw,44px);margin:0 0 12px}h2{font-size:22px;margin-top:38px}p,li{color:var(--muted)}a{color:var(--accent)}.notice{padding:16px 18px;border:1px solid rgba(245,166,35,.3);background:rgba(245,166,35,.07);border-radius:8px;color:var(--muted)}footer{margin-top:55px;padding-top:20px;border-top:1px solid #202940;color:var(--dim);font-size:13px}</style>
+<style>
+
+/* ---------- Comfort and accessibility refinement ---------- */
+:root {
+  --bg: #0B1220;
+  --bg-panel: #172235;
+  --bg-panel-2: #1D2A3F;
+  --bg-input: #101A2A;
+  --border: #33435D;
+  --border-soft: #26354C;
+  --text-primary: #F2F5FA;
+  --text-secondary: #B4C0D2;
+  --text-dim: #7F8DA5;
+}
+body { line-height: 1.65; }
+.wrap { padding-left: 28px; padding-right: 28px; }
+.sitenav {
+  border-bottom: 1px solid var(--border-soft);
+  margin-bottom: 8px;
+}
+.sitenav .brand { font-size: 16px; }
+.sitenav .navlinks { gap: 24px; }
+.sitenav .navlinks a, .nav-group-toggle { min-height: 32px; }
+header { padding-top: 48px; }
+header p, .about p.lead, .dek { line-height: 1.75; }
+.panel, .about-card, .terminal, .faq details {
+  box-shadow: 0 12px 32px rgba(0, 0, 0, .16);
+}
+.panel { padding: 30px; }
+input[type="text"], input[type="password"], select, textarea {
+  min-height: 44px;
+}
+button { min-height: 42px; }
+button.primary { box-shadow: 0 5px 16px rgba(61, 220, 132, .14); }
+.about-card { transition: border-color .18s ease, transform .18s ease; }
+.about-card:hover { border-color: rgba(61,220,132,.45); transform: translateY(-2px); }
+footer { line-height: 1.7; }
+.skip-link {
+  position: fixed; left: 16px; top: -60px; z-index: 100;
+  background: var(--accent); color: #06210F; padding: 10px 14px;
+  border-radius: 0 0 8px 8px; font-weight: 700; text-decoration: none;
+  transition: top .15s ease;
+}
+.skip-link:focus { top: 0; }
+@media (max-width: 720px) {
+  .wrap { padding-left: 16px; padding-right: 16px; }
+  .sitenav { padding-top: 16px; padding-bottom: 16px; }
+  header { padding: 36px 0 32px; margin-bottom: 28px; }
+  .panel { padding: 22px 18px; }
+  .output-col { position: static; }
+  .term-body { max-height: 460px; }
+  footer { flex-direction: column; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}
+
+</style>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to content</a>
 <!-- AdSense: DO NOT place ads on this page. This is a policy/compliance page, not publisher content. Keep it ad-free. -->
-<div class="wrap">
+<div id="main-content" class="wrap">
 <nav><a href="index.html">ispscripts<span>.</span>com</a><div class="links"><a href="index.html">Tools</a><a href="guide.html">Guides</a><a href="blog.html">Blog</a><a href="about.html">About</a><a href="contact.html">Contact</a></div></nav>
 <header><h1>Disclaimer</h1><p>Important information about the technical content, scripts, and configuration generators provided by ISP Scripts.</p></header>
 <p style="font-size:13px; color:var(--muted); margin-top:-10px;">ispscripts.com is written and operated by <strong style="color:var(--text)">Diaa</strong>, an independent network engineer — see <a href="about.html">About</a> for background or <a href="contact.html">Contact</a> to get in touch.</p>

@@ -11,6 +11,8 @@
 </script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0E1420">
+<meta name="robots" content="index,follow">
 <title>About — ispscripts.com</title>
 <link rel="canonical" href="https://ispscripts.com/about.html">
 <meta name="description" content="Free RouterOS config generators and guides for MikroTik-based WISP and ISP operators, built by someone who runs this infrastructure daily.">
@@ -173,7 +175,7 @@
 
   <p>ispscripts.com is written and maintained by <strong>Diaa</strong>, a network engineer who runs MikroTik-based wireless ISP infrastructure day to day — configuring RouterOS for PPPoE and Hotspot subscriber access, integrating RADIUS billing platforms, and managing the sector antennas and client devices that sit behind them.</p>
 
-  <p>Every generator on this site starts from a real configuration task, not a hypothetical one. The PPPoE + RADIUS generator and the Hotspot + RADIUS generator both reflect setups actually used to bring subscribers online, and the guides that go with them cover the failure modes that show up in practice — MTU mismatches, CGNAT reachability, DNS resolution for captive portals — not just the happy path.</p>
+  <p>Each tool on this site starts from a real configuration task, not a hypothetical one. The PPPoE + RADIUS generator and the Hotspot + RADIUS generator both reflect setups actually used to bring subscribers online, and the guides that go with them cover the failure modes that show up in practice — MTU mismatches, CGNAT reachability, DNS resolution for captive portals — not just the happy path.</p>
 
   <h2>Why this site exists</h2>
   <p>Most RouterOS configuration guidance online is scattered across forum threads, YouTube walkthroughs, and Telegram groups — often years out of date, missing steps, or copied from one setup into a completely different topology without adjustment. Getting PPPoE, RADIUS, and firewall rules to reference each other correctly by hand means stitching together commands from five different sources and hoping nothing was missed.</p>
@@ -182,7 +184,7 @@
   <h2>Who this is for</h2>
   <p>This site is built for people actually running networks, not for RouterOS beginners looking for a general tutorial:</p>
   <ul>
-    <li><strong>WISP operators</strong> distributing internet over wireless links to subscribers — the original use case for every generator here.</li>
+    <li><strong>WISP operators</strong> distributing internet over wireless links to subscribers — the original use case for the site's networking tools.</li>
     <li><strong>Small ISPs and network technicians</strong> managing MikroTik gateways, whether or not RADIUS billing is involved.</li>
     <li><strong>IT staff</strong> who inherited a MikroTik router and need a hardened baseline configuration quickly.</li>
   </ul>
@@ -204,10 +206,10 @@
   </ul>
 
   <h2>Maintainer &amp; source</h2>
-  <p>Every generator's output is reviewed against a real RouterOS v7.x device before it's published — nothing here is untested boilerplate. The full source for every generator, guide, and article on this site is public: <a href="https://github.com/diaacylan/ispscripts" target="_blank" rel="noopener">github.com/diaacylan/ispscripts</a>. If you can read RouterOS scripts, you can verify exactly what each tool outputs before ever running it on your own router.</p>
+  <p>Each generator's output is reviewed against a real RouterOS v7.x device before it's published — nothing here is untested boilerplate. The full source for every generator, guide, and article on this site is public: <a href="https://github.com/diaacylan/ispscripts" target="_blank" rel="noopener">github.com/diaacylan/ispscripts</a>. If you can read RouterOS scripts, you can verify exactly what each tool outputs before ever running it on your own router.</p>
 
   <div class="panel">
-    <p><strong>No account, no login, no data collection required to use any tool on this site.</strong> Every generator runs entirely in your browser — the router details you type in are never sent anywhere. See the <a href="privacy.html">privacy policy</a> for details on advertising cookies.</p>
+    <p><strong>No account or login is required to use any tool on this site.</strong> Every generator runs entirely in your browser — the router details you type in are never sent anywhere. See the <a href="privacy.html">privacy policy</a> for details on advertising cookies.</p>
   </div>
 
   <h2>Get in touch</h2>

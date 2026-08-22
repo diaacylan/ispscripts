@@ -373,12 +373,12 @@
     <p>If a sector genuinely needs more than 254 addresses, it's cleaner to split it into two logical sectors (each its own /24) than to move to a /23 — keeping every sector on a consistent, predictable /24 boundary makes firewall rules, monitoring, and troubleshooting simpler across the whole network.</p>
 
     <h2>Where CGNAT changes the picture</h2>
-    <p>If your upstream connection — Starlink or otherwise — sits behind Carrier-Grade NAT, your router's WAN interface never gets a real public IP; it gets a private address from the provider's own CGNAT range (commonly <code>100.64.0.0/10</code>, reserved specifically for this by RFC 6598). This is separate from your internal addressing plan, but it directly affects two things:</p>
+    <p>If your upstream connection — satellite internet or otherwise — sits behind Carrier-Grade NAT, your router's WAN interface never gets a real public IP; it gets a private address from the provider's own CGNAT range (commonly <code>100.64.0.0/10</code>, reserved specifically for this by RFC 6598). This is separate from your internal addressing plan, but it directly affects two things:</p>
     <ul style="color:var(--text-secondary); font-size:15.5px; padding-left:22px; margin:0 0 20px;">
       <li><strong>You can't be reached from the public internet on that WAN interface</strong> — no incoming connections, no simple port forward to a device behind it, regardless of firewall rules.</li>
       <li><strong>Remote management needs a workaround</strong> — typically a VPN tunnel (WireGuard) initiated outbound from the router to a VPS with a real public IP, since the router can always reach out even though nothing can reach in.</li>
     </ul>
-    <p>See the <a href="starlink-cgnat-wisp-backhaul.html">Starlink and CGNAT article</a> for the full reasoning and a working WireGuard setup.</p>
+    <p>See the <a href="satellite-cgnat-wisp-backhaul.html">satellite internet and CGNAT article</a> for the full reasoning and a working WireGuard setup.</p>
 
     <h2>A worked example</h2>
     <p>A WISP with 3 sectors, a Hotspot deployment at one location, and 4 towers connected by backhaul links might lay out addressing like this:</p>

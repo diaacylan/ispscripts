@@ -438,7 +438,7 @@
     <p>PPPoE adds 8 bytes of overhead to every packet. If <code>max-mtu</code> and <code>max-mru</code> aren't set to <strong>1480</strong> (down from Ethernet's standard 1500), subscribers get intermittent issues that look like a bad connection but are actually packet fragmentation — sites that load fine but images or video randomly stall. This is one of the most common "why does my PPPoE feel flaky" support tickets, and it's a one-line fix.</p>
 
     <h3>CGNAT on the WAN side</h3>
-    <p>If your uplink is Starlink or any other connection behind Carrier-Grade NAT, you don't get a public IP on the WAN interface at all — which means you can't reach the router remotely for monitoring or emergency changes without a separate tunnel (a VPS-hosted VPN, a reverse SSH tunnel, or a paid static-IP add-on if your provider offers one). This has nothing to do with the PPPoE/RADIUS config itself, but it's worth planning for before you have 40 subscribers and a router you can't reach at 2am.</p>
+    <p>If your uplink is satellite internet or any other connection behind Carrier-Grade NAT, you don't get a public IP on the WAN interface at all — which means you can't reach the router remotely for monitoring or emergency changes without a separate tunnel (a VPS-hosted VPN, a reverse SSH tunnel, or a paid static-IP add-on if your provider offers one). This has nothing to do with the PPPoE/RADIUS config itself, but it's worth planning for before you have 40 subscribers and a router you can't reach at 2am.</p>
 
     <h3>RADIUS timeout with no fallback</h3>
     <p>If the RADIUS server is unreachable, new sessions fail to authenticate — existing sessions keep running, but nobody new can log in until it's back. Some operators add a second <code>/radius</code> entry pointing at a backup server for exactly this reason; RouterOS will fail over automatically if the first one stops responding.</p>
@@ -462,12 +462,12 @@
     </table>
     </div>
 
-    <h2>Full example: a 40-subscriber WISP on Starlink backhaul</h2>
-    <p>A realistic scenario end to end: a small WISP with a Starlink uplink on <code>ether1</code>, an antenna sector on <code>ether2</code>, and SAS4 as the RADIUS/billing platform running on a local VPS at <code>10.0.0.5</code>.</p>
+    <h2>Full example: a 40-subscriber WISP on satellite backhaul</h2>
+    <p>A realistic scenario end to end: a small WISP with a satellite internet uplink on <code>ether1</code>, an antenna sector on <code>ether2</code>, and SAS4 as the RADIUS/billing platform running on a local VPS at <code>10.0.0.5</code>.</p>
     <div class="table-wrap">
     <table>
       <tr><th>Field</th><th>Value used</th></tr>
-      <tr><td>WAN interface</td><td><code>ether1</code> (Starlink router in bridge mode, CGNAT — see the note below)</td></tr>
+      <tr><td>WAN interface</td><td><code>ether1</code> (satellite modem in bridge mode, CGNAT — see the note below)</td></tr>
       <tr><td>Subscriber-side interface</td><td><code>ether2</code> (sector antenna)</td></tr>
       <tr><td>Router gateway IP</td><td><code>10.10.10.1</code></td></tr>
       <tr><td>Client pool range</td><td><code>10.10.10.2-10.10.10.254</code> (fallback only — SAS4 assigns real IPs per plan)</td></tr>
@@ -475,7 +475,7 @@
       <tr><td>Upload / Download</td><td><code>5M</code> / <code>10M</code> default profile — SAS4 overrides per subscriber plan via RADIUS attributes</td></tr>
     </table>
     </div>
-    <p style="font-size:13.5px; color:var(--text-dim);">Because Starlink sits behind CGNAT, this router has no public IP on <code>ether1</code> — remote management goes through a WireGuard tunnel to the VPS running SAS4, not directly to the router. See <a href="securing-mikrotik-routers.html">the security guide</a> for that setup.</p>
+    <p style="font-size:13.5px; color:var(--text-dim);">Because satellite internet sits behind CGNAT, this router has no public IP on <code>ether1</code> — remote management goes through a WireGuard tunnel to the VPS running SAS4, not directly to the router. See <a href="securing-mikrotik-routers.html">the security guide</a> for that setup.</p>
 
     <h2>Common mistakes and how to fix them</h2>
     <div class="table-wrap">

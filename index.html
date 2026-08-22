@@ -736,7 +736,7 @@
               <div class="field-msg" id="msg-lan"></div>
             </div>
           </div>
-          <p style="font-size:12.5px; color:var(--text-dim); margin:4px 0 0;">The WAN interface faces your uplink (Starlink, fiber, upstream router). The subscriber-side interface faces your antennas or access points — they must be two different physical or virtual interfaces on the router.</p>
+          <p style="font-size:12.5px; color:var(--text-dim); margin:4px 0 0;">The WAN interface faces your uplink (satellite internet, fiber, upstream router). The subscriber-side interface faces your antennas or access points — they must be two different physical or virtual interfaces on the router.</p>
         </fieldset>
 
         <fieldset>
@@ -843,7 +843,7 @@
       <div class="about-card">
         <div class="tag">01 · NAT</div>
         <p>A single masquerade rule on the WAN interface so every PPPoE client can reach the internet through one public IP.</p>
-        <p style="margin-top:8px; font-size:13px; color:var(--text-dim);">For beginners: your router has one public IP (or a private one behind CGNAT on Starlink), but dozens of subscribers behind it. NAT rewrites every outgoing packet so it looks like it came from the router, then rewrites the reply back to the right subscriber. Without this line, subscribers can't reach the internet at all.</p>
+        <p style="margin-top:8px; font-size:13px; color:var(--text-dim);">For beginners: your router has one public IP (or a private one behind CGNAT on some satellite connections), but dozens of subscribers behind it. NAT rewrites every outgoing packet so it looks like it came from the router, then rewrites the reply back to the right subscriber. Without this line, subscribers can't reach the internet at all.</p>
       </div>
       <div class="about-card">
         <div class="tag">02 · RADIUS</div>

@@ -11,9 +11,9 @@
 </script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>RADIUS Explained for ISP Operators</title>
-<link rel="canonical" href="https://ispscripts.com/radius-explained-for-isp-operators.html">
-<meta name="description" content="SAS4, GalaxyRAD, and freeRADIUS compared — what each does differently, what RADIUS actually is, and how to choose a platform for your WISP.">
+<title>Subnetting Explained: CIDR, Network & Broadcast Math</title>
+<link rel="canonical" href="https://ispscripts.com/subnet-calculator-guide.html">
+<meta name="description" content="How IP subnetting actually works — CIDR notation, the binary math behind network and broadcast addresses, and how to plan subnets without a calculator.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -242,6 +242,16 @@
   li { margin-bottom: 8px; }
   li strong { color: var(--text-primary); }
 
+  .diagram-wrap {
+    margin: 20px 0 32px;
+    padding: 16px;
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow-x: auto;
+  }
+  .diagram-wrap svg { display: block; min-width: 560px; width: 100%; height: auto; }
+
   .callout {
     margin: 28px 0;
     padding: 16px 18px;
@@ -315,16 +325,16 @@
         </div>
       </div>
       <div class="nav-group">
-        <button type="button" class="nav-group-toggle">Guides</button>
+        <button type="button" class="nav-group-toggle active">Guides</button>
         <div class="nav-group-menu">
           <a href="guide.html">PPPoE + RADIUS Guide</a>
           <a href="hotspot-guide.html">Hotspot + RADIUS Guide</a>
           <a href="nat-firewall-guide.html">NAT + Firewall Guide</a>
-          <a href="subnet-calculator-guide.html">Subnet Calculator Guide</a>
+          <a href="subnet-calculator-guide.html" class="active">Subnet Calculator Guide</a>
           <a href="pppoe-vs-hotspot.html">PPPoE vs Hotspot</a>
         </div>
       </div>
-      <a href="blog.html" class="active">Blog</a>
+      <a href="blog.html">Blog</a>
       <a href="about.html">About</a>
       <a href="contact.html">Contact</a>
     </div>
@@ -332,77 +342,98 @@
 
   <article>
     <header>
-      <div class="eyebrow">Blog &nbsp;→&nbsp; RADIUS &amp; Billing</div>
-      <h1>RADIUS Explained for ISP Operators</h1>
-      <p class="dek">What RADIUS actually does, why almost every WISP ends up running it, and how SAS4, GalaxyRAD, and freeRADIUS differ in practice.</p>
+      <div class="eyebrow">Guide → IP Subnetting</div>
+      <h1>Subnetting Explained: <br>the math behind the calculator</h1>
+      <p class="dek">The <a href="subnet-calculator.html">calculator</a> gives you the answer instantly. This page covers the binary math behind it — useful once you want to subnet by hand, or just understand what's actually happening.</p>
     </header>
 
-    <p>Every generator on this site — PPPoE, Hotspot — asks for a RADIUS server IP and a shared secret. If you're setting up your first WISP, it's worth understanding what that server is actually doing before you pick one, since the choice affects billing, support workload, and how much manual work every subscriber change costs you.</p>
+    <h2>What a subnet mask actually does</h2>
+    <p>An IPv4 address is 32 bits, normally written as four decimal numbers (octets) separated by dots — <code>192.168.1.10</code>. A subnet mask is also 32 bits, and its job is to split those bits into two groups: a <strong>network portion</strong> and a <strong>host portion</strong>. Wherever the mask has a 1 bit, that bit belongs to the network. Wherever it has a 0 bit, that bit belongs to the host.</p>
+    <p><code>255.255.255.0</code> in binary is <code>11111111.11111111.11111111.00000000</code> — 24 ones followed by 8 zeros. That's exactly what <strong>CIDR notation</strong> (<code>/24</code>) is shorthand for: the number after the slash is simply a count of how many leading bits are 1.</p>
 
-    <h2>What RADIUS actually is</h2>
-    <p>RADIUS (Remote Authentication Dial-In User Service) is a protocol, not a product — a standard way for a router to ask a separate server three questions about a connecting subscriber, known as <strong>AAA</strong>:</p>
+    <h3>The full CIDR-to-mask table</h3>
     <div class="table-wrap">
     <table>
-      <tr><th>AAA stage</th><th>Question the router is asking</th></tr>
-      <tr><td>Authentication</td><td>Is this username and password valid?</td></tr>
-      <tr><td>Authorization</td><td>What plan, IP, and limits should this subscriber get?</td></tr>
-      <tr><td>Accounting</td><td>How much data has this session used, and when did it start/end?</td></tr>
-    </table>
-    </div>
-    <p>Without RADIUS, a MikroTik router can still authenticate PPPoE or Hotspot logins — but only against a list stored directly on the router itself. That works for a handful of subscribers. Past that, every plan change, every new subscriber, and every disconnection for non-payment means logging into the router by hand. RADIUS moves subscriber management off the router entirely and onto a platform built for it.</p>
-
-    <h2>Why accounting is the part that actually matters for billing</h2>
-    <p>Authentication gets the most attention because it's what makes a login work, but for a WISP, <strong>accounting</strong> is what makes billing possible at all. The RADIUS server logs a Start packet when a session begins, Interim-Update packets at a regular interval (5 minutes is standard) with live byte counts, and a Stop packet with the final total when the session ends. A billing platform reads these logs to know how much data or time a subscriber actually used — without it, you're billing on trust alone.</p>
-    <div class="callout tip"><p><strong>The most common RADIUS support issue</strong> isn't authentication failing — it's accounting being misconfigured, so logins work fine but usage graphs show nothing. If a subscriber can connect but your platform shows zero usage, check accounting first.</p></div>
-
-    <h2>Three platforms WISPs actually use</h2>
-
-    <h3>SAS4</h3>
-    <p>A commercial billing and RADIUS platform built specifically for WISPs, popular in the Middle East, South Asia, and parts of Africa. SAS4 bundles RADIUS with subscriber management, invoicing, and a customer portal in one package — the appeal is not having to stitch together separate tools. It's a paid product with a licensing cost, but for an operator who wants billing and RADIUS solved together without custom development, it's a common starting point.</p>
-
-    <h3>GalaxyRAD</h3>
-    <p>Another commercial WISP-focused platform, similar in scope to SAS4 — RADIUS, billing, and subscriber management combined. The choice between the two often comes down to regional support availability, pricing, and which one a WISP's peers are already using — both are mature enough to run production networks reliably.</p>
-
-    <h3>freeRADIUS</h3>
-    <p>An open-source RADIUS server — just the AAA protocol implementation, with no billing or subscriber-management interface built in. freeRADIUS is free and extremely flexible, but it means building or bolting on your own subscriber database, billing logic, and admin interface (or wiring it to something like a MySQL backend and a custom panel). It suits operators comfortable with Linux administration who want full control, or who are already running other open-source infrastructure and don't want another licensed product.</p>
-
-    <h2>How to choose</h2>
-    <div class="table-wrap">
-    <table>
-      <tr><th>If you...</th><th>Consider</th></tr>
-      <tr><td>Want billing and RADIUS solved together, minimal setup</td><td>SAS4 or GalaxyRAD</td></tr>
-      <tr><td>Already have technical staff comfortable with Linux and databases</td><td>freeRADIUS + a billing panel of your choice</td></tr>
-      <tr><td>Are under 50 subscribers and want to keep costs at zero while learning</td><td>freeRADIUS — the licensing cost of a commercial platform is harder to justify at small scale</td></tr>
-      <tr><td>Plan to scale past a few hundred subscribers with a small team</td><td>A commercial platform — the support and packaged billing usually pays for itself in saved admin time</td></tr>
+      <tr><th>CIDR</th><th>Subnet mask</th><th>Total addresses</th><th>Usable hosts</th></tr>
+      <tr><td>/24</td><td>255.255.255.0</td><td>256</td><td>254</td></tr>
+      <tr><td>/25</td><td>255.255.255.128</td><td>128</td><td>126</td></tr>
+      <tr><td>/26</td><td>255.255.255.192</td><td>64</td><td>62</td></tr>
+      <tr><td>/27</td><td>255.255.255.224</td><td>32</td><td>30</td></tr>
+      <tr><td>/28</td><td>255.255.255.240</td><td>16</td><td>14</td></tr>
+      <tr><td>/29</td><td>255.255.255.248</td><td>8</td><td>6</td></tr>
+      <tr><td>/30</td><td>255.255.255.252</td><td>4</td><td>2</td></tr>
+      <tr><td>/31</td><td>255.255.255.254</td><td>2</td><td>2 (RFC 3021)</td></tr>
+      <tr><td>/32</td><td>255.255.255.255</td><td>1</td><td>1 (host route)</td></tr>
     </table>
     </div>
 
-    <h2>What stays the same no matter which you pick</h2>
-    <p>The RouterOS side of the configuration is identical regardless of platform — all three speak standard RADIUS (RFC 2865/2866), so the same <code>/radius</code> registration, <code>/ppp aaa</code> settings, and accounting interval apply whether the server on the other end is SAS4, GalaxyRAD, or freeRADIUS. The generators on this site don't need to know which platform you're using — just the server's IP and shared secret.</p>
+    <h2>Calculating the network address by hand</h2>
+    <p>The network address is found with a bitwise <strong>AND</strong> between the IP address and the subnet mask — for every bit position, the result is 1 only if both the IP and the mask have a 1 there. Take <code>192.168.1.137/26</code> as a worked example:</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th></th><th>Octet 4 in binary</th></tr>
+      <tr><td>IP address (.137)</td><td><code>10001001</code></td></tr>
+      <tr><td>Mask for /26 (.192)</td><td><code>11000000</code></td></tr>
+      <tr><td>AND result (.128)</td><td><code>10000000</code></td></tr>
+    </table>
+    </div>
+    <p>The first three octets of a /26 mask are all 1s (<code>255.255.255</code>), so they pass through unchanged. Only the last octet's math changes anything — the result is <code>192.168.1.128</code>, the network address for that /26 block. The broadcast address is the same calculation but with every host bit forced to 1 instead of 0: <code>192.168.1.191</code>.</p>
+
+    <div class="diagram-wrap">
+    <svg viewBox="0 0 700 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Bitwise AND diagram showing how the last octet of 192.168.1.137 combines with a /26 subnet mask to produce the network address 192.168.1.128">
+      <rect x="0" y="0" width="700" height="260" fill="#0E1420"/>
+      <text x="30" y="40" fill="#96A1B8" font-family="Inter, sans-serif" font-size="13">Last octet only — first three octets are 255.255.255 either way</text>
+
+      <text x="30" y="90" fill="#E8ECF4" font-family="JetBrains Mono, monospace" font-size="14">IP  .137</text>
+      <text x="160" y="90" fill="#E8ECF4" font-family="JetBrains Mono, monospace" font-size="18" letter-spacing="4">1 0 0 0 1 0 0 1</text>
+
+      <text x="30" y="130" fill="#96A1B8" font-family="JetBrains Mono, monospace" font-size="14">Mask .192</text>
+      <text x="160" y="130" fill="#96A1B8" font-family="JetBrains Mono, monospace" font-size="18" letter-spacing="4">1 1 0 0 0 0 0 0</text>
+
+      <line x1="160" y1="145" x2="490" y2="145" stroke="#2A3448" stroke-width="1.5"/>
+      <text x="490" y="140" fill="#5B6479" font-family="JetBrains Mono, monospace" font-size="12">AND</text>
+
+      <text x="30" y="180" fill="#3DDC84" font-family="JetBrains Mono, monospace" font-size="14" font-weight="600">= .128</text>
+      <text x="160" y="180" fill="#3DDC84" font-family="JetBrains Mono, monospace" font-size="18" font-weight="600" letter-spacing="4">1 0 0 0 0 0 0 0</text>
+
+      <text x="30" y="230" fill="#96A1B8" font-family="Inter, sans-serif" font-size="13">Result: 192.168.1.128 is the network address — every bit where the mask is 0 gets cleared to 0.</text>
+    </svg>
+    </div>
+
+    <div class="callout tip"><p><strong>Shortcut for the last octet:</strong> for any mask ending in a non-255, non-0 value (192, 224, 240, 248, 252, 254), subtract that number from 256 to get the "block size." For /26 (mask ends in 192), 256−192 = 64 — so networks land on multiples of 64: .0, .64, .128, .192. Find which multiple your IP falls into, and that's your network address.</p></div>
+
+    <h2>Why /31 and /32 are special cases</h2>
+    <p>Every subnet size from /0 through /30 reserves two addresses — network and broadcast — that can't be assigned to a device. A /30 (4 total addresses) therefore has exactly 2 usable hosts, which is why it was the traditional choice for point-to-point links.</p>
+    <p><strong>RFC 3021 changed this for /31</strong>: on a link with only two devices and no need for a broadcast address, both addresses in the block are treated as usable host addresses. This effectively doubles addressing efficiency on point-to-point links compared to a /30, and most modern routing platforms, including RouterOS, support it.</p>
+    <p>A <strong>/32</strong> isn't really a "subnet" in the traditional sense — it's a single host route, commonly used for loopback addresses or for routing traffic to one specific device.</p>
+
+    <h2>Reading a subnet split</h2>
+    <p>Splitting a network into N equal subnets always means increasing the CIDR prefix by <code>log₂(N)</code> bits. Splitting a /24 into 4 subnets means <code>24 + log₂(4) = 24 + 2 = /26</code> — each resulting block is a /26, and there are exactly 4 of them (<code>.0/26</code>, <code>.64/26</code>, <code>.128/26</code>, <code>.192/26</code>) because 2 bits can represent 4 distinct values (00, 01, 10, 11).</p>
+    <p>The same logic applies to any power of two: splitting into 8 adds 3 bits, into 16 adds 4 bits, and so on. If the number of subnets you need isn't a power of two, round up to the next one — you'll have a few unused blocks left over, which is normal and worth reserving for future growth rather than trying to eliminate.</p>
 
     <h2>Common mistakes and how to fix them</h2>
     <div class="table-wrap">
     <table>
       <tr><th>Symptom</th><th>Likely cause</th><th>Fix</th></tr>
-      <tr><td>Switched RADIUS platforms and logins started failing</td><td>Shared secret or authentication port changed but not updated on the router</td><td>Regenerate the router config with the new platform's IP and secret</td></tr>
-      <tr><td>Billing shows usage but no invoices generate</td><td>Accounting works but the billing platform's invoicing rules aren't configured</td><td>This is a platform-side configuration issue, not a RADIUS/router issue — check the billing platform's plan and cycle settings</td></tr>
-      <tr><td>freeRADIUS rejects valid logins intermittently</td><td>Database connection pool exhausted under load, or clients.conf missing the router's IP</td><td>Check the freeRADIUS debug log (<code>radiusd -X</code>) for the specific rejection reason rather than guessing</td></tr>
-      <tr><td>Two routers can't share one RADIUS server reliably</td><td>Router's IP not added to the RADIUS server's client/NAS list</td><td>Every router talking to a RADIUS server needs to be explicitly allowed as a client on that server, not just configured on the router side</td></tr>
+      <tr><td>Assigned a device the network or broadcast address by accident</td><td>Miscounted the usable range, especially on smaller subnets like /29 or /30</td><td>Usable hosts always run from network+1 to broadcast−1 — use the calculator to double-check on anything smaller than a /24</td></tr>
+      <tr><td>Two "adjacent" subnets turn out to overlap</td><td>Didn't align the new subnet to its actual block size boundary</td><td>Networks must start on a multiple of their block size (a /26 must start at .0, .64, .128, or .192 — never .32 or .100)</td></tr>
+      <tr><td>Split a network expecting N subnets but got a different count</td><td>N wasn't a power of two, and rounding up wasn't accounted for</td><td>Round up to the next power of two, and expect some unused blocks left over</td></tr>
+      <tr><td>Point-to-point link "wastes" two addresses unexpectedly</td><td>Used a /30 out of habit instead of a /31</td><td>If both endpoints are directly connected and only need one address each, a /31 is valid and saves 2 addresses per link</td></tr>
     </table>
     </div>
 
     <h2>Best practices</h2>
     <ul style="color:var(--text-secondary); font-size:15.5px; padding-left:22px; margin:0 0 20px;">
-      <li>Use a strong, unique shared secret per RADIUS server — never reuse a router's admin password.</li>
-      <li>Set a 5-minute accounting interval unless you have a specific reason to change it — it's the balance most platforms are tuned around.</li>
-      <li>Keep a backup RADIUS entry pointing at a secondary server if your platform supports it, so a single server outage doesn't block new logins network-wide.</li>
-      <li>Test accounting specifically, not just authentication, after any RADIUS change — a login succeeding doesn't confirm billing data is flowing.</li>
+      <li>Always align new subnets to their natural block-size boundary — never split at an arbitrary address.</li>
+      <li>Use /31 for point-to-point links where both devices are directly connected, and /30 only where broadcast behavior is specifically needed.</li>
+      <li>When splitting a block, round up to the next power of two rather than trying to force an odd number of equal-sized subnets.</li>
+      <li>Double-check the first and last usable host on any subnet smaller than /28 — the margin for a counting mistake shrinks fast as blocks get smaller.</li>
     </ul>
 
     <div class="cta">
-      <h3>Ready to connect your RADIUS server?</h3>
-      <p>The PPPoE and Hotspot generators build the full RouterOS-side RADIUS configuration — just fill in your server's IP and shared secret.</p>
-      <a href="index.html" class="btn">Open the PPPoE Generator →</a>
+      <h3>Skip the binary math</h3>
+      <p>The calculator does all of this instantly, including the subnet splitter.</p>
+      <a href="subnet-calculator.html" class="btn">Open the IP Subnet Calculator →</a>
     </div>
 
     <!-- AdSense: this page has substantial original content (600+ words) and
@@ -411,7 +442,11 @@
        or right before/after a button a user needs to click. -->
 
     <footer>Written for WISP and ISP operators running MikroTik + RADIUS. Not affiliated with MikroTik or any RADIUS platform vendor.<br><a href="about.html" style="color:var(--text-dim)">About</a> · <a href="privacy.html" style="color:var(--text-dim)">Privacy</a> · <a href="contact.html" style="color:var(--text-dim)">Contact</a> · <a href="changelog.html">Changelog</a> · <a href="https://github.com/diaacylan/ispscripts" target="_blank" rel="noopener">View source</a> · <a href="terms.html">Terms</a> · <a href="disclaimer.html">Disclaimer</a></footer>
-  </article>cript>
+  </article>
+
+</div>
+
+<script>
   document.getElementById('navToggle').addEventListener('click', function () {
     document.getElementById('navLinks').classList.toggle('open');
   });

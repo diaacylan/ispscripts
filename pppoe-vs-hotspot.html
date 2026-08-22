@@ -43,7 +43,7 @@
   .nav-group-toggle {
     background: none; border: none; cursor: pointer; font: inherit;
     color: var(--text-secondary); font-size: 13.5px; font-weight: 500;
-    padding: 0; display: flex; align-items: center; gap: 4px;
+    padding: 0 0 14px 0; margin-bottom: -14px; display: flex; align-items: center; gap: 4px;
   }
   .nav-group-toggle:hover { color: var(--text-primary); }
   .nav-group-toggle::after { content: '\25be'; font-size: 9px; margin-top: 1px; }
@@ -107,6 +107,7 @@
       text-transform: uppercase;
       letter-spacing: .06em;
       padding: 10px 14px 4px;
+      margin-bottom: 0;
     }
     .nav-group-toggle.active { color: var(--accent); }
     .nav-group-toggle::after { display: none; }

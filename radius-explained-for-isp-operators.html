@@ -11,9 +11,9 @@
 </script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Changelog — ispscripts.com</title>
-<link rel="canonical" href="https://ispscripts.com/changelog.html">
-<meta name="description" content="What's changed on ispscripts.com — new generators, guides, and site updates, in order.">
+<title>RADIUS Explained for ISP Operators</title>
+<link rel="canonical" href="https://ispscripts.com/radius-explained-for-isp-operators.html">
+<meta name="description" content="SAS4, GalaxyRAD, and freeRADIUS compared — what each does differently, what RADIUS actually is, and how to choose a platform for your WISP.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -295,22 +295,9 @@
   th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--border-soft); color: var(--text-secondary); }
   th { color: var(--text-primary); font-weight: 600; font-size: 12.5px; text-transform: uppercase; letter-spacing: .04em; }
   td code { font-size: 12.5px; }
-
-  .changelog { list-style: none; padding: 0; margin: 0 0 32px; border-left: 2px solid var(--border-soft); }
-  .changelog li { position: relative; padding: 2px 0 22px 26px; }
-  .changelog li::before {
-    content: ''; position: absolute; left: -7px; top: 6px;
-    width: 12px; height: 12px; border-radius: 50%;
-    background: var(--bg); border: 2px solid var(--accent);
-  }
-  .changelog .date { font-family: var(--font-mono); font-size: 12px; color: var(--text-dim); margin-bottom: 4px; }
-  .changelog .entry-title { font-weight: 600; color: var(--text-primary); font-size: 15px; margin-bottom: 2px; }
-  .changelog .entry-desc { font-size: 14px; color: var(--text-secondary); }
 </style>
 </head>
 <body>
-<!-- AdSense: DO NOT place ads on this page. This is a running log, not prose content. Word count is borderline and the content is list-style, not something a visitor searches for. -->
-
 
 <div class="wrap">
 
@@ -335,7 +322,7 @@
           <a href="pppoe-vs-hotspot.html">PPPoE vs Hotspot</a>
         </div>
       </div>
-      <a href="blog.html">Blog</a>
+      <a href="blog.html" class="active">Blog</a>
       <a href="about.html">About</a>
       <a href="contact.html">Contact</a>
     </div>
@@ -343,64 +330,86 @@
 
   <article>
     <header>
-      <div class="eyebrow">Changelog</div>
-      <h1>What's changed</h1>
-      <p class="dek">A running record of what's been added to ispscripts.com, in order. No silent changes — if a generator's output logic changes, it's listed here.</p>
+      <div class="eyebrow">Blog &nbsp;→&nbsp; RADIUS &amp; Billing</div>
+      <h1>RADIUS Explained for ISP Operators</h1>
+      <p class="dek">What RADIUS actually does, why almost every WISP ends up running it, and how SAS4, GalaxyRAD, and freeRADIUS differ in practice.</p>
     </header>
 
-    <ul class="changelog">
-      <li>
-        <div class="date">Latest update</div>
-        <div class="entry-title">Three new blog articles published</div>
-        <div class="entry-desc">Added "IP Address Planning for a Growing WISP," "RADIUS Explained for ISP Operators," and "Starlink as WISP Backhaul: Living With CGNAT" — replacing the "coming soon" placeholders on the blog index with full articles.</div>
-      </li>
-      <li>
-        <div class="date">Recent</div>
-        <div class="entry-title">Homepage messaging refresh</div>
-        <div class="entry-desc">Rewrote the headline on all three generator pages to lead with what you get, added "Free · Runs in your browser · Tested on RouterOS v7.x" trust badges, and linked the public source repo from every page.</div>
-      </li>
-      <li>
-        <div class="date">Recent</div>
-        <div class="entry-title">Compliance pages expanded</div>
-        <div class="entry-desc">About page now covers why the site exists and who it's for. Contact page clarifies why there's no contact form. Privacy policy states plainly that there's no backend server for the generators to send data to.</div>
-      </li>
-      <li>
-        <div class="date">Recent</div>
-        <div class="entry-title">Blog section launched</div>
-        <div class="entry-desc">Added a blog index and the first article, "Securing MikroTik Routers Against Common Attacks." Also added beginner-friendly explanations under each config block on all three generator pages.</div>
-      </li>
-      <li>
-        <div class="entry-title">PPPoE vs Hotspot comparison added</div>
-        <div class="entry-desc">A side-by-side article to help operators pick the right subscriber access model.</div>
-      </li>
-      <li>
-        <div class="entry-title">NAT + Firewall Generator added</div>
-        <div class="entry-desc">A third generator for any MikroTik gateway — masquerade, optional port forwarding, WAN-side service hardening, and brute-force protection.</div>
-      </li>
-      <li>
-        <div class="entry-title">Trust pages added</div>
-        <div class="entry-desc">About, Privacy Policy, and Contact pages published.</div>
-      </li>
-      <li>
-        <div class="entry-title">Hotspot + RADIUS Generator added</div>
-        <div class="entry-desc">Second generator, for voucher/card-based captive portal access, with its own setup guide.</div>
-      </li>
-      <li>
-        <div class="entry-title">Site launched</div>
-        <div class="entry-desc">First generator published: PPPoE + RADIUS config generator, with an in-depth setup guide.</div>
-      </li>
-    </ul>
+    <p>Every generator on this site — PPPoE, Hotspot — asks for a RADIUS server IP and a shared secret. If you're setting up your first WISP, it's worth understanding what that server is actually doing before you pick one, since the choice affects billing, support workload, and how much manual work every subscriber change costs you.</p>
 
-    <div class="panel" style="background: var(--bg-panel); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 22px 24px;">
-      <p style="margin:0;">Every generator's output is reviewed against a real RouterOS v7.x device before publishing. If a script ever produces invalid syntax on your version, <a href="contact.html">let me know</a> — that's exactly what this changelog and the contact page are for.</p>
+    <h2>What RADIUS actually is</h2>
+    <p>RADIUS (Remote Authentication Dial-In User Service) is a protocol, not a product — a standard way for a router to ask a separate server three questions about a connecting subscriber, known as <strong>AAA</strong>:</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>AAA stage</th><th>Question the router is asking</th></tr>
+      <tr><td>Authentication</td><td>Is this username and password valid?</td></tr>
+      <tr><td>Authorization</td><td>What plan, IP, and limits should this subscriber get?</td></tr>
+      <tr><td>Accounting</td><td>How much data has this session used, and when did it start/end?</td></tr>
+    </table>
+    </div>
+    <p>Without RADIUS, a MikroTik router can still authenticate PPPoE or Hotspot logins — but only against a list stored directly on the router itself. That works for a handful of subscribers. Past that, every plan change, every new subscriber, and every disconnection for non-payment means logging into the router by hand. RADIUS moves subscriber management off the router entirely and onto a platform built for it.</p>
+
+    <h2>Why accounting is the part that actually matters for billing</h2>
+    <p>Authentication gets the most attention because it's what makes a login work, but for a WISP, <strong>accounting</strong> is what makes billing possible at all. The RADIUS server logs a Start packet when a session begins, Interim-Update packets at a regular interval (5 minutes is standard) with live byte counts, and a Stop packet with the final total when the session ends. A billing platform reads these logs to know how much data or time a subscriber actually used — without it, you're billing on trust alone.</p>
+    <div class="callout tip"><p><strong>The most common RADIUS support issue</strong> isn't authentication failing — it's accounting being misconfigured, so logins work fine but usage graphs show nothing. If a subscriber can connect but your platform shows zero usage, check accounting first.</p></div>
+
+    <h2>Three platforms WISPs actually use</h2>
+
+    <h3>SAS4</h3>
+    <p>A commercial billing and RADIUS platform built specifically for WISPs, popular in the Middle East, South Asia, and parts of Africa. SAS4 bundles RADIUS with subscriber management, invoicing, and a customer portal in one package — the appeal is not having to stitch together separate tools. It's a paid product with a licensing cost, but for an operator who wants billing and RADIUS solved together without custom development, it's a common starting point.</p>
+
+    <h3>GalaxyRAD</h3>
+    <p>Another commercial WISP-focused platform, similar in scope to SAS4 — RADIUS, billing, and subscriber management combined. The choice between the two often comes down to regional support availability, pricing, and which one a WISP's peers are already using — both are mature enough to run production networks reliably.</p>
+
+    <h3>freeRADIUS</h3>
+    <p>An open-source RADIUS server — just the AAA protocol implementation, with no billing or subscriber-management interface built in. freeRADIUS is free and extremely flexible, but it means building or bolting on your own subscriber database, billing logic, and admin interface (or wiring it to something like a MySQL backend and a custom panel). It suits operators comfortable with Linux administration who want full control, or who are already running other open-source infrastructure and don't want another licensed product.</p>
+
+    <h2>How to choose</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>If you...</th><th>Consider</th></tr>
+      <tr><td>Want billing and RADIUS solved together, minimal setup</td><td>SAS4 or GalaxyRAD</td></tr>
+      <tr><td>Already have technical staff comfortable with Linux and databases</td><td>freeRADIUS + a billing panel of your choice</td></tr>
+      <tr><td>Are under 50 subscribers and want to keep costs at zero while learning</td><td>freeRADIUS — the licensing cost of a commercial platform is harder to justify at small scale</td></tr>
+      <tr><td>Plan to scale past a few hundred subscribers with a small team</td><td>A commercial platform — the support and packaged billing usually pays for itself in saved admin time</td></tr>
+    </table>
     </div>
 
+    <h2>What stays the same no matter which you pick</h2>
+    <p>The RouterOS side of the configuration is identical regardless of platform — all three speak standard RADIUS (RFC 2865/2866), so the same <code>/radius</code> registration, <code>/ppp aaa</code> settings, and accounting interval apply whether the server on the other end is SAS4, GalaxyRAD, or freeRADIUS. The generators on this site don't need to know which platform you're using — just the server's IP and shared secret.</p>
+
+    <h2>Common mistakes and how to fix them</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>Symptom</th><th>Likely cause</th><th>Fix</th></tr>
+      <tr><td>Switched RADIUS platforms and logins started failing</td><td>Shared secret or authentication port changed but not updated on the router</td><td>Regenerate the router config with the new platform's IP and secret</td></tr>
+      <tr><td>Billing shows usage but no invoices generate</td><td>Accounting works but the billing platform's invoicing rules aren't configured</td><td>This is a platform-side configuration issue, not a RADIUS/router issue — check the billing platform's plan and cycle settings</td></tr>
+      <tr><td>freeRADIUS rejects valid logins intermittently</td><td>Database connection pool exhausted under load, or clients.conf missing the router's IP</td><td>Check the freeRADIUS debug log (<code>radiusd -X</code>) for the specific rejection reason rather than guessing</td></tr>
+      <tr><td>Two routers can't share one RADIUS server reliably</td><td>Router's IP not added to the RADIUS server's client/NAS list</td><td>Every router talking to a RADIUS server needs to be explicitly allowed as a client on that server, not just configured on the router side</td></tr>
+    </table>
+    </div>
+
+    <h2>Best practices</h2>
+    <ul style="color:var(--text-secondary); font-size:15.5px; padding-left:22px; margin:0 0 20px;">
+      <li>Use a strong, unique shared secret per RADIUS server — never reuse a router's admin password.</li>
+      <li>Set a 5-minute accounting interval unless you have a specific reason to change it — it's the balance most platforms are tuned around.</li>
+      <li>Keep a backup RADIUS entry pointing at a secondary server if your platform supports it, so a single server outage doesn't block new logins network-wide.</li>
+      <li>Test accounting specifically, not just authentication, after any RADIUS change — a login succeeding doesn't confirm billing data is flowing.</li>
+    </ul>
+
+    <div class="cta">
+      <h3>Ready to connect your RADIUS server?</h3>
+      <p>The PPPoE and Hotspot generators build the full RouterOS-side RADIUS configuration — just fill in your server's IP and shared secret.</p>
+      <a href="index.html" class="btn">Open the PPPoE Generator →</a>
+    </div>
+
+    <!-- AdSense: this page has substantial original content (600+ words) and
+       is safe for ad placement. Place ad units after the CTA / before the
+       footer, or between major sections — never inside a table, code block,
+       or right before/after a button a user needs to click. -->
+
     <footer>Written for WISP and ISP operators running MikroTik + RADIUS. Not affiliated with MikroTik or any RADIUS platform vendor.<br><a href="about.html" style="color:var(--text-dim)">About</a> · <a href="privacy.html" style="color:var(--text-dim)">Privacy</a> · <a href="contact.html" style="color:var(--text-dim)">Contact</a> · <a href="changelog.html">Changelog</a> · <a href="https://github.com/diaacylan/ispscripts" target="_blank" rel="noopener">View source</a> · <a href="terms.html">Terms</a> · <a href="disclaimer.html">Disclaimer</a></footer>
-  </article>
-
-</div>
-
-<script>
+  </article>cript>
   document.getElementById('navToggle').addEventListener('click', function () {
     document.getElementById('navLinks').classList.toggle('open');
   });

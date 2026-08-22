@@ -11,9 +11,9 @@
 </script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Changelog — ispscripts.com</title>
-<link rel="canonical" href="https://ispscripts.com/changelog.html">
-<meta name="description" content="What's changed on ispscripts.com — new generators, guides, and site updates, in order.">
+<title>Starlink as WISP Backhaul: Living With CGNAT</title>
+<link rel="canonical" href="https://ispscripts.com/starlink-cgnat-wisp-backhaul.html">
+<meta name="description" content="What Carrier-Grade NAT means for a WISP running Starlink as backhaul — remote management, port forwarding, and a working WireGuard setup.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -295,22 +295,9 @@
   th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--border-soft); color: var(--text-secondary); }
   th { color: var(--text-primary); font-weight: 600; font-size: 12.5px; text-transform: uppercase; letter-spacing: .04em; }
   td code { font-size: 12.5px; }
-
-  .changelog { list-style: none; padding: 0; margin: 0 0 32px; border-left: 2px solid var(--border-soft); }
-  .changelog li { position: relative; padding: 2px 0 22px 26px; }
-  .changelog li::before {
-    content: ''; position: absolute; left: -7px; top: 6px;
-    width: 12px; height: 12px; border-radius: 50%;
-    background: var(--bg); border: 2px solid var(--accent);
-  }
-  .changelog .date { font-family: var(--font-mono); font-size: 12px; color: var(--text-dim); margin-bottom: 4px; }
-  .changelog .entry-title { font-weight: 600; color: var(--text-primary); font-size: 15px; margin-bottom: 2px; }
-  .changelog .entry-desc { font-size: 14px; color: var(--text-secondary); }
 </style>
 </head>
 <body>
-<!-- AdSense: DO NOT place ads on this page. This is a running log, not prose content. Word count is borderline and the content is list-style, not something a visitor searches for. -->
-
 
 <div class="wrap">
 
@@ -335,7 +322,7 @@
           <a href="pppoe-vs-hotspot.html">PPPoE vs Hotspot</a>
         </div>
       </div>
-      <a href="blog.html">Blog</a>
+      <a href="blog.html" class="active">Blog</a>
       <a href="about.html">About</a>
       <a href="contact.html">Contact</a>
     </div>
@@ -343,64 +330,79 @@
 
   <article>
     <header>
-      <div class="eyebrow">Changelog</div>
-      <h1>What's changed</h1>
-      <p class="dek">A running record of what's been added to ispscripts.com, in order. No silent changes — if a generator's output logic changes, it's listed here.</p>
+      <div class="eyebrow">Blog &nbsp;→&nbsp; Backhaul &amp; Connectivity</div>
+      <h1>Starlink as WISP Backhaul: Living With CGNAT</h1>
+      <p class="dek">What Carrier-Grade NAT actually means for a WISP using Starlink as an uplink, and a working way to still manage the router remotely.</p>
     </header>
 
-    <ul class="changelog">
-      <li>
-        <div class="date">Latest update</div>
-        <div class="entry-title">Three new blog articles published</div>
-        <div class="entry-desc">Added "IP Address Planning for a Growing WISP," "RADIUS Explained for ISP Operators," and "Starlink as WISP Backhaul: Living With CGNAT" — replacing the "coming soon" placeholders on the blog index with full articles.</div>
-      </li>
-      <li>
-        <div class="date">Recent</div>
-        <div class="entry-title">Homepage messaging refresh</div>
-        <div class="entry-desc">Rewrote the headline on all three generator pages to lead with what you get, added "Free · Runs in your browser · Tested on RouterOS v7.x" trust badges, and linked the public source repo from every page.</div>
-      </li>
-      <li>
-        <div class="date">Recent</div>
-        <div class="entry-title">Compliance pages expanded</div>
-        <div class="entry-desc">About page now covers why the site exists and who it's for. Contact page clarifies why there's no contact form. Privacy policy states plainly that there's no backend server for the generators to send data to.</div>
-      </li>
-      <li>
-        <div class="date">Recent</div>
-        <div class="entry-title">Blog section launched</div>
-        <div class="entry-desc">Added a blog index and the first article, "Securing MikroTik Routers Against Common Attacks." Also added beginner-friendly explanations under each config block on all three generator pages.</div>
-      </li>
-      <li>
-        <div class="entry-title">PPPoE vs Hotspot comparison added</div>
-        <div class="entry-desc">A side-by-side article to help operators pick the right subscriber access model.</div>
-      </li>
-      <li>
-        <div class="entry-title">NAT + Firewall Generator added</div>
-        <div class="entry-desc">A third generator for any MikroTik gateway — masquerade, optional port forwarding, WAN-side service hardening, and brute-force protection.</div>
-      </li>
-      <li>
-        <div class="entry-title">Trust pages added</div>
-        <div class="entry-desc">About, Privacy Policy, and Contact pages published.</div>
-      </li>
-      <li>
-        <div class="entry-title">Hotspot + RADIUS Generator added</div>
-        <div class="entry-desc">Second generator, for voucher/card-based captive portal access, with its own setup guide.</div>
-      </li>
-      <li>
-        <div class="entry-title">Site launched</div>
-        <div class="entry-desc">First generator published: PPPoE + RADIUS config generator, with an in-depth setup guide.</div>
-      </li>
+    <p>Starlink has become a common backhaul choice for small WISPs in areas without reliable fiber — it's fast to deploy and doesn't depend on local infrastructure. But it comes with one architectural detail that catches new operators off guard: <strong>your router's WAN interface never gets a real public IP address.</strong></p>
+
+    <h2>What CGNAT actually is</h2>
+    <p>Carrier-Grade NAT (CGNAT) is Starlink sharing a pool of public IPv4 addresses across many customers simultaneously, the same way your router shares one public IP across many subscribers via masquerade — just one layer further up. Your router's WAN interface gets an address from the range <code>100.64.0.0/10</code>, reserved specifically for this purpose under RFC 6598. That address is real and routable on Starlink's internal network, but it is not a public internet address — nothing outside Starlink's network can initiate a connection to it.</p>
+    <div class="callout tip"><p><strong>How to tell if you're behind CGNAT:</strong> check your router's WAN IP. If it starts with <code>100.64</code> through <code>100.127</code>, you're behind CGNAT. Compare it to what a site like whatismyip.com reports from a device on that connection — if they're different, there's NAT happening between your router and the public internet.</p></div>
+
+    <h2>What this changes in practice</h2>
+    <ul style="color:var(--text-secondary); font-size:15.5px; padding-left:22px; margin:0 0 20px;">
+      <li><strong>No inbound connections work</strong> — not Winbox, not a port-forwarded camera, not a self-hosted service. It doesn't matter how the firewall is configured; the connection never reaches the router because the WAN IP isn't publicly reachable at all.</li>
+      <li><strong>Port forwarding is not fixable with router configuration</strong> — this is a common point of confusion. A correctly configured <code>dst-nat</code> rule does nothing if the packet never arrives at the WAN interface in the first place.</li>
+      <li><strong>Outbound connections are unaffected</strong> — subscribers can browse the internet normally, since NAT (both Starlink's and your own) only blocks unsolicited inbound traffic, not traffic initiated from inside your network.</li>
     </ul>
 
-    <div class="panel" style="background: var(--bg-panel); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 22px 24px;">
-      <p style="margin:0;">Every generator's output is reviewed against a real RouterOS v7.x device before publishing. If a script ever produces invalid syntax on your version, <a href="contact.html">let me know</a> — that's exactly what this changelog and the contact page are for.</p>
+    <h2>The practical workaround: an outbound-initiated tunnel</h2>
+    <p>Since the router can always reach out even though nothing can reach in, the standard fix is a VPN tunnel that the router itself initiates toward a server with a real public IP — typically a small VPS. Once the tunnel is up, you connect to the VPS, and the VPS forwards your management traffic through the tunnel to the router. WireGuard is the simplest modern option on RouterOS for this.</p>
+
+    <h3>The setup, at a high level</h3>
+    <div class="table-wrap">
+    <table>
+      <tr><th>Component</th><th>Role</th></tr>
+      <tr><td>VPS (Contabo, DigitalOcean, etc.)</td><td>Has a real public IP. Runs the WireGuard server side.</td></tr>
+      <tr><td>MikroTik router</td><td>Runs the WireGuard client side, initiates the tunnel outbound — this works fine even behind CGNAT since it's an outbound connection.</td></tr>
+      <tr><td>Your laptop</td><td>Connects to the VPS (or its own WireGuard client), reaching the router through the tunnel.</td></tr>
+    </table>
+    </div>
+    <p>Once configured, Winbox, SSH, or the API can all be reached through the tunnel's IP address as if you were on the router's own LAN — CGNAT on the WAN side becomes irrelevant for management purposes.</p>
+
+    <div class="callout warn"><p><strong>Set this up before you need it.</strong> A router only reachable through a tunnel that isn't configured yet is a router you can't fix remotely if something goes wrong. Build the WireGuard tunnel as part of initial deployment, not as an emergency measure after a lockout.</p></div>
+
+    <h2>What CGNAT doesn't affect</h2>
+    <p>It's worth being precise about the boundary here, since it's easy to over-apply this concern:</p>
+    <ul style="color:var(--text-secondary); font-size:15.5px; padding-left:22px; margin:0 0 20px;">
+      <li><strong>RADIUS still works normally</strong> if your RADIUS server is on the same LAN as the router, or reachable through the same tunnel — CGNAT only affects the WAN-facing side.</li>
+      <li><strong>PPPoE and Hotspot for subscribers are unaffected</strong> — those services run on your subscriber-facing interface, not the WAN interface behind CGNAT.</li>
+      <li><strong>Outbound-initiated services</strong> like a router phoning home to a monitoring platform, or NTP time sync, work exactly as they would with a public IP.</li>
+    </ul>
+
+    <h2>Common mistakes and how to fix them</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>Symptom</th><th>Likely cause</th><th>Fix</th></tr>
+      <tr><td>Port forward configured correctly but still unreachable from outside</td><td>WAN interface is behind CGNAT — the packet never arrives</td><td>Confirm the WAN IP is in <code>100.64.0.0/10</code>; if so, port forwarding cannot work without a different approach (tunnel, or a Starlink plan with a real public IP if available in your region)</td></tr>
+      <tr><td>Lost remote access to a router after a network change</td><td>No VPN tunnel was configured before the change, and CGNAT means no direct fallback</td><td>Requires physical access to reconfigure — this is exactly why the tunnel should exist before it's needed</td></tr>
+      <tr><td>WireGuard tunnel drops intermittently</td><td>Starlink's own IP reassignment behind CGNAT can occasionally interrupt long-lived connections</td><td>Set a reasonable WireGuard keepalive interval (25–30 seconds) so the tunnel re-establishes quickly after any interruption</td></tr>
+    </table>
     </div>
 
+    <h2>Best practices</h2>
+    <ul style="color:var(--text-secondary); font-size:15.5px; padding-left:22px; margin:0 0 20px;">
+      <li>Set up a WireGuard tunnel to a VPS as part of initial deployment, not after something breaks.</li>
+      <li>Don't rely on port forwarding for anything on a CGNAT-behind connection — plan around a tunnel from the start.</li>
+      <li>Document the VPS's IP and the tunnel configuration somewhere accessible outside the router itself.</li>
+      <li>Test remote access through the tunnel before you actually need it in an emergency, not during one.</li>
+    </ul>
+
+    <div class="cta">
+      <h3>Hardening the router itself?</h3>
+      <p>The NAT + Firewall generator covers WAN-side hardening that applies whether or not you're behind CGNAT.</p>
+      <a href="mikrotik-nat-firewall-generator.html" class="btn">Open the NAT + Firewall Generator →</a>
+    </div>
+
+    <!-- AdSense: this page has substantial original content (600+ words) and
+       is safe for ad placement. Place ad units after the CTA / before the
+       footer, or between major sections — never inside a table, code block,
+       or right before/after a button a user needs to click. -->
+
     <footer>Written for WISP and ISP operators running MikroTik + RADIUS. Not affiliated with MikroTik or any RADIUS platform vendor.<br><a href="about.html" style="color:var(--text-dim)">About</a> · <a href="privacy.html" style="color:var(--text-dim)">Privacy</a> · <a href="contact.html" style="color:var(--text-dim)">Contact</a> · <a href="changelog.html">Changelog</a> · <a href="https://github.com/diaacylan/ispscripts" target="_blank" rel="noopener">View source</a> · <a href="terms.html">Terms</a> · <a href="disclaimer.html">Disclaimer</a></footer>
-  </article>
-
-</div>
-
-<script>
+  </article>cript>
   document.getElementById('navToggle').addEventListener('click', function () {
     document.getElementById('navLinks').classList.toggle('open');
   });

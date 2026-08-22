@@ -55,6 +55,24 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://ispscripts.com/ip-planning-for-wisp.html</loc>
+    <lastmod>2026-08-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://ispscripts.com/radius-explained-for-isp-operators.html</loc>
+    <lastmod>2026-08-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://ispscripts.com/starlink-cgnat-wisp-backhaul.html</loc>
+    <lastmod>2026-08-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://ispscripts.com/changelog.html</loc>
     <lastmod>2026-08-21</lastmod>
     <changefreq>weekly</changefreq>

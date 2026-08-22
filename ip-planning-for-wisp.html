@@ -11,9 +11,9 @@
 </script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Changelog — ispscripts.com</title>
-<link rel="canonical" href="https://ispscripts.com/changelog.html">
-<meta name="description" content="What's changed on ispscripts.com — new generators, guides, and site updates, in order.">
+<title>IP Address Planning for a Growing WISP</title>
+<link rel="canonical" href="https://ispscripts.com/ip-planning-for-wisp.html">
+<meta name="description" content="How to lay out subnets, pools, and CGNAT ranges before you run out of room — a practical IP addressing plan for a growing wireless ISP.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -295,22 +295,9 @@
   th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--border-soft); color: var(--text-secondary); }
   th { color: var(--text-primary); font-weight: 600; font-size: 12.5px; text-transform: uppercase; letter-spacing: .04em; }
   td code { font-size: 12.5px; }
-
-  .changelog { list-style: none; padding: 0; margin: 0 0 32px; border-left: 2px solid var(--border-soft); }
-  .changelog li { position: relative; padding: 2px 0 22px 26px; }
-  .changelog li::before {
-    content: ''; position: absolute; left: -7px; top: 6px;
-    width: 12px; height: 12px; border-radius: 50%;
-    background: var(--bg); border: 2px solid var(--accent);
-  }
-  .changelog .date { font-family: var(--font-mono); font-size: 12px; color: var(--text-dim); margin-bottom: 4px; }
-  .changelog .entry-title { font-weight: 600; color: var(--text-primary); font-size: 15px; margin-bottom: 2px; }
-  .changelog .entry-desc { font-size: 14px; color: var(--text-secondary); }
 </style>
 </head>
 <body>
-<!-- AdSense: DO NOT place ads on this page. This is a running log, not prose content. Word count is borderline and the content is list-style, not something a visitor searches for. -->
-
 
 <div class="wrap">
 
@@ -335,7 +322,7 @@
           <a href="pppoe-vs-hotspot.html">PPPoE vs Hotspot</a>
         </div>
       </div>
-      <a href="blog.html">Blog</a>
+      <a href="blog.html" class="active">Blog</a>
       <a href="about.html">About</a>
       <a href="contact.html">Contact</a>
     </div>
@@ -343,64 +330,103 @@
 
   <article>
     <header>
-      <div class="eyebrow">Changelog</div>
-      <h1>What's changed</h1>
-      <p class="dek">A running record of what's been added to ispscripts.com, in order. No silent changes — if a generator's output logic changes, it's listed here.</p>
+      <div class="eyebrow">Blog &nbsp;→&nbsp; Network Planning</div>
+      <h1>IP Address Planning for a Growing WISP</h1>
+      <p class="dek">How to lay out subnets, pools, and CGNAT ranges before you run out of room — written for operators past the "just use 192.168.1.0/24 everywhere" stage.</p>
     </header>
 
-    <ul class="changelog">
-      <li>
-        <div class="date">Latest update</div>
-        <div class="entry-title">Three new blog articles published</div>
-        <div class="entry-desc">Added "IP Address Planning for a Growing WISP," "RADIUS Explained for ISP Operators," and "Starlink as WISP Backhaul: Living With CGNAT" — replacing the "coming soon" placeholders on the blog index with full articles.</div>
-      </li>
-      <li>
-        <div class="date">Recent</div>
-        <div class="entry-title">Homepage messaging refresh</div>
-        <div class="entry-desc">Rewrote the headline on all three generator pages to lead with what you get, added "Free · Runs in your browser · Tested on RouterOS v7.x" trust badges, and linked the public source repo from every page.</div>
-      </li>
-      <li>
-        <div class="date">Recent</div>
-        <div class="entry-title">Compliance pages expanded</div>
-        <div class="entry-desc">About page now covers why the site exists and who it's for. Contact page clarifies why there's no contact form. Privacy policy states plainly that there's no backend server for the generators to send data to.</div>
-      </li>
-      <li>
-        <div class="date">Recent</div>
-        <div class="entry-title">Blog section launched</div>
-        <div class="entry-desc">Added a blog index and the first article, "Securing MikroTik Routers Against Common Attacks." Also added beginner-friendly explanations under each config block on all three generator pages.</div>
-      </li>
-      <li>
-        <div class="entry-title">PPPoE vs Hotspot comparison added</div>
-        <div class="entry-desc">A side-by-side article to help operators pick the right subscriber access model.</div>
-      </li>
-      <li>
-        <div class="entry-title">NAT + Firewall Generator added</div>
-        <div class="entry-desc">A third generator for any MikroTik gateway — masquerade, optional port forwarding, WAN-side service hardening, and brute-force protection.</div>
-      </li>
-      <li>
-        <div class="entry-title">Trust pages added</div>
-        <div class="entry-desc">About, Privacy Policy, and Contact pages published.</div>
-      </li>
-      <li>
-        <div class="entry-title">Hotspot + RADIUS Generator added</div>
-        <div class="entry-desc">Second generator, for voucher/card-based captive portal access, with its own setup guide.</div>
-      </li>
-      <li>
-        <div class="entry-title">Site launched</div>
-        <div class="entry-desc">First generator published: PPPoE + RADIUS config generator, with an in-depth setup guide.</div>
-      </li>
-    </ul>
+    <p>Most WISPs start with whatever addressing scheme came pre-configured on the first router — usually <code>192.168.1.0/24</code> or <code>10.10.10.0/24</code> — and it works fine for the first dozen subscribers. The trouble starts around 40–60 subscribers across two or three sectors, when someone needs a second pool, a management VLAN, or a second router, and the original scheme has no room to grow without renumbering something that's already live.</p>
+    <p>A little planning up front avoids almost all of this. None of it requires exotic knowledge — just deciding on a structure before you need it, not after.</p>
 
-    <div class="panel" style="background: var(--bg-panel); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 22px 24px;">
-      <p style="margin:0;">Every generator's output is reviewed against a real RouterOS v7.x device before publishing. If a script ever produces invalid syntax on your version, <a href="contact.html">let me know</a> — that's exactly what this changelog and the contact page are for.</p>
+    <h2>Start from a private range with real room to grow</h2>
+    <p>The three private IPv4 ranges (RFC 1918) aren't equal in how much room they give you:</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>Range</th><th>Size</th><th>Practical use for a WISP</th></tr>
+      <tr><td><code>192.168.0.0/16</code></td><td>65,536 addresses</td><td>Fine for a single site or lab — too small to subnet cleanly across many sectors.</td></tr>
+      <tr><td><code>172.16.0.0/12</code></td><td>~1 million addresses</td><td>Workable, but less commonly used — more collision risk if you ever merge networks (mergers, VPNs to partner ISPs).</td></tr>
+      <tr><td><code>10.0.0.0/8</code></td><td>~16.7 million addresses</td><td>The standard choice for any ISP expecting to scale past a few hundred subscribers.</td></tr>
+    </table>
+    </div>
+    <p>Starting from <code>10.0.0.0/8</code> costs nothing and means you will not run into a hard ceiling later. The plan below assumes it, but the same structure works inside <code>172.16.0.0/12</code> if that's what you've already committed to.</p>
+
+    <h2>A structure that scales: /24 per sector, grouped by function</h2>
+    <p>Rather than one flat subnet for every subscriber, split addressing along two axes: <strong>what the subnet is for</strong>, and <strong>which physical sector or site it belongs to</strong>. A simple version:</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>Octet 2</th><th>Purpose</th></tr>
+      <tr><td><code>10.0.x.x</code></td><td>Core infrastructure — routers, switches, management VLANs</td></tr>
+      <tr><td><code>10.10–10.49.x.x</code></td><td>Subscriber pools, one /24 per sector (10.10 = Sector 1, 10.11 = Sector 2, ...)</td></tr>
+      <tr><td><code>10.50–10.59.x.x</code></td><td>Point-to-point backhaul links between towers</td></tr>
+      <tr><td><code>10.90.x.x</code></td><td>Hotspot / voucher subnets, kept separate from PPPoE subscribers</td></tr>
+      <tr><td><code>10.99.x.x</code></td><td>Management-only — out-of-band access to routers themselves</td></tr>
+    </table>
+    </div>
+    <p>This gives every sector its own /24 (254 usable addresses — plenty for a single sector's subscriber count) and leaves 39 more sector blocks before you touch anything else. A new tower doesn't require renumbering an existing one — it just gets the next unused sector number.</p>
+
+    <div class="callout tip"><p><strong>Keep management addressing separate from subscriber addressing.</strong> If a subscriber pool and a router's own management IP live in the same subnet, a misconfigured client device can occasionally interfere with router reachability. A dedicated <code>10.99.x.x</code> range for router management, reachable only via VPN, avoids this entirely.</p></div>
+
+    <h2>Sizing a sector's /24 realistically</h2>
+    <p>A /24 gives 254 usable host addresses. For PPPoE deployments this is rarely the limit — RADIUS assigns addresses per session, so the practical ceiling is closer to how many simultaneous sessions a sector's radios can actually carry. For Hotspot deployments, size the pool for peak concurrent devices, not just paying subscribers — phones and routers often hold a DHCP lease even when idle, and a sector with 100 subscribers might have 150+ leased addresses at any given moment.</p>
+    <p>If a sector genuinely needs more than 254 addresses, it's cleaner to split it into two logical sectors (each its own /24) than to move to a /23 — keeping every sector on a consistent, predictable /24 boundary makes firewall rules, monitoring, and troubleshooting simpler across the whole network.</p>
+
+    <h2>Where CGNAT changes the picture</h2>
+    <p>If your upstream connection — Starlink or otherwise — sits behind Carrier-Grade NAT, your router's WAN interface never gets a real public IP; it gets a private address from the provider's own CGNAT range (commonly <code>100.64.0.0/10</code>, reserved specifically for this by RFC 6598). This is separate from your internal addressing plan, but it directly affects two things:</p>
+    <ul style="color:var(--text-secondary); font-size:15.5px; padding-left:22px; margin:0 0 20px;">
+      <li><strong>You can't be reached from the public internet on that WAN interface</strong> — no incoming connections, no simple port forward to a device behind it, regardless of firewall rules.</li>
+      <li><strong>Remote management needs a workaround</strong> — typically a VPN tunnel (WireGuard) initiated outbound from the router to a VPS with a real public IP, since the router can always reach out even though nothing can reach in.</li>
+    </ul>
+    <p>See the <a href="starlink-cgnat-wisp-backhaul.html">Starlink and CGNAT article</a> for the full reasoning and a working WireGuard setup.</p>
+
+    <h2>A worked example</h2>
+    <p>A WISP with 3 sectors, a Hotspot deployment at one location, and 4 towers connected by backhaul links might lay out addressing like this:</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>Subnet</th><th>Assignment</th></tr>
+      <tr><td><code>10.0.0.0/24</code></td><td>Core router and switch management</td></tr>
+      <tr><td><code>10.10.0.0/24</code></td><td>Sector 1 — PPPoE subscriber pool</td></tr>
+      <tr><td><code>10.11.0.0/24</code></td><td>Sector 2 — PPPoE subscriber pool</td></tr>
+      <tr><td><code>10.12.0.0/24</code></td><td>Sector 3 — PPPoE subscriber pool</td></tr>
+      <tr><td><code>10.50.0.0/30</code>–<code>10.50.0.12/30</code></td><td>Point-to-point links, tower-to-tower (4 towers = 3 links, /30 each)</td></tr>
+      <tr><td><code>10.90.0.0/24</code></td><td>Hotspot voucher subnet, main office location</td></tr>
+      <tr><td><code>10.99.0.0/24</code></td><td>Router management, reachable only via WireGuard</td></tr>
+    </table>
+    </div>
+    <p>Adding a fourth sector later is just <code>10.13.0.0/24</code> — no renumbering, no overlap risk, no surprises.</p>
+
+    <h2>Common mistakes and how to fix them</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>Symptom</th><th>Likely cause</th><th>Fix</th></tr>
+      <tr><td>Two sectors occasionally see each other's subscriber traffic</td><td>Overlapping subnets from ad-hoc addressing (both using <code>192.168.1.0/24</code> independently, later bridged)</td><td>Renumber one sector to a non-overlapping block — painful once, unnecessary if planned up front</td></tr>
+      <tr><td>Ran out of address space in a sector's pool</td><td>Sector grew past 254 devices without a plan for a second block</td><td>Split into two logical sectors, each its own /24, rather than expanding to a /23 that breaks the consistent boundary</td></tr>
+      <tr><td>Can't add a VPN client subnet without conflicts</td><td>No reserved range was set aside for future use</td><td>Always leave 5–10 unused /24 blocks in the plan from day one — they cost nothing until needed</td></tr>
+      <tr><td>Router management interface briefly unreachable when a subscriber's device misbehaves</td><td>Management IP shares a subnet with subscriber pool</td><td>Move router management to its own dedicated, VPN-only subnet</td></tr>
+    </table>
     </div>
 
+    <h2>Best practices</h2>
+    <ul style="color:var(--text-secondary); font-size:15.5px; padding-left:22px; margin:0 0 20px;">
+      <li>Start from <code>10.0.0.0/8</code> even if you only need a fraction of it today — there's no cost to reserving room.</li>
+      <li>Keep every sector on a consistent /24 boundary rather than mixing subnet sizes across the network.</li>
+      <li>Separate subscriber pools, backhaul links, and router management into distinct ranges from the start.</li>
+      <li>Document the plan somewhere outside the routers themselves — a spreadsheet or wiki page that survives a factory reset.</li>
+      <li>Reserve unused blocks deliberately rather than assigning sequentially — it's easier to skip a number than to renumber a live sector later.</li>
+    </ul>
+
+    <div class="cta">
+      <h3>Setting up a new sector?</h3>
+      <p>The PPPoE and Hotspot generators on this site build the RADIUS and pool configuration once you've decided on the addressing — fill in your chosen subnet and get a ready-to-import script.</p>
+      <a href="index.html" class="btn">Open the PPPoE Generator →</a>
+    </div>
+
+    <!-- AdSense: this page has substantial original content (600+ words) and
+       is safe for ad placement. Place ad units after the CTA / before the
+       footer, or between major sections — never inside a table, code block,
+       or right before/after a button a user needs to click. -->
+
     <footer>Written for WISP and ISP operators running MikroTik + RADIUS. Not affiliated with MikroTik or any RADIUS platform vendor.<br><a href="about.html" style="color:var(--text-dim)">About</a> · <a href="privacy.html" style="color:var(--text-dim)">Privacy</a> · <a href="contact.html" style="color:var(--text-dim)">Contact</a> · <a href="changelog.html">Changelog</a> · <a href="https://github.com/diaacylan/ispscripts" target="_blank" rel="noopener">View source</a> · <a href="terms.html">Terms</a> · <a href="disclaimer.html">Disclaimer</a></footer>
-  </article>
-
-</div>
-
-<script>
+  </article>cript>
   document.getElementById('navToggle').addEventListener('click', function () {
     document.getElementById('navLinks').classList.toggle('open');
   });

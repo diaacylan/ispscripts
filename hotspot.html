@@ -11,10 +11,15 @@
 </script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#0E1420">
-<meta name="robots" content="index,follow">
 <title>MikroTik Hotspot + RADIUS Generator — Voucher-Based RouterOS Config</title>
 <link rel="canonical" href="https://ispscripts.com/hotspot.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="MikroTik Hotspot + RADIUS Generator — Voucher-Based RouterOS Config">
+<meta property="og:description" content="MikroTik Hotspot + RADIUS Generator — Voucher-Based RouterOS Config — practical MikroTik, WISP, and ISP networking tools and guides.">
+<meta property="og:url" content="https://ispscripts.com/hotspot.html">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="MikroTik Hotspot + RADIUS Generator — Voucher-Based RouterOS Config">
+<meta name="twitter:description" content="MikroTik Hotspot + RADIUS Generator — Voucher-Based RouterOS Config — practical MikroTik, WISP, and ISP networking tools and guides.">
 <meta name="description" content="Generate a ready-to-import RouterOS Hotspot config with RADIUS authentication and accounting — for voucher and card-based wireless ISP billing.">
 <script type="application/ld+json">
 {
@@ -346,6 +351,19 @@
   .note strong { color: var(--amber); }
 
   footer { margin-top: 56px; padding-top: 24px; border-top: 1px solid var(--border-soft); color: var(--text-dim); font-size: 12.5px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+
+  .preset-panel {
+    margin: 0 0 26px; padding: 16px 18px; background: var(--accent-soft);
+    border: 1px solid rgba(61,220,132,.24); border-radius: var(--radius);
+  }
+  .preset-panel label { color: var(--text-primary); }
+  .preset-panel select { width: 100%; background: var(--bg-input); border: 1px solid var(--border);
+    color: var(--text-primary); font: 13.5px var(--font-body); padding: 10px 12px; border-radius: var(--radius); }
+  .preset-panel p { margin: 8px 0 0; font-size: 12.5px; color: var(--text-secondary); }
+  .test-steps { margin: 18px 0 0; padding: 14px 18px 14px 34px; border: 1px solid var(--border);
+    border-radius: var(--radius); background: var(--bg-panel); color: var(--text-secondary); }
+  .test-steps li { margin: 6px 0; }
+
 </style>
 <script type="application/ld+json">
 {
@@ -364,69 +382,10 @@
   }
 }
 </script>
-<style>
-
-/* ---------- Comfort and accessibility refinement ---------- */
-:root {
-  --bg: #0B1220;
-  --bg-panel: #172235;
-  --bg-panel-2: #1D2A3F;
-  --bg-input: #101A2A;
-  --border: #33435D;
-  --border-soft: #26354C;
-  --text-primary: #F2F5FA;
-  --text-secondary: #B4C0D2;
-  --text-dim: #7F8DA5;
-}
-body { line-height: 1.65; }
-.wrap { padding-left: 28px; padding-right: 28px; }
-.sitenav {
-  border-bottom: 1px solid var(--border-soft);
-  margin-bottom: 8px;
-}
-.sitenav .brand { font-size: 16px; }
-.sitenav .navlinks { gap: 24px; }
-.sitenav .navlinks a, .nav-group-toggle { min-height: 32px; }
-header { padding-top: 48px; }
-header p, .about p.lead, .dek { line-height: 1.75; }
-.panel, .about-card, .terminal, .faq details {
-  box-shadow: 0 12px 32px rgba(0, 0, 0, .16);
-}
-.panel { padding: 30px; }
-input[type="text"], input[type="password"], select, textarea {
-  min-height: 44px;
-}
-button { min-height: 42px; }
-button.primary { box-shadow: 0 5px 16px rgba(61, 220, 132, .14); }
-.about-card { transition: border-color .18s ease, transform .18s ease; }
-.about-card:hover { border-color: rgba(61,220,132,.45); transform: translateY(-2px); }
-footer { line-height: 1.7; }
-.skip-link {
-  position: fixed; left: 16px; top: -60px; z-index: 100;
-  background: var(--accent); color: #06210F; padding: 10px 14px;
-  border-radius: 0 0 8px 8px; font-weight: 700; text-decoration: none;
-  transition: top .15s ease;
-}
-.skip-link:focus { top: 0; }
-@media (max-width: 720px) {
-  .wrap { padding-left: 16px; padding-right: 16px; }
-  .sitenav { padding-top: 16px; padding-bottom: 16px; }
-  header { padding: 36px 0 32px; margin-bottom: 28px; }
-  .panel { padding: 22px 18px; }
-  .output-col { position: static; }
-  .term-body { max-height: 460px; }
-  footer { flex-direction: column; }
-}
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; }
-}
-
-</style>
 </head>
 <body>
-<a class="skip-link" href="#main-content">Skip to content</a>
 
-<div id="main-content" class="wrap">
+<div class="wrap">
 
   <nav class="sitenav">
     <a href="index.html" class="brand">ispscripts<span class="accent">.</span>com</a>
@@ -482,6 +441,16 @@ footer { line-height: 1.7; }
 
     <div class="panel">
       <form id="cfgForm">
+      <div class="preset-panel" aria-labelledby="preset-label">
+        <label id="preset-label" for="preset"><strong>Start with a template</strong></label>
+        <select id="preset">
+          <option value="" selected>Choose a preset (optional)</option>
+          <option value="small-hotspot">Small WISP Hotspot</option>
+          <option value="hotel">Hotel / residence Hotspot</option>
+          <option value="sas4">RADIUS / SAS4 Hotspot</option>
+        </select>
+        <p>Presets fill editable examples only. Confirm the gateway, pool, login hostname, RADIUS address, and secret before generating.</p>
+      </div>
 
         <fieldset>
           <legend>Interface &amp; addressing</legend>
@@ -586,6 +555,12 @@ footer { line-height: 1.7; }
 
   </div>
 
+  <ol class="test-steps">
+    <li>Export a backup before importing anything.</li>
+    <li>Review the generated interfaces, IP ranges, and RADIUS values against your topology.</li>
+    <li>Test on one reachable router first, then verify login, accounting, NAT, and management access.</li>
+  </ol>
+
   <div class="about">
     <h2>What this script sets up</h2>
     <p class="lead">Hotspot login is a different access model from PPPoE — clients get a DHCP lease first, then get redirected to a login page before they're allowed out. Six pieces, wired together correctly.</p>
@@ -663,6 +638,7 @@ add name=<span class="v">hs-profile</span> hotspot-address=<span class="v">10.20
 
 <script>
   const ids = ['iface','gwip','netcidr','pool','dns','dnsname','walledgarden','radiusIp','radiusSecret','svcname','profname','harden'];
+  const preset = document.getElementById('preset');
   const els = Object.fromEntries(ids.map(id => [id, document.getElementById(id)]));
   const output = document.getElementById('output');
 
@@ -828,6 +804,24 @@ add name=<span class="v">hs-profile</span> hotspot-address=<span class="v">10.20
   }
 
   ids.forEach(id => { els[id].addEventListener('input', () => { validate(); build(); }); });
+
+  const hotspotPresets = {
+    'small-hotspot': { iface:'ether3', gwip:'10.20.20.1', netcidr:'10.20.20.0/24', pool:'10.20.20.10-10.20.20.254', dns:'1.1.1.1,8.8.8.8', dnsname:'login.mynetwork.com', walledgarden:'', radiusIp:'', radiusSecret:'', svcname:'hs-server', profname:'hs-profile', harden:true },
+    'hotel': { iface:'bridge-guest', gwip:'10.40.40.1', netcidr:'10.40.40.0/24', pool:'10.40.40.10-10.40.40.254', dns:'1.1.1.1,8.8.8.8', dnsname:'login.hotel.example', walledgarden:'payments.example.com', radiusIp:'', radiusSecret:'', svcname:'hotel-hotspot', profname:'hotel-profile', harden:true },
+    'sas4': { iface:'ether3', gwip:'10.50.50.1', netcidr:'10.50.50.0/24', pool:'10.50.50.10-10.50.50.254', dns:'8.8.8.8,1.1.1.1', dnsname:'login.isp.example', walledgarden:'', radiusIp:'192.168.88.10', radiusSecret:'', svcname:'sas4-hotspot', profname:'sas4-hotspot-profile', harden:true }
+  };
+  function applyPreset(values) {
+    Object.entries(values).forEach(([id, value]) => {
+      if (!els[id]) return;
+      if (els[id].type === 'checkbox') els[id].checked = Boolean(value);
+      else els[id].value = value;
+    });
+    validate();
+    build();
+  }
+  preset.addEventListener('change', () => {
+    if (preset.value && hotspotPresets[preset.value]) applyPreset(hotspotPresets[preset.value]);
+  });
 
   function plainScript() { return output.innerText.replace(/\u200b/g, ''); }
 

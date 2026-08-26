@@ -11,10 +11,15 @@
 </script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#0E1420">
-<meta name="robots" content="index,follow">
 <title>Subnetting Explained: CIDR, Network & Broadcast Math</title>
 <link rel="canonical" href="https://ispscripts.com/subnet-calculator-guide.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Subnetting Explained: CIDR, Network &amp; Broadcast Math">
+<meta property="og:description" content="Subnetting Explained: CIDR, Network &amp; Broadcast Math — practical MikroTik, WISP, and ISP networking tools and guides.">
+<meta property="og:url" content="https://ispscripts.com/subnet-calculator-guide.html">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Subnetting Explained: CIDR, Network &amp; Broadcast Math">
+<meta name="twitter:description" content="Subnetting Explained: CIDR, Network &amp; Broadcast Math — practical MikroTik, WISP, and ISP networking tools and guides.">
 <meta name="description" content="How IP subnetting actually works — CIDR notation, the binary math behind network and broadcast addresses, and how to plan subnets without a calculator.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -308,69 +313,10 @@
   th { color: var(--text-primary); font-weight: 600; font-size: 12.5px; text-transform: uppercase; letter-spacing: .04em; }
   td code { font-size: 12.5px; }
 </style>
-<style>
-
-/* ---------- Comfort and accessibility refinement ---------- */
-:root {
-  --bg: #0B1220;
-  --bg-panel: #172235;
-  --bg-panel-2: #1D2A3F;
-  --bg-input: #101A2A;
-  --border: #33435D;
-  --border-soft: #26354C;
-  --text-primary: #F2F5FA;
-  --text-secondary: #B4C0D2;
-  --text-dim: #7F8DA5;
-}
-body { line-height: 1.65; }
-.wrap { padding-left: 28px; padding-right: 28px; }
-.sitenav {
-  border-bottom: 1px solid var(--border-soft);
-  margin-bottom: 8px;
-}
-.sitenav .brand { font-size: 16px; }
-.sitenav .navlinks { gap: 24px; }
-.sitenav .navlinks a, .nav-group-toggle { min-height: 32px; }
-header { padding-top: 48px; }
-header p, .about p.lead, .dek { line-height: 1.75; }
-.panel, .about-card, .terminal, .faq details {
-  box-shadow: 0 12px 32px rgba(0, 0, 0, .16);
-}
-.panel { padding: 30px; }
-input[type="text"], input[type="password"], select, textarea {
-  min-height: 44px;
-}
-button { min-height: 42px; }
-button.primary { box-shadow: 0 5px 16px rgba(61, 220, 132, .14); }
-.about-card { transition: border-color .18s ease, transform .18s ease; }
-.about-card:hover { border-color: rgba(61,220,132,.45); transform: translateY(-2px); }
-footer { line-height: 1.7; }
-.skip-link {
-  position: fixed; left: 16px; top: -60px; z-index: 100;
-  background: var(--accent); color: #06210F; padding: 10px 14px;
-  border-radius: 0 0 8px 8px; font-weight: 700; text-decoration: none;
-  transition: top .15s ease;
-}
-.skip-link:focus { top: 0; }
-@media (max-width: 720px) {
-  .wrap { padding-left: 16px; padding-right: 16px; }
-  .sitenav { padding-top: 16px; padding-bottom: 16px; }
-  header { padding: 36px 0 32px; margin-bottom: 28px; }
-  .panel { padding: 22px 18px; }
-  .output-col { position: static; }
-  .term-body { max-height: 460px; }
-  footer { flex-direction: column; }
-}
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; }
-}
-
-</style>
 </head>
 <body>
-<a class="skip-link" href="#main-content">Skip to content</a>
 
-<div id="main-content" class="wrap">
+<div class="wrap">
 
   <nav class="sitenav">
     <a href="index.html" class="brand">ispscripts<span class="accent">.</span>com</a>
@@ -405,7 +351,6 @@ footer { line-height: 1.7; }
     <header>
       <div class="eyebrow">Guide → IP Subnetting</div>
       <h1>Subnetting Explained: <br>the math behind the calculator</h1>
-    <p class="article-meta" style="font-family:var(--font-mono);font-size:12px;color:var(--text-dim);margin:14px 0 0;">Maintained by Diaa · Reviewed August 2026 · Scope: MikroTik RouterOS v7.x</p>
       <p class="dek">The <a href="subnet-calculator.html">calculator</a> gives you the answer instantly. This page covers the binary math behind it — useful once you want to subnet by hand, or just understand what's actually happening.</p>
     </header>
 

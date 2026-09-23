@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Diaa"><meta name="theme-color" content="#0E1420">
+  <link rel="icon" href="/favicon.ico" sizes="any"><link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <title>RADIUS Troubleshooting for MikroTik PPPoE and Hotspot</title><link rel="canonical" href="https://ispscripts.com/diagnose-radius.html">
+  <meta name="description" content="A step-by-step diagnostic method for separating reachability, client definition, authentication, and accounting failures in MikroTik RADIUS deployments.">
+  <meta property="og:type" content="article"><meta property="og:site_name" content="ISP Scripts"><meta property="og:title" content="RADIUS Troubleshooting for MikroTik PPPoE and Hotspot"><meta property="og:description" content="A step-by-step diagnostic method for separating reachability, client definition, authentication, and accounting failures in MikroTik RADIUS deployments."><meta property="og:url" content="https://ispscripts.com/diagnose-radius.html">
+  <meta name="twitter:card" content="summary"><meta name="twitter:title" content="RADIUS Troubleshooting for MikroTik PPPoE and Hotspot"><meta name="twitter:description" content="A step-by-step diagnostic method for separating reachability, client definition, authentication, and accounting failures in MikroTik RADIUS deployments.">
+  <meta property="article:modified_time" content="2026-09-21">
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+:root{--bg:#0E1420;--panel:#161D2B;--panel2:#1B2333;--input:#10161F;--border:#2A3448;--soft:#202940;--text:#E8ECF4;--muted:#96A1B8;--dim:#5B6479;--accent:#3DDC84;--accent-soft:rgba(61,220,132,.13);--amber:#F5A623;--mono:#090D14;--display:'Space Grotesk',sans-serif;--body:'Inter',sans-serif;--code:'JetBrains Mono',monospace;--radius:8px;--radius-lg:12px}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(1100px 500px at 85% -10%,rgba(61,220,132,.06),transparent 60%),var(--bg);color:var(--text);font-family:var(--body);line-height:1.65;-webkit-font-smoothing:antialiased}a{color:var(--accent)}:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px}.wrap{max-width:820px;margin:0 auto;padding:0 24px 96px}
+.sitenav{display:flex;align-items:center;justify-content:space-between;padding:22px 0;flex-wrap:wrap;gap:12px}.brand{font-family:var(--display);font-weight:600;font-size:15px;color:var(--text);text-decoration:none}.brand .accent{color:var(--accent)}.navlinks{display:flex;gap:20px;align-items:center}.navlinks a,.nav-group-toggle{font-size:13.5px;font-weight:500;color:var(--muted);text-decoration:none}.navlinks a:hover,.nav-group-toggle:hover{color:var(--text)}.nav-group{position:relative}.nav-group-toggle{background:none;border:0;cursor:pointer;font-family:inherit;padding:0 0 14px;margin-bottom:-14px;display:flex;gap:4px;align-items:center}.nav-group-toggle:after{content:'\25be';font-size:9px}.nav-group-menu{display:none;position:absolute;top:100%;left:0;margin-top:12px;background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:8px;min-width:240px;flex-direction:column;gap:2px;z-index:20}.nav-group:hover .nav-group-menu,.nav-group:focus-within .nav-group-menu,.nav-group.open .nav-group-menu{display:flex}.nav-group-menu a{padding:8px 10px;border-radius:6px}.nav-group-menu a:hover{background:var(--input)}.navtoggle{display:none;background:transparent;border:1px solid var(--border);color:var(--text);font-size:17px;padding:7px 11px;border-radius:var(--radius);cursor:pointer}@media(max-width:720px){.navtoggle{display:block}.sitenav{position:relative}.navlinks{display:none;flex-direction:column;align-items:stretch;width:100%;gap:2px;margin-top:14px}.navlinks.open{display:flex}.navlinks>a,.nav-group-toggle{padding:12px 14px;background:var(--panel);border:1px solid var(--soft);border-radius:var(--radius);margin:0}.nav-group-toggle{justify-content:flex-start;pointer-events:none;color:var(--dim);font-size:11px;text-transform:uppercase;letter-spacing:.06em;padding-bottom:5px;border:0;background:transparent}.nav-group-menu{display:flex!important;position:static;border:0;background:transparent;padding:0;margin:0;gap:2px}.nav-group-menu a{padding:12px 14px}}
+article header{padding:34px 0 40px;border-bottom:1px solid var(--soft);margin-bottom:38px}.eyebrow{font-family:var(--code);font-size:12px;letter-spacing:.06em;color:var(--dim);margin-bottom:14px}h1,h2,h3{font-family:var(--display);font-weight:600;line-height:1.25}h1{font-size:clamp(29px,4vw,42px);margin:0 0 16px;letter-spacing:-.02em}h2{font-size:23px;margin:48px 0 16px}h3{font-size:17px;margin:30px 0 10px}p{font-size:15.5px;color:var(--muted);margin:0 0 17px}p strong,li strong,th{color:var(--text)}.dek{font-size:17px;max-width:680px}.article-meta{font-family:var(--code);font-size:12px;color:var(--dim);margin-top:18px}.panel,.callout{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius-lg);padding:22px 24px;margin:24px 0}.callout.tip{background:var(--accent-soft);border-color:rgba(61,220,132,.32)}.callout.warn{background:rgba(245,166,35,.08);border-color:rgba(245,166,35,.3)}.callout strong{color:var(--accent)}.callout.warn strong{color:var(--amber)}ul,ol{color:var(--muted);font-size:15.5px;padding-left:24px;margin:0 0 20px}li{margin-bottom:9px}code,pre{font-family:var(--code)}code{font-size:13px;background:var(--input);border:1px solid var(--border);padding:2px 6px;border-radius:4px;color:#A9C4FF}pre{font-size:13px;line-height:1.65;background:var(--mono);border:1px solid var(--border);border-radius:var(--radius);padding:18px;overflow:auto;color:#C9E8D3;margin:0 0 20px}.table-wrap{overflow-x:auto;margin:0 0 22px}table{width:100%;min-width:600px;border-collapse:collapse;font-size:14px}th,td{text-align:left;padding:11px 12px;border-bottom:1px solid var(--soft);color:var(--muted);vertical-align:top}th{font-size:12px;text-transform:uppercase;letter-spacing:.04em}.checklist{display:grid;gap:10px}.check{display:flex;gap:11px;align-items:flex-start;padding:12px 14px;background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);color:var(--muted);font-size:14px}.check input{margin-top:4px;accent-color:var(--accent)}.check.done{border-color:rgba(61,220,132,.45);color:var(--text)}.progress{font-family:var(--code);font-size:12px;color:var(--dim);margin:10px 0 16px}.refs{font-size:13px;color:var(--dim)}footer{margin-top:60px;padding-top:24px;border-top:1px solid var(--soft);color:var(--dim);font-size:12.5px}footer a{color:var(--dim)}
+</style>
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "RADIUS Troubleshooting for MikroTik PPPoE and Hotspot", "description": "A step-by-step diagnostic method for separating reachability, client definition, authentication, and accounting failures in MikroTik RADIUS deployments.", "author": {"@type": "Person", "name": "Diaa"}, "publisher": {"@type": "Organization", "name": "ISP Scripts", "url": "https://ispscripts.com/"}, "mainEntityOfPage": "https://ispscripts.com/diagnose-radius.html", "dateModified": "2026-09-21"}</script>
+</head>
+<body><div class="wrap">
+<nav class="sitenav">
+  <a href="index.html" class="brand">ispscripts<span class="accent">.</span>com</a>
+  <button class="navtoggle" id="navToggle" aria-label="Open navigation" aria-controls="navLinks" aria-expanded="false">☰</button>
+  <div class="navlinks" id="navLinks">
+    <div class="nav-group"><button type="button" class="nav-group-toggle">Generators</button><div class="nav-group-menu"><a href="index.html">PPPoE + RADIUS</a>
+          <a href="hotspot.html">Hotspot + RADIUS</a>
+          <a href="mikrotik-nat-firewall-generator.html">NAT + Firewall</a>
+          <a href="subnet-calculator.html">IP Subnet Calculator</a>
+          <a href="wireguard.html">WireGuard</a>
+          <a href="port-forwarding.html">Port Forwarding</a>
+          <a href="qos-calculator.html">QoS &amp; Queues</a>
+          <a href="wireless-link-budget.html">Wireless Link Budget</a>
+        </div></div>
+    <div class="nav-group"><button type="button" class="nav-group-toggle">Guides</button><div class="nav-group-menu">
+      <a href="guide.html">PPPoE + RADIUS Guide</a><a href="hotspot-guide.html">Hotspot + RADIUS Guide</a><a href="nat-firewall-guide.html">NAT + Firewall Guide</a><a href="subnet-calculator-guide.html">Subnet Calculator Guide</a><a href="pppoe-vs-hotspot.html">PPPoE vs Hotspot</a><a href="deployment-checklist.html">Deployment Checklist</a><a href="diagnose-radius.html">RADIUS Troubleshooting</a>
+    </div></div>
+    <a href="tools.html">Tools</a>
+      <a href="blog.html">Blog</a><a href="about.html">About</a><a href="contact.html">Contact</a>
+  </div>
+</nav>
+  <article>
+    <header><div class="eyebrow">Operations → RADIUS troubleshooting</div><h1>RADIUS Troubleshooting for MikroTik PPPoE and Hotspot</h1><p class="dek">Stop guessing at RADIUS failures. Collect evidence in order, test one identity, and distinguish authentication from accounting.</p><div class="article-meta">Written by Diaa · Last reviewed 21 September 2026 · RouterOS v7.x focus</div></header>
+
+    <p>When a MikroTik PPPoE or Hotspot deployment fails, changing the router configuration repeatedly can hide the real cause. RADIUS troubleshooting is faster when you separate the path into four questions: can the router reach the server, is the router an allowed client, does authentication work, and is accounting being recorded?</p>
+
+    <div class="callout tip"><p><strong>Use one test identity and one change at a time.</strong> Keep the username, router source address, timestamp, and RADIUS server log entry together. That turns a vague “login failed” report into an evidence trail.</p></div>
+
+    <h2>The four-layer diagnostic order</h2>
+    <div class="table-wrap"><table><tr><th>Layer</th><th>Question</th><th>Evidence</th></tr>
+      <tr><td>1. Reachability</td><td>Can the router reach the RADIUS server over the intended route?</td><td>Route table, ping where appropriate, server-side packet capture or logs.</td></tr>
+      <tr><td>2. Client definition</td><td>Does the server recognize this router's source IP as a RADIUS client?</td><td>NAS/client entry and the source address seen by the server.</td></tr>
+      <tr><td>3. Authentication</td><td>Does the test username receive Access-Accept with the expected attributes?</td><td>Access-Request, response code, username, profile, address, and rate limit.</td></tr>
+      <tr><td>4. Accounting</td><td>Do Start, Interim-Update, and Stop records arrive?</td><td>Accounting logs and byte counters in the billing platform.</td></tr>
+    </table></div>
+
+    <h2>Start with RouterOS evidence</h2>
+    <p>Collect output before changing anything. Redact secrets before sharing it with another person.</p>
+    <pre><code>/radius print detail
+/ppp aaa print
+/ip route print
+/log print where topics~"radius|ppp"
+/ppp active print detail</code></pre>
+    <p>Check that the service matches the access method: PPPoE uses the PPP service; Hotspot uses the Hotspot service. Confirm the router's actual source address is the address registered on the RADIUS server. A management address, loopback address, or NAT address can be different from the address you expected.</p>
+
+    <h2>Authentication failures</h2>
+    <p>If there is no Access-Request at the server, troubleshoot routing, firewall policy, UDP 1812, and the source address first. If the request arrives and the server rejects it, inspect the username, password, client definition, and policy rules. If the server accepts it but RouterOS reports a timeout, compare the return path and any intermediate firewall rules.</p>
+    <div class="table-wrap"><table><tr><th>Symptom</th><th>Likely cause</th><th>Next test</th></tr>
+      <tr><td>No RADIUS log entry</td><td>Wrong route, blocked UDP, wrong server address, or the router is not sending requests.</td><td>Check route and firewall counters, then observe traffic on the server.</td></tr>
+      <tr><td>“Unknown client”</td><td>The server does not have the router's source IP in its client/NAS list.</td><td>Add the exact source IP and reload the RADIUS service.</td></tr>
+      <tr><td>“Invalid secret” or silent reject</td><td>Shared secret differs, contains whitespace, or the wrong client entry is matched.</td><td>Set a new unique secret on both sides and test once.</td></tr>
+      <tr><td>Access-Accept but no session</td><td>RouterOS service, profile, address pool, or returned attribute is incompatible.</td><td>Inspect the response attributes and the PPP/Hotspot log.</td></tr>
+    </table></div>
+
+    <h2>Accounting failures</h2>
+    <p>Do not treat a successful login as proof that billing works. Verify <code>accounting=yes</code>, the accounting service, and the interim interval. UDP 1813 may be blocked even when UDP 1812 is open. A Stop record may also be delayed until the session ends, so use an Interim-Update for a live test.</p>
+    <pre><code>/ppp aaa print
+/log print where topics~"radius"
+# Then keep one test session active for at least one interim interval.</code></pre>
+    <p>Compare the router's session start time with the server's record. If authentication and accounting appear from different source addresses, fix the routing or source-address selection rather than creating duplicate client entries without understanding the path.</p>
+
+    <h2>Safe test sequence</h2>
+    <ol><li>Record the current configuration and time in UTC.</li><li>Test reachability and verify the route to the RADIUS server.</li><li>Confirm the server sees the router as the expected client.</li><li>Use one test account and verify Access-Accept attributes.</li><li>Keep the session active until an Interim-Update is visible.</li><li>Disconnect the client and verify the Stop record and final byte counters.</li><li>Only after all six checks pass, test a second account or a second access interface.</li></ol>
+
+    <h2>What not to change blindly</h2>
+    <p>Do not disable the firewall globally, copy a shared secret into a public ticket, change the subscriber pool while sessions are active, or add multiple RADIUS servers to hide a timeout. Each change makes the evidence less clear and can create a wider outage. Use the <a href="deployment-checklist.html">deployment checklist</a> when the issue is part of a larger rollout.</p>
+
+    <h2>References</h2>
+    <p class="refs">For protocol and RouterOS behavior, consult the official <a href="https://help.mikrotik.com/docs/spaces/ROS/pages/328097/RADIUS">RADIUS</a>, <a href="https://help.mikrotik.com/docs/spaces/ROS/pages/132350049/PPP+AAA">PPP AAA</a>, and <a href="https://help.mikrotik.com/docs/spaces/ROS/pages/328094/Log">Log</a> documentation. This page explains a diagnostic method; it does not replace the manual for the exact RouterOS release in use.</p>
+
+  </article>
+<footer>Written for WISP and ISP operators running MikroTik + RADIUS. Not affiliated with MikroTik or any RADIUS platform vendor.<br>
+  <a href="about.html">About</a> · <a href="privacy.html">Privacy</a> · <a href="contact.html">Contact</a> · <a href="changelog.html">Changelog</a> · <a href="deployment-checklist.html">Deployment checklist</a> · <a href="https://github.com/diaacylan/ispscripts" target="_blank" rel="noopener noreferrer">View source</a> · <a href="terms.html">Terms</a> · <a href="disclaimer.html">Disclaimer</a>
+</footer>
+</div>
+
+<script>
+  const navToggle = document.getElementById('navToggle');
+  const navLinks = document.getElementById('navLinks');
+  navToggle?.addEventListener('click', function () {
+    const isOpen = navLinks.classList.toggle('open');
+    navToggle.setAttribute('aria-expanded', String(isOpen));
+  });
+  document.querySelectorAll('.nav-group-toggle').forEach(function (btn) {
+    btn.addEventListener('click', function (event) {
+      event.stopPropagation();
+      const group = btn.closest('.nav-group');
+      const wasOpen = group.classList.contains('open');
+      document.querySelectorAll('.nav-group.open').forEach(function (item) { item.classList.remove('open'); });
+      if (!wasOpen) group.classList.add('open');
+    });
+  });
+  document.addEventListener('click', function () {
+    document.querySelectorAll('.nav-group.open').forEach(function (item) { item.classList.remove('open'); });
+  });
+</script>
+</body></html>

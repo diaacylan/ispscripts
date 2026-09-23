@@ -174,6 +174,12 @@
   th { color: var(--text-primary); font-weight: 600; font-size: 12.5px; text-transform: uppercase; letter-spacing: .04em; }
   td code { font-size: 12.5px; }
 </style>
+
+<meta name="author" content="Diaa">
+<meta name="theme-color" content="#0E1420">
+<meta property="og:site_name" content="ISP Scripts">
+<meta property="article:modified_time" content="2026-09-21">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "MikroTik Hotspot + RADIUS: Voucher Billing Setup Guide", "description": "How MikroTik's captive portal actually works, why DNS and HTTPS trip up new hotspot deployments, and how RADIUS voucher billing fits together.", "author": {"@type": "Person", "name": "Diaa"}, "publisher": {"@type": "Organization", "name": "ISP Scripts", "url": "https://ispscripts.com/"}, "mainEntityOfPage": "https://ispscripts.com/hotspot-guide.html", "dateModified": "2026-09-21"}</script>
 </head>
 <body>
 
@@ -181,15 +187,18 @@
 
   <nav class="sitenav">
     <a href="index.html" class="brand">ispscripts<span class="accent">.</span>com</a>
-    <button class="navtoggle" id="navToggle" aria-label="Menu">&#9776;</button>
+    <button class="navtoggle" id="navToggle" aria-label="Open navigation" aria-controls="navLinks" aria-expanded="false">&#9776;</button>
     <div class="navlinks" id="navLinks">
       <div class="nav-group">
         <button type="button" class="nav-group-toggle">Generators</button>
-        <div class="nav-group-menu">
-          <a href="index.html">PPPoE + RADIUS</a>
+        <div class="nav-group-menu"><a href="index.html">PPPoE + RADIUS</a>
           <a href="hotspot.html">Hotspot + RADIUS</a>
           <a href="mikrotik-nat-firewall-generator.html">NAT + Firewall</a>
           <a href="subnet-calculator.html">IP Subnet Calculator</a>
+          <a href="wireguard.html">WireGuard</a>
+          <a href="port-forwarding.html">Port Forwarding</a>
+          <a href="qos-calculator.html">QoS &amp; Queues</a>
+          <a href="wireless-link-budget.html">Wireless Link Budget</a>
         </div>
       </div>
       <div class="nav-group">
@@ -199,9 +208,10 @@
           <a href="hotspot-guide.html" class="active">Hotspot + RADIUS Guide</a>
           <a href="nat-firewall-guide.html">NAT + Firewall Guide</a>
           <a href="subnet-calculator-guide.html">Subnet Calculator Guide</a>
-          <a href="pppoe-vs-hotspot.html">PPPoE vs Hotspot</a>
+          <a href="pppoe-vs-hotspot.html">PPPoE vs Hotspot</a><a href="deployment-checklist.html">Deployment Checklist</a><a href="diagnose-radius.html">RADIUS Troubleshooting</a>
         </div>
       </div>
+      <a href="tools.html">Tools</a>
       <a href="blog.html">Blog</a>
       <a href="about.html">About</a>
       <a href="contact.html">Contact</a>
@@ -213,6 +223,7 @@
       <div class="eyebrow">Guide &nbsp;→&nbsp; Hotspot &amp; RADIUS on RouterOS</div>
       <h1>MikroTik Hotspot + RADIUS: <br>how voucher billing actually works</h1>
       <p class="dek">The <a href="hotspot.html">generator</a> builds the config. This page covers what's actually happening when a client connects — and the two things (DNS and HTTPS) that break more hotspot deployments than anything else.</p>
+      <div class="article-meta" style="font-family:var(--font-mono);font-size:12px;color:var(--text-dim);margin-top:16px;">Written by Diaa · Last reviewed 21 September 2026 · RouterOS v7.x focus</div>
     </header>
 
     <h2>Why hotspot instead of PPPoE</h2>
@@ -371,14 +382,17 @@
        footer, or between major sections — never inside a table, code block,
        or right before/after a button a user needs to click. -->
 
-    <footer>Written for WISP and ISP operators running MikroTik + RADIUS. Not affiliated with MikroTik or any RADIUS platform vendor.<br><a href="about.html" style="color:var(--text-dim)">About</a> · <a href="privacy.html" style="color:var(--text-dim)">Privacy</a> · <a href="contact.html" style="color:var(--text-dim)">Contact</a> · <a href="changelog.html">Changelog</a> · <a href="https://github.com/diaacylan/ispscripts" target="_blank" rel="noopener">View source</a> · <a href="terms.html">Terms</a> · <a href="disclaimer.html">Disclaimer</a></footer>
+    <footer>Written for WISP and ISP operators running MikroTik + RADIUS. Not affiliated with MikroTik or any RADIUS platform vendor.<br><a href="about.html" style="color:var(--text-dim)">About</a> · <a href="privacy.html" style="color:var(--text-dim)">Privacy</a> · <a href="contact.html" style="color:var(--text-dim)">Contact</a> · <a href="changelog.html">Changelog</a> · <a href="deployment-checklist.html">Deployment checklist</a> · <a href="https://github.com/diaacylan/ispscripts" target="_blank" rel="noopener">View source</a> · <a href="terms.html">Terms</a> · <a href="disclaimer.html">Disclaimer</a></footer>
   </article>
 
 </div>
 
 <script>
-  document.getElementById('navToggle').addEventListener('click', function () {
-    document.getElementById('navLinks').classList.toggle('open');
+  const navToggle = document.getElementById('navToggle');
+  const navLinks = document.getElementById('navLinks');
+  navToggle?.addEventListener('click', function () {
+    const isOpen = navLinks.classList.toggle('open');
+    navToggle.setAttribute('aria-expanded', String(isOpen));
   });
 
   document.querySelectorAll('.nav-group-toggle').forEach(function (btn) {

@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Diaa"><meta name="theme-color" content="#0E1420">
+  <link rel="icon" href="/favicon.ico" sizes="any"><link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <title>MikroTik Deployment Checklist for WISP Operators</title><link rel="canonical" href="https://ispscripts.com/deployment-checklist.html">
+  <meta name="description" content="A practical pre-change, testing, and rollback checklist for applying PPPoE, Hotspot, NAT, and firewall changes safely on MikroTik RouterOS.">
+  <meta property="og:type" content="article"><meta property="og:site_name" content="ISP Scripts"><meta property="og:title" content="MikroTik Deployment Checklist for WISP Operators"><meta property="og:description" content="A practical pre-change, testing, and rollback checklist for applying PPPoE, Hotspot, NAT, and firewall changes safely on MikroTik RouterOS."><meta property="og:url" content="https://ispscripts.com/deployment-checklist.html">
+  <meta name="twitter:card" content="summary"><meta name="twitter:title" content="MikroTik Deployment Checklist for WISP Operators"><meta name="twitter:description" content="A practical pre-change, testing, and rollback checklist for applying PPPoE, Hotspot, NAT, and firewall changes safely on MikroTik RouterOS.">
+  <meta property="article:modified_time" content="2026-09-21">
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+:root{--bg:#0E1420;--panel:#161D2B;--panel2:#1B2333;--input:#10161F;--border:#2A3448;--soft:#202940;--text:#E8ECF4;--muted:#96A1B8;--dim:#5B6479;--accent:#3DDC84;--accent-soft:rgba(61,220,132,.13);--amber:#F5A623;--mono:#090D14;--display:'Space Grotesk',sans-serif;--body:'Inter',sans-serif;--code:'JetBrains Mono',monospace;--radius:8px;--radius-lg:12px}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(1100px 500px at 85% -10%,rgba(61,220,132,.06),transparent 60%),var(--bg);color:var(--text);font-family:var(--body);line-height:1.65;-webkit-font-smoothing:antialiased}a{color:var(--accent)}:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px}.wrap{max-width:820px;margin:0 auto;padding:0 24px 96px}
+.sitenav{display:flex;align-items:center;justify-content:space-between;padding:22px 0;flex-wrap:wrap;gap:12px}.brand{font-family:var(--display);font-weight:600;font-size:15px;color:var(--text);text-decoration:none}.brand .accent{color:var(--accent)}.navlinks{display:flex;gap:20px;align-items:center}.navlinks a,.nav-group-toggle{font-size:13.5px;font-weight:500;color:var(--muted);text-decoration:none}.navlinks a:hover,.nav-group-toggle:hover{color:var(--text)}.nav-group{position:relative}.nav-group-toggle{background:none;border:0;cursor:pointer;font-family:inherit;padding:0 0 14px;margin-bottom:-14px;display:flex;gap:4px;align-items:center}.nav-group-toggle:after{content:'\25be';font-size:9px}.nav-group-menu{display:none;position:absolute;top:100%;left:0;margin-top:12px;background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:8px;min-width:240px;flex-direction:column;gap:2px;z-index:20}.nav-group:hover .nav-group-menu,.nav-group:focus-within .nav-group-menu,.nav-group.open .nav-group-menu{display:flex}.nav-group-menu a{padding:8px 10px;border-radius:6px}.nav-group-menu a:hover{background:var(--input)}.navtoggle{display:none;background:transparent;border:1px solid var(--border);color:var(--text);font-size:17px;padding:7px 11px;border-radius:var(--radius);cursor:pointer}@media(max-width:720px){.navtoggle{display:block}.sitenav{position:relative}.navlinks{display:none;flex-direction:column;align-items:stretch;width:100%;gap:2px;margin-top:14px}.navlinks.open{display:flex}.navlinks>a,.nav-group-toggle{padding:12px 14px;background:var(--panel);border:1px solid var(--soft);border-radius:var(--radius);margin:0}.nav-group-toggle{justify-content:flex-start;pointer-events:none;color:var(--dim);font-size:11px;text-transform:uppercase;letter-spacing:.06em;padding-bottom:5px;border:0;background:transparent}.nav-group-menu{display:flex!important;position:static;border:0;background:transparent;padding:0;margin:0;gap:2px}.nav-group-menu a{padding:12px 14px}}
+article header{padding:34px 0 40px;border-bottom:1px solid var(--soft);margin-bottom:38px}.eyebrow{font-family:var(--code);font-size:12px;letter-spacing:.06em;color:var(--dim);margin-bottom:14px}h1,h2,h3{font-family:var(--display);font-weight:600;line-height:1.25}h1{font-size:clamp(29px,4vw,42px);margin:0 0 16px;letter-spacing:-.02em}h2{font-size:23px;margin:48px 0 16px}h3{font-size:17px;margin:30px 0 10px}p{font-size:15.5px;color:var(--muted);margin:0 0 17px}p strong,li strong,th{color:var(--text)}.dek{font-size:17px;max-width:680px}.article-meta{font-family:var(--code);font-size:12px;color:var(--dim);margin-top:18px}.panel,.callout{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius-lg);padding:22px 24px;margin:24px 0}.callout.tip{background:var(--accent-soft);border-color:rgba(61,220,132,.32)}.callout.warn{background:rgba(245,166,35,.08);border-color:rgba(245,166,35,.3)}.callout strong{color:var(--accent)}.callout.warn strong{color:var(--amber)}ul,ol{color:var(--muted);font-size:15.5px;padding-left:24px;margin:0 0 20px}li{margin-bottom:9px}code,pre{font-family:var(--code)}code{font-size:13px;background:var(--input);border:1px solid var(--border);padding:2px 6px;border-radius:4px;color:#A9C4FF}pre{font-size:13px;line-height:1.65;background:var(--mono);border:1px solid var(--border);border-radius:var(--radius);padding:18px;overflow:auto;color:#C9E8D3;margin:0 0 20px}.table-wrap{overflow-x:auto;margin:0 0 22px}table{width:100%;min-width:600px;border-collapse:collapse;font-size:14px}th,td{text-align:left;padding:11px 12px;border-bottom:1px solid var(--soft);color:var(--muted);vertical-align:top}th{font-size:12px;text-transform:uppercase;letter-spacing:.04em}.checklist{display:grid;gap:10px}.check{display:flex;gap:11px;align-items:flex-start;padding:12px 14px;background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);color:var(--muted);font-size:14px}.check input{margin-top:4px;accent-color:var(--accent)}.check.done{border-color:rgba(61,220,132,.45);color:var(--text)}.progress{font-family:var(--code);font-size:12px;color:var(--dim);margin:10px 0 16px}.refs{font-size:13px;color:var(--dim)}footer{margin-top:60px;padding-top:24px;border-top:1px solid var(--soft);color:var(--dim);font-size:12.5px}footer a{color:var(--dim)}
+</style>
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "MikroTik Deployment Checklist for WISP Operators", "description": "A practical pre-change, testing, and rollback checklist for applying PPPoE, Hotspot, NAT, and firewall changes safely on MikroTik RouterOS.", "author": {"@type": "Person", "name": "Diaa"}, "publisher": {"@type": "Organization", "name": "ISP Scripts", "url": "https://ispscripts.com/"}, "mainEntityOfPage": "https://ispscripts.com/deployment-checklist.html", "dateModified": "2026-09-21"}</script>
+</head>
+<body><div class="wrap">
+<nav class="sitenav">
+  <a href="index.html" class="brand">ispscripts<span class="accent">.</span>com</a>
+  <button class="navtoggle" id="navToggle" aria-label="Open navigation" aria-controls="navLinks" aria-expanded="false">☰</button>
+  <div class="navlinks" id="navLinks">
+    <div class="nav-group"><button type="button" class="nav-group-toggle">Generators</button><div class="nav-group-menu"><a href="index.html">PPPoE + RADIUS</a>
+          <a href="hotspot.html">Hotspot + RADIUS</a>
+          <a href="mikrotik-nat-firewall-generator.html">NAT + Firewall</a>
+          <a href="subnet-calculator.html">IP Subnet Calculator</a>
+          <a href="wireguard.html">WireGuard</a>
+          <a href="port-forwarding.html">Port Forwarding</a>
+          <a href="qos-calculator.html">QoS &amp; Queues</a>
+          <a href="wireless-link-budget.html">Wireless Link Budget</a>
+        </div></div>
+    <div class="nav-group"><button type="button" class="nav-group-toggle">Guides</button><div class="nav-group-menu">
+      <a href="guide.html">PPPoE + RADIUS Guide</a><a href="hotspot-guide.html">Hotspot + RADIUS Guide</a><a href="nat-firewall-guide.html">NAT + Firewall Guide</a><a href="subnet-calculator-guide.html">Subnet Calculator Guide</a><a href="pppoe-vs-hotspot.html">PPPoE vs Hotspot</a><a href="deployment-checklist.html">Deployment Checklist</a><a href="diagnose-radius.html">RADIUS Troubleshooting</a>
+    </div></div>
+    <a href="tools.html">Tools</a>
+      <a href="blog.html">Blog</a><a href="about.html">About</a><a href="contact.html">Contact</a>
+  </div>
+</nav>
+  <article>
+    <header><div class="eyebrow">Operations → Change control</div><h1>MikroTik Deployment Checklist for WISP Operators</h1><p class="dek">A deployment is successful only when the network is understood, the recovery path is ready, and one test subscriber passes the acceptance checks.</p><div class="article-meta">Written by Diaa · Last reviewed 21 September 2026 · RouterOS v7.x focus</div></header>
+
+    <p>A safe RouterOS deployment is not the same thing as a script that imports without an error. A production change also needs a known topology, a reachable recovery path, a small test scope, and a rollback plan. Use this checklist before applying any PPPoE, Hotspot, NAT, or firewall configuration generated by this site.</p>
+
+    <div class="callout warn"><p><strong>Important:</strong> this checklist does not certify a configuration for your hardware or provider. It is a change-control aid. Keep a local console or out-of-band path available before changing WAN, firewall, routing, or management rules.</p></div>
+
+    <h2>1. Record the current state</h2>
+    <p>Take an export and record the facts that the generated script cannot know. The goal is to make the change reversible and to prevent an interface or subnet assumption from becoming an outage.</p>
+    <pre><code>/export file=before-ispscripts-change
+/system resource print
+/interface print
+/ip address print
+/ip route print
+/ip firewall export file=before-firewall-change</code></pre>
+    <ul><li>Write down the exact RouterOS version, device model, active WAN interface, subscriber interface, and management path.</li><li>Save the current export somewhere outside the router. A backup stored only on the device is not a rollback plan after a failed reset.</li><li>Record the current subscriber count, active sessions, RADIUS server address, and the expected gateway and pool ranges.</li></ul>
+
+    <h2>2. Validate topology and addressing</h2>
+    <p>Before importing, draw the traffic path in one sentence: <em>subscriber device → access interface or VLAN → MikroTik → RADIUS and upstream → internet</em>. If the generated file does not match that path, stop and edit the inputs instead of compensating with unrelated firewall rules.</p>
+    <div class="table-wrap"><table><tr><th>Check</th><th>What to verify</th><th>Why it matters</th></tr>
+      <tr><td>WAN and subscriber side</td><td>They are different physical or logical interfaces and have the intended roles.</td><td>A reversed interface can expose management or strand subscribers.</td></tr>
+      <tr><td>Gateway and pool</td><td>The gateway is unused, the pool is inside the intended subnet, and it does not overlap another site.</td><td>Overlap creates intermittent routing and authentication failures.</td></tr>
+      <tr><td>MTU and MRU</td><td>PPPoE overhead is considered and the value is tested with the upstream path.</td><td>Incorrect MTU often looks like selective slowness or broken HTTPS.</td></tr>
+      <tr><td>CGNAT</td><td>The WAN address is checked; a provider-side private address is not treated as a public address.</td><td>Inbound management and port forwarding will not work through provider CGNAT.</td></tr>
+    </table></div>
+
+    <h2>3. Test RADIUS before the subscriber rollout</h2>
+    <p>Authentication and accounting are separate tests. A subscriber can log in successfully while the billing platform receives no usage data. Confirm the router is configured as an allowed RADIUS client, the shared secret is unique, and UDP ports 1812 and 1813 are permitted on the path.</p>
+    <ol><li>Use one test account with a known plan and an intentionally identifiable username.</li><li>Connect one test subscriber only. Confirm an Access-Request and an Access-Accept in the RADIUS logs.</li><li>Keep the session active long enough to observe an Interim-Update, then disconnect and confirm a Stop record.</li><li>Compare the assigned address and rate limit with the attributes returned by the RADIUS server.</li></ol>
+    <p>For a focused procedure, use the <a href="diagnose-radius.html">RADIUS troubleshooting guide</a> rather than changing several variables at once.</p>
+
+    <h2>4. Protect the management path</h2>
+    <p>Do not apply a WAN hardening rule while connected through that same WAN path unless you have a recovery route. Prefer a dedicated management VLAN or a WireGuard path. Close unused services and allow administrative access only from known management sources.</p>
+    <pre><code>/ip service print
+/ip firewall filter print stats
+/log print where topics~"firewall|ppp|radius"</code></pre>
+    <p>Review the counters after the change. A rule that looks correct but never matches may be attached to the wrong interface, chain, address list, or traffic direction.</p>
+
+    <h2>5. Roll out in a controlled way</h2>
+    <p>Start with one reachable router and one test subscriber. Observe login, address assignment, DNS resolution, NAT, browsing, accounting, and management access. Only then expand to a second device or a wider subscriber group. Record the exact time and configuration revision so a support report can be matched to logs.</p>
+
+    <h2>6. Define rollback before you need it</h2>
+    <p>A rollback should be an explicit action, not a guess. Keep the pre-change export, the generated file, and the tested command history together. If the change breaks reachability, use the local console or out-of-band path, restore the known-good configuration, and verify one test subscriber before reopening the wider service.</p>
+    <div class="panel"><h3>Minimum acceptance test</h3><ul><li>One subscriber authenticates with the expected RADIUS profile.</li><li>Accounting Start, Interim-Update, and Stop records appear.</li><li>Subscriber traffic reaches the internet through the intended NAT rule.</li><li>DNS, HTTPS, and the largest routine application flows work without unexplained fragmentation.</li><li>Management remains reachable through the documented path, while unwanted WAN services remain closed.</li></ul></div>
+
+    <h2>Interactive change checklist</h2>
+    <p>Tick each item only after you have evidence, not merely because the configuration was imported. The state is saved locally in this browser and is not sent to the site.</p>
+    <div class="progress" id="progress">0 of 12 complete</div>
+    <div class="checklist" id="checklist">
+      <label class="check"><input type="checkbox"> Pre-change export saved outside the router.</label>
+      <label class="check"><input type="checkbox"> RouterOS version, model, and management path recorded.</label>
+      <label class="check"><input type="checkbox"> WAN, subscriber interface, VLAN, and topology roles confirmed.</label>
+      <label class="check"><input type="checkbox"> Gateway, pool, and subnet overlap checked.</label>
+      <label class="check"><input type="checkbox"> RADIUS client IP and shared secret confirmed on both sides.</label>
+      <label class="check"><input type="checkbox"> UDP 1812 authentication and UDP 1813 accounting paths checked.</label>
+      <label class="check"><input type="checkbox"> One test subscriber account is ready.</label>
+      <label class="check"><input type="checkbox"> Recovery access is available before firewall changes.</label>
+      <label class="check"><input type="checkbox"> One-router, one-subscriber rollout completed.</label>
+      <label class="check"><input type="checkbox"> Accounting Start, Interim-Update, and Stop records verified.</label>
+      <label class="check"><input type="checkbox"> DNS, HTTPS, NAT, MTU, and rate limits tested.</label>
+      <label class="check"><input type="checkbox"> Rollback files and the acceptance result recorded.</label>
+    </div>
+
+    <h2>References</h2>
+    <p class="refs">This checklist follows the concepts documented in the official <a href="https://help.mikrotik.com/docs/spaces/ROS/pages/328097/RADIUS">RouterOS RADIUS documentation</a>, <a href="https://help.mikrotik.com/docs/spaces/ROS/pages/132350049/PPP+AAA">PPP AAA documentation</a>, <a href="https://help.mikrotik.com/docs/spaces/ROS/pages/250708066/Firewall">RouterOS Firewall documentation</a>, and <a href="https://help.mikrotik.com/docs/spaces/ROS/pages/328094/Log">RouterOS Log documentation</a>. Review the version-specific manual before applying commands.</p>
+
+    <script>
+      (function(){
+        const boxes = Array.from(document.querySelectorAll('#checklist input'));
+        const progress = document.getElementById('progress');
+        const key = 'ispscripts-deployment-checklist-v1';
+        let saved = [];
+        try { saved = JSON.parse(localStorage.getItem(key) || '[]'); } catch (_) {}
+        boxes.forEach((box, index) => { box.checked = saved[index] === true; box.closest('.check').classList.toggle('done', box.checked); box.addEventListener('change', function(){
+          box.closest('.check').classList.toggle('done', box.checked);
+          const state = boxes.map(item => item.checked); localStorage.setItem(key, JSON.stringify(state)); update();
+        }); });
+        function update(){ const done = boxes.filter(item => item.checked).length; progress.textContent = done + ' of ' + boxes.length + ' complete'; }
+        update();
+      }());
+    </script>
+
+  </article>
+<footer>Written for WISP and ISP operators running MikroTik + RADIUS. Not affiliated with MikroTik or any RADIUS platform vendor.<br>
+  <a href="about.html">About</a> · <a href="privacy.html">Privacy</a> · <a href="contact.html">Contact</a> · <a href="changelog.html">Changelog</a> · <a href="deployment-checklist.html">Deployment checklist</a> · <a href="https://github.com/diaacylan/ispscripts" target="_blank" rel="noopener noreferrer">View source</a> · <a href="terms.html">Terms</a> · <a href="disclaimer.html">Disclaimer</a>
+</footer>
+</div>
+
+<script>
+  const navToggle = document.getElementById('navToggle');
+  const navLinks = document.getElementById('navLinks');
+  navToggle?.addEventListener('click', function () {
+    const isOpen = navLinks.classList.toggle('open');
+    navToggle.setAttribute('aria-expanded', String(isOpen));
+  });
+  document.querySelectorAll('.nav-group-toggle').forEach(function (btn) {
+    btn.addEventListener('click', function (event) {
+      event.stopPropagation();
+      const group = btn.closest('.nav-group');
+      const wasOpen = group.classList.contains('open');
+      document.querySelectorAll('.nav-group.open').forEach(function (item) { item.classList.remove('open'); });
+      if (!wasOpen) group.classList.add('open');
+    });
+  });
+  document.addEventListener('click', function () {
+    document.querySelectorAll('.nav-group.open').forEach(function (item) { item.classList.remove('open'); });
+  });
+</script>
+</body></html>

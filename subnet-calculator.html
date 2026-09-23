@@ -352,6 +352,24 @@
   .note strong { color: var(--amber); }
   footer { margin-top: 56px; padding-top: 24px; border-top: 1px solid var(--border-soft); color: var(--text-dim); font-size: 12.5px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
   footer a { color: var(--text-dim); }
+
+  .advanced-planning { margin-top: 54px; padding-top: 8px; border-top: 1px solid var(--border-soft); }
+  .advanced-planning .planner-grid { display:grid; grid-template-columns: 1fr 1fr; gap:16px; }
+  .advanced-planning textarea { width:100%; min-height:92px; padding:10px 12px; background:var(--bg-input); border:1px solid var(--border); border-radius:var(--radius); color:var(--text-primary); font:13px/1.6 var(--font-mono); resize:vertical; }
+  .advanced-planning input { width:100%; padding:10px 12px; background:var(--bg-input); border:1px solid var(--border); border-radius:var(--radius); color:var(--text-primary); font:14px var(--font-body); }
+  .advanced-planning label { display:block; color:var(--text-primary); font-size:13px; font-weight:600; margin:0 0 6px; }
+  .advanced-planning .help { font-size:12.5px; color:var(--text-dim); margin:5px 0 12px; }
+  .advanced-planning .mini-actions { display:flex; gap:8px; flex-wrap:wrap; margin:10px 0 14px; }
+  .advanced-planning .mini-actions button { background:var(--accent); color:#06210f; border:0; border-radius:var(--radius); padding:9px 13px; font-weight:600; cursor:pointer; }
+  .advanced-planning .planner-output { margin-top:14px; background:var(--bg-terminal); border:1px solid var(--border); border-radius:var(--radius); padding:14px; color:#c9e8d3; font:12.5px/1.65 var(--font-mono); white-space:pre-wrap; overflow:auto; }
+  .advanced-planning .planner-status { min-height:20px; color:var(--text-secondary); font-size:13px; margin:5px 0; }
+  .advanced-planning .planner-status.err { color:var(--red); }
+  .advanced-planning .planner-status.ok { color:var(--accent); }
+  .advanced-planning .planner-table-wrap { overflow-x:auto; margin-top:12px; }
+  .advanced-planning table { min-width:720px; }
+  .advanced-planning .overlap-result { margin-top:12px; padding:12px; border-radius:var(--radius); background:var(--bg-panel); border:1px solid var(--border); font-size:13.5px; color:var(--text-secondary); }
+  @media (max-width: 720px) { .advanced-planning .planner-grid { grid-template-columns:1fr; } }
+
 </style>
 <script type="application/ld+json">
 {
@@ -370,22 +388,29 @@
   }
 }
 </script>
-</head>
+
+<meta name="author" content="Diaa">
+<meta name="theme-color" content="#0E1420">
+<meta property="og:site_name" content="ISP Scripts">
+<meta property="article:modified_time" content="2026-09-21"></head>
 <body>
 
 <div class="wrap">
 
   <nav class="sitenav">
     <a href="index.html" class="brand">ispscripts<span class="accent">.</span>com</a>
-    <button class="navtoggle" id="navToggle" aria-label="Menu">&#9776;</button>
+    <button class="navtoggle" id="navToggle" aria-label="Open navigation" aria-controls="navLinks" aria-expanded="false">&#9776;</button>
     <div class="navlinks" id="navLinks">
       <div class="nav-group">
         <button type="button" class="nav-group-toggle active">Generators</button>
-        <div class="nav-group-menu">
-          <a href="index.html">PPPoE + RADIUS</a>
+        <div class="nav-group-menu"><a href="index.html">PPPoE + RADIUS</a>
           <a href="hotspot.html">Hotspot + RADIUS</a>
           <a href="mikrotik-nat-firewall-generator.html">NAT + Firewall</a>
-          <a href="subnet-calculator.html" class="active">IP Subnet Calculator</a>
+          <a href="subnet-calculator.html">IP Subnet Calculator</a>
+          <a href="wireguard.html">WireGuard</a>
+          <a href="port-forwarding.html">Port Forwarding</a>
+          <a href="qos-calculator.html">QoS &amp; Queues</a>
+          <a href="wireless-link-budget.html">Wireless Link Budget</a>
         </div>
       </div>
       <div class="nav-group">
@@ -395,16 +420,17 @@
           <a href="hotspot-guide.html">Hotspot + RADIUS Guide</a>
           <a href="nat-firewall-guide.html">NAT + Firewall Guide</a>
           <a href="subnet-calculator-guide.html">Subnet Calculator Guide</a>
-          <a href="pppoe-vs-hotspot.html">PPPoE vs Hotspot</a>
+          <a href="pppoe-vs-hotspot.html">PPPoE vs Hotspot</a><a href="deployment-checklist.html">Deployment Checklist</a><a href="diagnose-radius.html">RADIUS Troubleshooting</a>
         </div>
       </div>
+      <a href="tools.html">Tools</a>
       <a href="blog.html">Blog</a>
       <a href="about.html">About</a>
       <a href="contact.html">Contact</a>
     </div>
   </nav>
 
-  <div class="toolbanner">🛠️ This site has 4 free networking tools + in-depth guides — <a href="about.html">see everything here</a>.</div>
+  <div class="toolbanner">🛠️ This site has 8 free networking tools + in-depth guides — <a href="about.html">see everything here</a>.</div>
 
   <header>
     <div class="leds">
@@ -557,6 +583,39 @@
     </div>
   </div>
 
+
+    <section class="advanced-planning" id="advancedPlanning">
+      <h2>Advanced planning: VLSM and overlap checks</h2>
+      <p class="lead">The basic calculator answers one block. These two planners answer the questions that usually come next: how do I divide one address pool by real host requirements, and do my planned networks overlap?</p>
+      <div class="planner-grid">
+        <div class="results-panel">
+          <h3 style="margin-top:0;">VLSM planner</h3>
+          <label for="vlsmBase">Base network</label>
+          <input id="vlsmBase" value="10.10.0.0/24" aria-describedby="vlsmBaseHelp">
+          <p class="help" id="vlsmBaseHelp">Enter the pool you own. The planner allocates the largest requirement first so smaller blocks do not consume the alignment space needed by larger blocks.</p>
+          <label for="vlsmHosts">Required usable hosts per segment</label>
+          <textarea id="vlsmHosts" aria-describedby="vlsmHostsHelp">100, 50, 20, 10</textarea>
+          <p class="help" id="vlsmHostsHelp">Comma- or newline-separated positive numbers. Each block reserves network and broadcast addresses, so a request for 50 hosts needs a /26.</p>
+          <div class="mini-actions"><button type="button" id="vlsmBtn">Plan VLSM blocks</button></div>
+          <div class="planner-status" id="vlsmStatus"></div>
+          <div class="planner-table-wrap hidden" id="vlsmTableWrap"><table id="vlsmTable"><thead><tr><th>Request</th><th>Network</th><th>Usable range</th><th>Broadcast</th><th>Addresses</th></tr></thead><tbody></tbody></table></div>
+          <pre class="planner-output hidden" id="vlsmOutput"></pre>
+        </div>
+        <div class="results-panel">
+          <h3 style="margin-top:0;">Overlap checker</h3>
+          <label for="overlapInput">One IPv4 CIDR block per line</label>
+          <textarea id="overlapInput">10.10.10.0/24
+10.10.11.0/24
+10.10.10.128/25</textarea>
+          <p class="help">The checker normalizes each entry to its real network boundary, then compares the complete address intervals. It catches partial overlaps that are easy to miss by eye.</p>
+          <div class="mini-actions"><button type="button" id="overlapBtn">Check overlap</button></div>
+          <div class="overlap-result" id="overlapResult">Enter blocks and run the check.</div>
+          <h3>Why this matters in WISP planning</h3>
+          <p class="help" style="font-size:13.5px;line-height:1.65;">An overlapping customer pool can create ambiguous routes, ARP surprises, or traffic that reaches the wrong subscriber. Run the check before assigning a new tower, VLAN, VPN, or management segment.</p>
+        </div>
+      </div>
+    </section>
+
   <!-- AdSense safe zone: place ad units here or below. Do NOT place ads inside
        .grid, .terminal, or near #copyBtn/#downloadBtn — those must stay
        uninterrupted per AdSense's policy against ads that interfere with
@@ -564,7 +623,7 @@
 
   <footer>
     <span>Built for network engineers &amp; ISP operators · No data leaves your browser</span>
-    <span><a href="about.html">About</a> · <a href="privacy.html">Privacy</a> · <a href="contact.html">Contact</a></span> · <a href="changelog.html">Changelog</a> · <a href="https://github.com/diaacylan/ispscripts" target="_blank" rel="noopener">View source</a> · <a href="terms.html">Terms</a> · <a href="disclaimer.html">Disclaimer</a></footer>
+    <span><a href="about.html">About</a> · <a href="privacy.html">Privacy</a> · <a href="contact.html">Contact</a></span> · <a href="changelog.html">Changelog</a> · <a href="deployment-checklist.html">Deployment checklist</a> · <a href="https://github.com/diaacylan/ispscripts" target="_blank" rel="noopener">View source</a> · <a href="terms.html">Terms</a> · <a href="disclaimer.html">Disclaimer</a></footer>
 
 </div>
 
@@ -757,8 +816,80 @@
   build();
 
 
-  document.getElementById('navToggle').addEventListener('click', function () {
-    document.getElementById('navLinks').classList.toggle('open');
+  // ---------- VLSM and overlap planning ----------
+  const vlsmBaseEl = document.getElementById('vlsmBase');
+  const vlsmHostsEl = document.getElementById('vlsmHosts');
+  const vlsmBtn = document.getElementById('vlsmBtn');
+  const vlsmStatus = document.getElementById('vlsmStatus');
+  const vlsmTableWrap = document.getElementById('vlsmTableWrap');
+  const vlsmTableBody = document.querySelector('#vlsmTable tbody');
+  const vlsmOutput = document.getElementById('vlsmOutput');
+  const overlapInput = document.getElementById('overlapInput');
+  const overlapBtn = document.getElementById('overlapBtn');
+  const overlapResult = document.getElementById('overlapResult');
+
+  function parseCidrBlock(value) {
+    const bits = String(value || '').trim().split('/');
+    if (bits.length !== 2 || !isValidIPv4(bits[0])) return null;
+    const cidr = Number(bits[1]);
+    if (!Number.isInteger(cidr) || cidr < 0 || cidr > 32) return null;
+    const mask = maskFromCidr(cidr);
+    const network = (ipToInt(bits[0]) & mask) >>> 0;
+    const size = Math.pow(2, 32 - cidr);
+    return { input: String(value).trim(), cidr, network, broadcast: (network + size - 1) >>> 0, size };
+  }
+
+  function hostRange(block) {
+    if (block.cidr >= 31) return [intToIp(block.network), intToIp(block.broadcast)];
+    return [intToIp((block.network + 1) >>> 0), intToIp((block.broadcast - 1) >>> 0)];
+  }
+
+  function planVlsm() {
+    const base = parseCidrBlock(vlsmBaseEl.value);
+    const raw = vlsmHostsEl.value.split(/[\s,]+/).map(Number).filter(n => Number.isFinite(n) && n > 0 && Number.isInteger(n));
+    vlsmTableWrap.classList.add('hidden'); vlsmOutput.classList.add('hidden'); vlsmTableBody.innerHTML = '';
+    if (!base) { vlsmStatus.className = 'planner-status err'; vlsmStatus.textContent = 'Enter a valid base network such as 10.10.0.0/24.'; return; }
+    if (!raw.length) { vlsmStatus.className = 'planner-status err'; vlsmStatus.textContent = 'Enter at least one positive host requirement.'; return; }
+    const requests = raw.map((hosts, index) => ({ hosts, index })).sort((a, b) => b.hosts - a.hosts);
+    let cursor = base.network; const allocations = [];
+    for (const request of requests) {
+      const needed = request.hosts + 2;
+      const hostBits = Math.ceil(Math.log2(needed));
+      const cidr = 32 - hostBits;
+      if (cidr < 0) { vlsmStatus.className = 'planner-status err'; vlsmStatus.textContent = `The ${request.hosts}-host request is larger than IPv4.`; return; }
+      const size = Math.pow(2, hostBits);
+      const aligned = Math.ceil(cursor / size) * size;
+      const end = aligned + size - 1;
+      if (end > base.broadcast) { vlsmStatus.className = 'planner-status err'; vlsmStatus.textContent = `The requirements do not fit inside ${intToIp(base.network)}/${base.cidr}. Try a larger base block.`; return; }
+      const block = { network: aligned >>> 0, broadcast: end >>> 0, cidr, size, hosts: request.hosts, original: request.index + 1 };
+      block.range = hostRange(block); allocations.push(block); cursor = end + 1;
+    }
+    allocations.sort((a, b) => a.original - b.original);
+    vlsmTableBody.innerHTML = allocations.map(a => `<tr><td>${a.original} · ${a.hosts} hosts</td><td><code>${intToIp(a.network)}/${a.cidr}</code></td><td>${a.range[0]} – ${a.range[1]}</td><td>${intToIp(a.broadcast)}</td><td>${a.size.toLocaleString()}</td></tr>`).join('');
+    vlsmOutput.textContent = allocations.map((a, i) => `/ip pool add name=vlsm-${i + 1} ranges=${a.range[0]}-${a.range[1]} comment="VLSM request ${a.original}: ${a.hosts} hosts"`).join('\n');
+    vlsmTableWrap.classList.remove('hidden'); vlsmOutput.classList.remove('hidden'); vlsmStatus.className = 'planner-status ok'; vlsmStatus.textContent = `${allocations.length} blocks planned. Allocation was sorted largest-first, then shown in your original request order.`;
+  }
+
+  function checkOverlap() {
+    const rows = overlapInput.value.split(/\n+/).map(x => x.trim()).filter(Boolean);
+    const blocks = rows.map(parseCidrBlock);
+    if (blocks.some(b => !b)) { overlapResult.innerHTML = '<strong style="color:var(--red)">One or more lines are invalid.</strong> Use IPv4 CIDR such as 192.168.10.0/24.'; return; }
+    const collisions = [];
+    for (let i = 0; i < blocks.length; i++) for (let j = i + 1; j < blocks.length; j++) {
+      if (Math.max(blocks[i].network, blocks[j].network) <= Math.min(blocks[i].broadcast, blocks[j].broadcast)) collisions.push(`${blocks[i].input} overlaps ${blocks[j].input}`);
+    }
+    overlapResult.innerHTML = collisions.length ? `<strong style="color:var(--red)">${collisions.length} overlap(s) found.</strong><br>${collisions.map(x => `<span class="mono">${x}</span>`).join('<br>')}` : '<strong style="color:var(--accent)">No overlaps found.</strong> Each normalized block occupies a distinct IPv4 interval.';
+  }
+  vlsmBtn.addEventListener('click', planVlsm); overlapBtn.addEventListener('click', checkOverlap);
+  vlsmHostsEl.addEventListener('input', planVlsm); vlsmBaseEl.addEventListener('input', planVlsm); overlapInput.addEventListener('input', checkOverlap);
+  planVlsm(); checkOverlap();
+
+
+  const navToggle = document.getElementById('navToggle');
+  const navLinks = document.getElementById('navLinks');
+  navToggle?.addEventListener('click', function () {
+    const isOpen = navLinks.classList.toggle('open');
+    navToggle.setAttribute('aria-expanded', String(isOpen));
   });
 
   document.querySelectorAll('.nav-group-toggle').forEach(function (btn) {

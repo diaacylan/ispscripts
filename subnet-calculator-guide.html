@@ -317,6 +317,12 @@
   th { color: var(--text-primary); font-weight: 600; font-size: 12.5px; text-transform: uppercase; letter-spacing: .04em; }
   td code { font-size: 12.5px; }
 </style>
+
+<meta name="author" content="Diaa">
+<meta name="theme-color" content="#0E1420">
+<meta property="og:site_name" content="ISP Scripts">
+<meta property="article:modified_time" content="2026-09-21">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Subnetting Explained: CIDR, Network & Broadcast Math", "description": "How IP subnetting actually works — CIDR notation, the binary math behind network and broadcast addresses, and how to plan subnets without a calculator.", "author": {"@type": "Person", "name": "Diaa"}, "publisher": {"@type": "Organization", "name": "ISP Scripts", "url": "https://ispscripts.com/"}, "mainEntityOfPage": "https://ispscripts.com/subnet-calculator-guide.html", "dateModified": "2026-09-21"}</script>
 </head>
 <body>
 
@@ -324,15 +330,18 @@
 
   <nav class="sitenav">
     <a href="index.html" class="brand">ispscripts<span class="accent">.</span>com</a>
-    <button class="navtoggle" id="navToggle" aria-label="Menu">&#9776;</button>
+    <button class="navtoggle" id="navToggle" aria-label="Open navigation" aria-controls="navLinks" aria-expanded="false">&#9776;</button>
     <div class="navlinks" id="navLinks">
       <div class="nav-group">
         <button type="button" class="nav-group-toggle">Generators</button>
-        <div class="nav-group-menu">
-          <a href="index.html">PPPoE + RADIUS</a>
+        <div class="nav-group-menu"><a href="index.html">PPPoE + RADIUS</a>
           <a href="hotspot.html">Hotspot + RADIUS</a>
           <a href="mikrotik-nat-firewall-generator.html">NAT + Firewall</a>
           <a href="subnet-calculator.html">IP Subnet Calculator</a>
+          <a href="wireguard.html">WireGuard</a>
+          <a href="port-forwarding.html">Port Forwarding</a>
+          <a href="qos-calculator.html">QoS &amp; Queues</a>
+          <a href="wireless-link-budget.html">Wireless Link Budget</a>
         </div>
       </div>
       <div class="nav-group">
@@ -342,9 +351,10 @@
           <a href="hotspot-guide.html">Hotspot + RADIUS Guide</a>
           <a href="nat-firewall-guide.html">NAT + Firewall Guide</a>
           <a href="subnet-calculator-guide.html" class="active">Subnet Calculator Guide</a>
-          <a href="pppoe-vs-hotspot.html">PPPoE vs Hotspot</a>
+          <a href="pppoe-vs-hotspot.html">PPPoE vs Hotspot</a><a href="deployment-checklist.html">Deployment Checklist</a><a href="diagnose-radius.html">RADIUS Troubleshooting</a>
         </div>
       </div>
+      <a href="tools.html">Tools</a>
       <a href="blog.html">Blog</a>
       <a href="about.html">About</a>
       <a href="contact.html">Contact</a>
@@ -356,6 +366,7 @@
       <div class="eyebrow">Guide → IP Subnetting</div>
       <h1>Subnetting Explained: <br>the math behind the calculator</h1>
       <p class="dek">The <a href="subnet-calculator.html">calculator</a> gives you the answer instantly. This page covers the binary math behind it — useful once you want to subnet by hand, or just understand what's actually happening.</p>
+      <div class="article-meta" style="font-family:var(--font-mono);font-size:12px;color:var(--text-dim);margin-top:16px;">Written by Diaa · Last reviewed 21 September 2026 · RouterOS v7.x focus</div>
     </header>
 
     <h2>What a subnet mask actually does</h2>
@@ -422,6 +433,12 @@
     <p>Splitting a network into N equal subnets always means increasing the CIDR prefix by <code>log₂(N)</code> bits. Splitting a /24 into 4 subnets means <code>24 + log₂(4) = 24 + 2 = /26</code> — each resulting block is a /26, and there are exactly 4 of them (<code>.0/26</code>, <code>.64/26</code>, <code>.128/26</code>, <code>.192/26</code>) because 2 bits can represent 4 distinct values (00, 01, 10, 11).</p>
     <p>The same logic applies to any power of two: splitting into 8 adds 3 bits, into 16 adds 4 bits, and so on. If the number of subnets you need isn't a power of two, round up to the next one — you'll have a few unused blocks left over, which is normal and worth reserving for future growth rather than trying to eliminate.</p>
 
+
+    <h2>VLSM: allocating different subnet sizes</h2>
+    <p><strong>VLSM</strong> (Variable Length Subnet Masking) means that the same parent block can be divided into different-sized networks. This is more efficient than splitting every segment into identical blocks. For example, a tower management segment needing 100 hosts should not consume the same space as a point-to-point link needing only 2.</p>
+    <p>Start with the largest requirement. A request for 100 usable hosts needs at least 102 addresses when network and broadcast are reserved, so the smallest ordinary block is a /25 with 126 usable addresses. A request for 50 hosts becomes a /26, 20 hosts becomes a /27, and 10 hosts becomes a /28. Each next block must start on its natural boundary; an arbitrary starting address creates overlap.</p>
+    <div class="callout tip"><p><strong>Use the advanced planner:</strong> the <a href="subnet-calculator.html#advancedPlanning">calculator's VLSM section</a> sorts requirements largest-first, aligns each block, shows the usable range, and reports when the plan no longer fits inside the parent network.</p></div>
+
     <h2>Common mistakes and how to fix them</h2>
     <div class="table-wrap">
     <table>
@@ -452,14 +469,17 @@
        footer, or between major sections — never inside a table, code block,
        or right before/after a button a user needs to click. -->
 
-    <footer>Written for WISP and ISP operators running MikroTik + RADIUS. Not affiliated with MikroTik or any RADIUS platform vendor.<br><a href="about.html" style="color:var(--text-dim)">About</a> · <a href="privacy.html" style="color:var(--text-dim)">Privacy</a> · <a href="contact.html" style="color:var(--text-dim)">Contact</a> · <a href="changelog.html">Changelog</a> · <a href="https://github.com/diaacylan/ispscripts" target="_blank" rel="noopener">View source</a> · <a href="terms.html">Terms</a> · <a href="disclaimer.html">Disclaimer</a></footer>
+    <footer>Written for WISP and ISP operators running MikroTik + RADIUS. Not affiliated with MikroTik or any RADIUS platform vendor.<br><a href="about.html" style="color:var(--text-dim)">About</a> · <a href="privacy.html" style="color:var(--text-dim)">Privacy</a> · <a href="contact.html" style="color:var(--text-dim)">Contact</a> · <a href="changelog.html">Changelog</a> · <a href="deployment-checklist.html">Deployment checklist</a> · <a href="https://github.com/diaacylan/ispscripts" target="_blank" rel="noopener">View source</a> · <a href="terms.html">Terms</a> · <a href="disclaimer.html">Disclaimer</a></footer>
   </article>
 
 </div>
 
 <script>
-  document.getElementById('navToggle').addEventListener('click', function () {
-    document.getElementById('navLinks').classList.toggle('open');
+  const navToggle = document.getElementById('navToggle');
+  const navLinks = document.getElementById('navLinks');
+  navToggle?.addEventListener('click', function () {
+    const isOpen = navLinks.classList.toggle('open');
+    navToggle.setAttribute('aria-expanded', String(isOpen));
   });
 
   document.querySelectorAll('.nav-group-toggle').forEach(function (btn) {

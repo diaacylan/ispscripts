@@ -318,7 +318,11 @@
   .changelog .entry-title { font-weight: 600; color: var(--text-primary); font-size: 15px; margin-bottom: 2px; }
   .changelog .entry-desc { font-size: 14px; color: var(--text-secondary); }
 </style>
-</head>
+
+<meta name="author" content="Diaa">
+<meta name="theme-color" content="#0E1420">
+<meta property="og:site_name" content="ISP Scripts">
+<meta property="article:modified_time" content="2026-09-21"></head>
 <body>
 <!-- AdSense: DO NOT place ads on this page. This is a running log, not prose content. Word count is borderline and the content is list-style, not something a visitor searches for. -->
 
@@ -327,15 +331,18 @@
 
   <nav class="sitenav">
     <a href="index.html" class="brand">ispscripts<span class="accent">.</span>com</a>
-    <button class="navtoggle" id="navToggle" aria-label="Menu">&#9776;</button>
+    <button class="navtoggle" id="navToggle" aria-label="Open navigation" aria-controls="navLinks" aria-expanded="false">&#9776;</button>
     <div class="navlinks" id="navLinks">
       <div class="nav-group">
         <button type="button" class="nav-group-toggle">Generators</button>
-        <div class="nav-group-menu">
-          <a href="index.html">PPPoE + RADIUS</a>
+        <div class="nav-group-menu"><a href="index.html">PPPoE + RADIUS</a>
           <a href="hotspot.html">Hotspot + RADIUS</a>
           <a href="mikrotik-nat-firewall-generator.html">NAT + Firewall</a>
           <a href="subnet-calculator.html">IP Subnet Calculator</a>
+          <a href="wireguard.html">WireGuard</a>
+          <a href="port-forwarding.html">Port Forwarding</a>
+          <a href="qos-calculator.html">QoS &amp; Queues</a>
+          <a href="wireless-link-budget.html">Wireless Link Budget</a>
         </div>
       </div>
       <div class="nav-group">
@@ -345,9 +352,10 @@
           <a href="hotspot-guide.html">Hotspot + RADIUS Guide</a>
           <a href="nat-firewall-guide.html">NAT + Firewall Guide</a>
           <a href="subnet-calculator-guide.html">Subnet Calculator Guide</a>
-          <a href="pppoe-vs-hotspot.html">PPPoE vs Hotspot</a>
+          <a href="pppoe-vs-hotspot.html">PPPoE vs Hotspot</a><a href="deployment-checklist.html">Deployment Checklist</a><a href="diagnose-radius.html">RADIUS Troubleshooting</a>
         </div>
       </div>
+      <a href="tools.html">Tools</a>
       <a href="blog.html">Blog</a>
       <a href="about.html">About</a>
       <a href="contact.html">Contact</a>
@@ -362,6 +370,16 @@
     </header>
 
     <ul class="changelog">
+      <li>
+        <div class="date">21 September 2026</div>
+        <div class="entry-title">Deployment and RADIUS operations guides added</div>
+        <div class="entry-desc">Added a change-control checklist with local progress saving and a RADIUS troubleshooting guide that separates reachability, client definition, authentication, and accounting. Navigation, author metadata, review dates, structured data, and accessibility labels were updated across the site.</div>
+      </li>
+      <li>
+        <div class="date">21 September 2026</div>
+        <div class="entry-title">Five practical ISP and WISP planning tools added</div>
+        <div class="entry-desc">Added a MikroTik WireGuard generator, Port Forwarding and dst-nat planner, QoS and PCQ calculator, WISP Wireless Link Budget calculator, and advanced IPv4 planning with VLSM allocation and overlap detection. Each page includes assumptions, safe-use limits, reviewable output, verification steps, and related guides.</div>
+      </li>
       <li>
         <div class="date">Latest update</div>
         <div class="entry-title">IP Subnet Calculator launched</div>
@@ -413,14 +431,17 @@
       <p style="margin:0;">Every generator's output is reviewed against a real RouterOS v7.x device before publishing. If a script ever produces invalid syntax on your version, <a href="contact.html">let me know</a> — that's exactly what this changelog and the contact page are for.</p>
     </div>
 
-    <footer>Written for WISP and ISP operators running MikroTik + RADIUS. Not affiliated with MikroTik or any RADIUS platform vendor.<br><a href="about.html" style="color:var(--text-dim)">About</a> · <a href="privacy.html" style="color:var(--text-dim)">Privacy</a> · <a href="contact.html" style="color:var(--text-dim)">Contact</a> · <a href="changelog.html">Changelog</a> · <a href="https://github.com/diaacylan/ispscripts" target="_blank" rel="noopener">View source</a> · <a href="terms.html">Terms</a> · <a href="disclaimer.html">Disclaimer</a></footer>
+    <footer>Written for WISP and ISP operators running MikroTik + RADIUS. Not affiliated with MikroTik or any RADIUS platform vendor.<br><a href="about.html" style="color:var(--text-dim)">About</a> · <a href="privacy.html" style="color:var(--text-dim)">Privacy</a> · <a href="contact.html" style="color:var(--text-dim)">Contact</a> · <a href="changelog.html">Changelog</a> · <a href="deployment-checklist.html">Deployment checklist</a> · <a href="https://github.com/diaacylan/ispscripts" target="_blank" rel="noopener">View source</a> · <a href="terms.html">Terms</a> · <a href="disclaimer.html">Disclaimer</a></footer>
   </article>
 
 </div>
 
 <script>
-  document.getElementById('navToggle').addEventListener('click', function () {
-    document.getElementById('navLinks').classList.toggle('open');
+  const navToggle = document.getElementById('navToggle');
+  const navLinks = document.getElementById('navLinks');
+  navToggle?.addEventListener('click', function () {
+    const isOpen = navLinks.classList.toggle('open');
+    navToggle.setAttribute('aria-expanded', String(isOpen));
   });
 
   document.querySelectorAll('.nav-group-toggle').forEach(function (btn) {

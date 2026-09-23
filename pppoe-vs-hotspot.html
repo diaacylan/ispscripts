@@ -166,6 +166,12 @@
   footer { margin-top: 56px; padding-top: 24px; border-top: 1px solid var(--border-soft); color: var(--text-dim); font-size: 12.5px; }
   footer a { color: var(--text-dim); }
 </style>
+
+<meta name="author" content="Diaa">
+<meta name="theme-color" content="#0E1420">
+<meta property="og:site_name" content="ISP Scripts">
+<meta property="article:modified_time" content="2026-09-21">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "MikroTik PPPoE vs Hotspot: Which One Should You Use?", "description": "A side-by-side comparison of PPPoE and Hotspot subscriber access on MikroTik — which fits fixed installations, which fits walk-up/voucher billing, and when to run both.", "author": {"@type": "Person", "name": "Diaa"}, "publisher": {"@type": "Organization", "name": "ISP Scripts", "url": "https://ispscripts.com/"}, "mainEntityOfPage": "https://ispscripts.com/pppoe-vs-hotspot.html", "dateModified": "2026-09-21"}</script>
 </head>
 <body>
 
@@ -173,15 +179,18 @@
 
   <nav class="sitenav">
     <a href="index.html" class="brand">ispscripts<span class="accent">.</span>com</a>
-    <button class="navtoggle" id="navToggle" aria-label="Menu">&#9776;</button>
+    <button class="navtoggle" id="navToggle" aria-label="Open navigation" aria-controls="navLinks" aria-expanded="false">&#9776;</button>
     <div class="navlinks" id="navLinks">
       <div class="nav-group">
         <button type="button" class="nav-group-toggle">Generators</button>
-        <div class="nav-group-menu">
-          <a href="index.html">PPPoE + RADIUS</a>
+        <div class="nav-group-menu"><a href="index.html">PPPoE + RADIUS</a>
           <a href="hotspot.html">Hotspot + RADIUS</a>
           <a href="mikrotik-nat-firewall-generator.html">NAT + Firewall</a>
           <a href="subnet-calculator.html">IP Subnet Calculator</a>
+          <a href="wireguard.html">WireGuard</a>
+          <a href="port-forwarding.html">Port Forwarding</a>
+          <a href="qos-calculator.html">QoS &amp; Queues</a>
+          <a href="wireless-link-budget.html">Wireless Link Budget</a>
         </div>
       </div>
       <div class="nav-group">
@@ -194,6 +203,7 @@
           <a href="pppoe-vs-hotspot.html" class="active">PPPoE vs Hotspot</a>
         </div>
       </div>
+      <a href="tools.html">Tools</a>
       <a href="blog.html">Blog</a>
       <a href="about.html">About</a>
       <a href="contact.html">Contact</a>
@@ -205,6 +215,7 @@
       <div class="eyebrow">Guide &nbsp;→&nbsp; PPPoE vs Hotspot</div>
       <h1>MikroTik PPPoE vs Hotspot: <br>which one should you actually use?</h1>
       <p class="dek">Both authenticate subscribers through RADIUS. They solve different problems, and most WISPs that grow past a certain size end up running both — for different parts of the same network.</p>
+      <div class="article-meta" style="font-family:var(--font-mono);font-size:12px;color:var(--text-dim);margin-top:16px;">Written by Diaa · Last reviewed 21 September 2026 · RouterOS v7.x focus</div>
     </header>
 
     <p>The short answer: <strong>PPPoE for fixed, billed installations</strong> — a dish and an indoor unit at someone's house, paying monthly. <strong>Hotspot for walk-up, voucher-based access</strong> — no installation, no dedicated hardware at the subscriber's end, just a login page. Here's the reasoning, side by side.</p>
@@ -254,14 +265,17 @@
 
     <footer>
       Written for WISP and ISP operators running MikroTik + RADIUS. Not affiliated with MikroTik or any RADIUS platform vendor.<br>
-      <a href="about.html">About</a> · <a href="privacy.html">Privacy</a> · <a href="contact.html">Contact</a> · <a href="changelog.html">Changelog</a> · <a href="https://github.com/diaacylan/ispscripts" target="_blank" rel="noopener">View source</a> · <a href="terms.html">Terms</a> · <a href="disclaimer.html">Disclaimer</a></footer>
+      <a href="about.html">About</a> · <a href="privacy.html">Privacy</a> · <a href="contact.html">Contact</a> · <a href="changelog.html">Changelog</a> · <a href="deployment-checklist.html">Deployment checklist</a> · <a href="https://github.com/diaacylan/ispscripts" target="_blank" rel="noopener">View source</a> · <a href="terms.html">Terms</a> · <a href="disclaimer.html">Disclaimer</a></footer>
   </article>
 
 </div>
 
 <script>
-  document.getElementById('navToggle').addEventListener('click', function () {
-    document.getElementById('navLinks').classList.toggle('open');
+  const navToggle = document.getElementById('navToggle');
+  const navLinks = document.getElementById('navLinks');
+  navToggle?.addEventListener('click', function () {
+    const isOpen = navLinks.classList.toggle('open');
+    navToggle.setAttribute('aria-expanded', String(isOpen));
   });
 
   document.querySelectorAll('.nav-group-toggle').forEach(function (btn) {

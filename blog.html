@@ -15,7 +15,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" href="/favicon.ico" sizes="any">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-<title>Networking Blog — MikroTik, RADIUS & WISP Guides | ispscripts.com</title>
+<title>MikroTik WISP Troubleshooting and Configuration Articles | ISP Scripts</title>
 <link rel="canonical" href="https://ispscripts.com/blog.html">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Networking Blog — MikroTik, RADIUS &amp; WISP Guides | ispscripts.com">
@@ -24,7 +24,7 @@
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Networking Blog — MikroTik, RADIUS &amp; WISP Guides | ispscripts.com">
 <meta name="twitter:description" content="Networking Blog — MikroTik, RADIUS &amp; WISP Guides | ispscripts.com — practical MikroTik, WISP, and ISP networking tools and guides.">
-<meta name="description" content="Technical articles for WISP and ISP operators running MikroTik: router security, IP planning, RADIUS billing, and lessons from real deployments.">
+<meta name="description" content="Practical MikroTik, PPPoE, RADIUS, WISP security, subnetting, and backhaul articles written for network operators.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -341,7 +341,7 @@
 <meta name="author" content="Diaa">
 <meta name="theme-color" content="#0E1420">
 <meta property="og:site_name" content="ISP Scripts">
-<meta property="article:modified_time" content="2026-09-21"></head>
+<meta property="article:modified_time" content="2026-09-25"></head>
 <body>
 <!-- AdSense: this index page now links to 5 fully published articles (no
      placeholder/stub content remaining). Safe for light ad placement — e.g.
@@ -352,12 +352,12 @@
 <div class="wrap">
 
   <nav class="sitenav">
-    <a href="index.html" class="brand">ispscripts<span class="accent">.</span>com</a>
+    <a href="/" class="brand">ispscripts<span class="accent">.</span>com</a>
     <button class="navtoggle" id="navToggle" aria-label="Open navigation" aria-controls="navLinks" aria-expanded="false">&#9776;</button>
     <div class="navlinks" id="navLinks">
       <div class="nav-group">
         <button type="button" class="nav-group-toggle">Generators</button>
-        <div class="nav-group-menu"><a href="index.html">PPPoE + RADIUS</a>
+        <div class="nav-group-menu"><a href="/">PPPoE + RADIUS</a>
           <a href="hotspot.html">Hotspot + RADIUS</a>
           <a href="mikrotik-nat-firewall-generator.html">NAT + Firewall</a>
           <a href="subnet-calculator.html">IP Subnet Calculator</a>
@@ -391,6 +391,20 @@
     </header>
 
     <ul class="post-list">
+      <li>
+        <a class="post-card" href="radius-server-not-responding-mikrotik-v7.html">
+          <div class="post-tag">TROUBLESHOOTING</div>
+          <h2>RADIUS Server Not Responding on MikroTik RouterOS v7</h2>
+          <p>Separate PPPoE discovery, routing, UDP, firewall, shared-secret, authentication, and accounting failures with a one-test-at-a-time checklist.</p>
+        </a>
+      </li>
+      <li>
+        <a class="post-card" href="pppoe-server-mikrotik-v7-configuration-script.html">
+          <div class="post-tag">CONFIGURATION</div>
+          <h2>PPPoE Server MikroTik Configuration Script for RouterOS v7</h2>
+          <p>Build and verify a reviewable PPPoE access concentrator with an IP pool, PPP profile, RADIUS AAA, accounting, and safe rollout checks.</p>
+        </a>
+      </li>
       <li>
         <a class="post-card" href="securing-mikrotik-routers.html">
           <div class="post-tag">SECURITY</div>

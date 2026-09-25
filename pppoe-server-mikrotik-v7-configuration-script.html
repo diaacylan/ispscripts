@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4560959124000202"
+     crossorigin="anonymous"></script>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-5GLVMBDCZ4"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-5GLVMBDCZ4');
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<title>PPPoE Server MikroTik Configuration Script for RouterOS v7</title>
+<link rel="canonical" href="https://ispscripts.com/pppoe-server-mikrotik-v7-configuration-script.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="PPPoE Server MikroTik Configuration Script for RouterOS v7">
+<meta property="og:description" content="Build a MikroTik RouterOS v7 PPPoE server step by step with an IP pool, PPP profile, RADIUS AAA, accounting, verification, and safe rollout checks.">
+<meta property="og:url" content="https://ispscripts.com/pppoe-server-mikrotik-v7-configuration-script.html">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="PPPoE Server MikroTik Configuration Script for RouterOS v7">
+<meta name="twitter:description" content="Build a MikroTik RouterOS v7 PPPoE server step by step with an IP pool, PPP profile, RADIUS AAA, accounting, verification, and safe rollout checks.">
+<meta name="description" content="Build a MikroTik RouterOS v7 PPPoE server step by step with an IP pool, PPP profile, RADIUS AAA, accounting, verification, and safe rollout checks.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0E1420;
+    --bg-panel: #161D2B;
+    --bg-panel-2: #1B2333;
+    --bg-input: #10161F;
+    --border: #2A3448;
+    --border-soft: #202940;
+    --text-primary: #E8ECF4;
+    --text-secondary: #96A1B8;
+    --text-dim: #5B6479;
+    --accent: #3DDC84;
+    --accent-soft: rgba(61, 220, 132, 0.13);
+    --amber: #F5A623;
+    --red: #E5484D;
+    --mono-bg: #090D14;
+    --font-display: 'Space Grotesk', sans-serif;
+    --font-body: 'Inter', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+    --radius: 8px;
+    --radius-lg: 12px;
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    margin: 0;
+    background:
+      radial-gradient(1100px 500px at 85% -10%, rgba(61,220,132,0.06), transparent 60%),
+      var(--bg);
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  a { color: var(--accent); }
+  ::selection { background: var(--accent-soft); color: var(--text-primary); }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+
+  .wrap { max-width: 780px; margin: 0 auto; padding: 0 24px 100px; }
+
+  .sitenav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 22px 0;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .sitenav .brand {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 15px;
+    color: var(--text-primary);
+    text-decoration: none;
+  }
+  .sitenav .brand .accent { color: var(--accent); }
+  .sitenav .navlinks { display: flex; gap: 22px; }
+
+  .nav-group { position: relative; }
+  .nav-group-toggle {
+    background: none; border: none; cursor: pointer; font: inherit;
+    color: var(--text-secondary); font-size: 13.5px; font-weight: 500;
+    padding: 0 0 14px 0; margin-bottom: -14px; display: flex; align-items: center; gap: 4px;
+  }
+  .nav-group-toggle:hover { color: var(--text-primary); }
+  .nav-group-toggle::after { content: '\25be'; font-size: 9px; margin-top: 1px; }
+  .nav-group-toggle.active { color: var(--accent); }
+  .nav-group-menu {
+    display: none;
+    position: absolute; top: 100%; left: 0; margin-top: 12px;
+    background: var(--bg-panel); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 8px; min-width: 210px;
+    flex-direction: column; gap: 2px; z-index: 30;
+  }
+  .nav-group:hover .nav-group-menu,
+  .nav-group:focus-within .nav-group-menu { display: flex; }
+  .nav-group.open .nav-group-menu { display: flex; }
+  .nav-group-menu a {
+    padding: 8px 10px; border-radius: 6px; font-size: 13px;
+    color: var(--text-secondary); text-decoration: none;
+  }
+  .nav-group-menu a:hover { background: var(--bg-input); color: var(--text-primary); }
+  .nav-group-menu a.active { color: var(--accent); }
+  .sitenav .navlinks a {
+    font-size: 13.5px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    text-decoration: none;
+    padding-bottom: 3px;
+    border-bottom: 1px solid transparent;
+  }
+  .sitenav .navlinks a:hover { color: var(--text-primary); }
+  .sitenav .navlinks a.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+  .navtoggle {
+    display: none;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-primary);
+    font-size: 17px;
+    line-height: 1;
+    padding: 7px 11px;
+    border-radius: var(--radius);
+    cursor: pointer;
+  }
+  .navtoggle:hover { border-color: var(--accent); }
+  @media (max-width: 720px) {
+    .sitenav { position: relative; }
+    .navtoggle { display: block; }
+    .sitenav .navlinks {
+      display: none;
+      flex-direction: column;
+      width: 100%;
+      gap: 2px;
+      margin-top: 14px;
+    }
+    .sitenav .navlinks.open { display: flex; }
+    .navlinks a {
+      padding: 12px 14px;
+      background: var(--bg-panel);
+      border: 1px solid var(--border-soft);
+      border-radius: var(--radius);
+      border-bottom: 1px solid var(--border-soft) !important;
+    }
+    .navlinks a.active { background: var(--accent-soft); }
+
+    .nav-group-toggle {
+      pointer-events: none;
+      color: var(--text-dim);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      padding: 10px 14px 4px;
+      margin-bottom: 0;
+    }
+    .nav-group-toggle.active { color: var(--accent); }
+    .nav-group-toggle::after { display: none; }
+    .nav-group-menu {
+      display: flex !important;
+      position: static;
+      border: none; background: none; padding: 0; margin: 0;
+      flex-direction: column; gap: 2px;
+    }
+  }
+
+  article header {
+    padding: 32px 0 40px;
+    border-bottom: 1px solid var(--border-soft);
+    margin-bottom: 40px;
+  }
+
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    letter-spacing: .06em;
+    color: var(--text-dim);
+    margin-bottom: 14px;
+  }
+
+  h1 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(28px, 4vw, 38px);
+    line-height: 1.2;
+    margin: 0 0 16px;
+    letter-spacing: -0.01em;
+  }
+
+  .dek {
+    color: var(--text-secondary);
+    font-size: 16.5px;
+    max-width: 620px;
+    margin: 0;
+  }
+
+  h2 {
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 600;
+    margin: 52px 0 18px;
+    letter-spacing: -0.005em;
+  }
+
+  h3 {
+    font-family: var(--font-display);
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 30px 0 12px;
+  }
+
+  p { font-size: 15.5px; color: var(--text-secondary); margin: 0 0 16px; }
+  p strong { color: var(--text-primary); font-weight: 600; }
+
+  code {
+    font-family: var(--font-mono);
+    font-size: 13.5px;
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: #A9C4FF;
+  }
+
+  pre {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    line-height: 1.65;
+    background: var(--mono-bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px 20px;
+    overflow-x: auto;
+    color: #C9E8D3;
+    margin: 0 0 20px;
+  }
+  pre code { background: none; border: none; padding: 0; color: inherit; }
+
+  ul, ol { color: var(--text-secondary); font-size: 15.5px; padding-left: 22px; margin: 0 0 20px; }
+  li { margin-bottom: 8px; }
+  li strong { color: var(--text-primary); }
+
+  .callout {
+    margin: 28px 0;
+    padding: 16px 18px;
+    border-radius: var(--radius);
+    font-size: 14px;
+  }
+  .callout.warn {
+    background: rgba(245, 166, 35, 0.07);
+    border: 1px solid rgba(245, 166, 35, 0.25);
+  }
+  .callout.warn strong { color: var(--amber); }
+  .callout.tip {
+    background: var(--accent-soft);
+    border: 1px solid rgba(61, 220, 132, 0.3);
+  }
+  .callout.tip strong { color: var(--accent); }
+  .callout p { margin: 0; color: var(--text-secondary); }
+
+  .cta {
+    margin-top: 60px;
+    padding: 28px;
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    text-align: center;
+  }
+  .cta h3 { margin-top: 0; }
+  .cta p { max-width: 480px; margin: 0 auto 18px; }
+  .cta a.btn {
+    display: inline-block;
+    background: var(--accent);
+    color: #06210F;
+    font-weight: 600;
+    font-size: 14px;
+    text-decoration: none;
+    padding: 11px 22px;
+    border-radius: var(--radius);
+  }
+
+  footer {
+    margin-top: 56px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border-soft);
+    color: var(--text-dim);
+    font-size: 12.5px;
+  }
+
+  .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 0 0 20px; }
+  .table-wrap table { margin: 0; min-width: 520px; }
+  table { width: 100%; border-collapse: collapse; margin: 0 0 20px; font-size: 14px; }
+  th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--border-soft); color: var(--text-secondary); }
+  th { color: var(--text-primary); font-weight: 600; font-size: 12.5px; text-transform: uppercase; letter-spacing: .04em; }
+  td code { font-size: 12.5px; }
+</style>
+
+<meta name="author" content="Diaa">
+<meta name="theme-color" content="#0E1420">
+<meta property="og:site_name" content="ISP Scripts">
+<meta property="article:modified_time" content="2026-09-25">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "PPPoE Server MikroTik Configuration Script for RouterOS v7", "description": "Build a MikroTik RouterOS v7 PPPoE server step by step with an IP pool, PPP profile, RADIUS AAA, accounting, verification, and safe rollout checks.", "author": {"@type": "Person", "name": "Diaa"}, "publisher": {"@type": "Organization", "name": "ISP Scripts", "url": "https://ispscripts.com/"}, "mainEntityOfPage": "https://ispscripts.com/pppoe-server-mikrotik-v7-configuration-script.html", "dateModified": "2026-09-25"}</script>
+</head><body>
+
+<div class="wrap">
+
+  <nav class="sitenav">
+    <a href="/" class="brand">ispscripts<span class="accent">.</span>com</a>
+    <button class="navtoggle" id="navToggle" aria-label="Open navigation" aria-controls="navLinks" aria-expanded="false">&#9776;</button>
+    <div class="navlinks" id="navLinks">
+      <div class="nav-group">
+        <button type="button" class="nav-group-toggle">Generators</button>
+        <div class="nav-group-menu"><a href="/">PPPoE + RADIUS</a>
+          <a href="hotspot.html">Hotspot + RADIUS</a>
+          <a href="mikrotik-nat-firewall-generator.html">NAT + Firewall</a>
+          <a href="subnet-calculator.html">IP Subnet Calculator</a>
+          <a href="wireguard.html">WireGuard</a>
+          <a href="port-forwarding.html">Port Forwarding</a>
+          <a href="qos-calculator.html">QoS &amp; Queues</a>
+          <a href="wireless-link-budget.html">Wireless Link Budget</a>
+        </div>
+      </div>
+      <div class="nav-group">
+        <button type="button" class="nav-group-toggle">Guides</button>
+        <div class="nav-group-menu">
+          <a href="guide.html">PPPoE + RADIUS Guide</a>
+          <a href="hotspot-guide.html">Hotspot + RADIUS Guide</a>
+          <a href="nat-firewall-guide.html">NAT + Firewall Guide</a>
+          <a href="subnet-calculator-guide.html">Subnet Calculator Guide</a>
+          <a href="pppoe-vs-hotspot.html">PPPoE vs Hotspot</a><a href="deployment-checklist.html">Deployment Checklist</a><a href="diagnose-radius.html">RADIUS Troubleshooting</a>
+        </div>
+      </div>
+      <a href="blog.html" class="active">Blog</a>
+      <a href="about.html">About</a>
+      <a href="contact.html">Contact</a>
+    </div>
+  </nav>
+
+  
+  <article>
+    <header>
+      <div class="eyebrow">Configuration guide → MikroTik RouterOS v7</div>
+      <h1>PPPoE Server MikroTik Configuration Script for RouterOS v7</h1>
+      <p class="dek">Build a reviewable PPPoE access concentrator one block at a time: subscriber pool, PPP profile, local test account, RADIUS AAA, server interface, verification, and safe rollout.</p>
+      <div class="article-meta" style="font-family:var(--font-mono);font-size:12px;color:var(--text-dim);margin-top:16px;">Written by Diaa · Last reviewed 25 September 2026 · RouterOS v7.x focus</div>
+    </header>
+
+    <div class="callout warn"><p><strong>Do not paste this as a blind production import.</strong> Replace placeholders, run one command at a time, inspect the result, and keep an out-of-band or local recovery path. The correct interface, addressing plan, MTU, RADIUS policy, and firewall depend on your topology.</p></div>
+
+    <h2>What this baseline configures</h2>
+    <p>This guide creates a small, understandable PPPoE test service. It does not pretend to solve every ISP design. The blocks cover:</p>
+    <ul>
+      <li>An IP pool for fallback local PPP users.</li>
+      <li>A PPP profile with local address, DNS, and a conservative rate limit.</li>
+      <li>One local test account so you can prove PPPoE before adding RADIUS.</li>
+      <li>A RADIUS client entry for PPP authentication and accounting.</li>
+      <li>PPP AAA settings with an interim accounting update.</li>
+      <li>A PPPoE server on the subscriber-facing interface.</li>
+    </ul>
+    <p>For a real WISP, add VLAN design, subscriber isolation, routing, queue strategy, monitoring, backups, and a tested firewall policy separately. The generator on this site can produce a starting file, but the review steps below remain necessary.</p>
+
+    <h2>1. Decide the values before touching RouterOS</h2>
+    <div class="table-wrap"><table>
+      <tr><th>Placeholder</th><th>Example</th><th>Meaning</th></tr>
+      <tr><td><code>&lt;SUBSCRIBER_IF&gt;</code></td><td><code>ether2</code></td><td>Interface or VLAN where PPPoE discovery arrives</td></tr>
+      <tr><td><code>&lt;POOL_NAME&gt;</code></td><td><code>pppoe-pool</code></td><td>Local fallback pool name</td></tr>
+      <tr><td><code>&lt;POOL_RANGE&gt;</code></td><td><code>10.10.10.2-10.10.10.254</code></td><td>Addresses for test/local PPP users</td></tr>
+      <tr><td><code>&lt;ROUTER_PPP_IP&gt;</code></td><td><code>10.10.10.1</code></td><td>Local tunnel address in the PPP profile</td></tr>
+      <tr><td><code>&lt;RADIUS_IP&gt;</code></td><td><code>10.0.0.5</code></td><td>RADIUS server address reachable from the router</td></tr>
+      <tr><td><code>&lt;SERVICE_NAME&gt;</code></td><td><code>isp-pppoe</code></td><td>PPPoE service name; keep it consistent with the client if used</td></tr>
+    </table></div>
+    <p>The subscriber interface must be the correct Layer 2 path. Do not use the WAN interface by accident. RouterOS documentation also warns against assigning a normal IP or DHCP service to the interface that receives PPPoE requests unless the topology explicitly requires it.</p>
+
+    <h2>2. Create a backup and inspect the starting point</h2>
+    <p>Export a readable backup before adding anything:</p>
+    <pre><code>/export file=before-pppoe-setup</code></pre>
+    <p>Check the interfaces so you do not confuse the uplink with the subscriber side:</p>
+    <pre><code>/interface print</code></pre>
+    <p>Check the installed RouterOS version:</p>
+    <pre><code>/system resource print</code></pre>
+    <p>Record the version and the interface names in your change log. If the router is remote, verify that you can return to it through a local console, an existing VPN, or another tested management path.</p>
+
+    <h2>3. Add the subscriber IP pool</h2>
+    <p>Run this only after checking that the range is unused and does not overlap a LAN, VPN, tower management, or customer network:</p>
+    <pre><code>/ip pool add name=&lt;POOL_NAME&gt; ranges=&lt;POOL_RANGE&gt; comment="PPPoE fallback pool"</code></pre>
+    <p>Verify the pool:</p>
+    <pre><code>/ip pool print detail</code></pre>
+
+    <h2>4. Create a PPP profile</h2>
+    <p>The rate-limit format is from the router’s perspective: <code>rx-rate/tx-rate</code> means subscriber upload/subscriber download. Start with a modest test rate and change it after you verify the direction:</p>
+    <pre><code>/ppp profile add name=pppoe-test local-address=&lt;ROUTER_PPP_IP&gt; remote-address=&lt;POOL_NAME&gt; dns-server=1.1.1.1,8.8.8.8 rate-limit=5M/10M only-one=yes change-tcp-mss=yes comment="PPPoE test profile"</code></pre>
+    <p>Verify the profile:</p>
+    <pre><code>/ppp profile print detail where name="pppoe-test"</code></pre>
+    <p>Do not treat this profile as a universal QoS policy. Large networks often use RADIUS attributes, PCQ, Queue Tree, or a separate queue architecture.</p>
+
+    <h2>5. Add one local test account first</h2>
+    <p>Use a temporary test username and a strong temporary password. Replace both placeholders and remove the account after the RADIUS path is proven:</p>
+    <pre><code>/ppp secret add name=&lt;TEST_USER&gt; password=&lt;TEMPORARY_PASSWORD&gt; service=pppoe profile=pppoe-test comment="Temporary PPPoE validation account"</code></pre>
+    <p>Verify that the secret exists without sharing its password:</p>
+    <pre><code>/ppp secret print detail where name="&lt;TEST_USER&gt;"</code></pre>
+    <p>This local test isolates PPPoE discovery, the PPP profile, IP assignment, and the client device from RADIUS. If the local account cannot connect, do not troubleshoot RADIUS yet.</p>
+
+    <h2>6. Create the PPPoE access concentrator</h2>
+    <p>Use the subscriber-facing interface, not the WAN:</p>
+    <pre><code>/interface pppoe-server server add interface=&lt;SUBSCRIBER_IF&gt; service-name=&lt;SERVICE_NAME&gt; default-profile=pppoe-test one-session-per-host=yes max-mtu=1480 max-mru=1480 disabled=no comment="PPPoE access concentrator"</code></pre>
+    <p>The service name helps clients identify the access concentrator. If you use VLANs, make the VLAN design explicit. RouterOS supports <code>pppoe-over-vlan-range</code>, but do not overlap a VLAN interface and a PPPoE VLAN range accidentally.</p>
+    <p>Verify the server:</p>
+    <pre><code>/interface pppoe-server server print detail</code></pre>
+    <p>From the test client, connect with the temporary local account. Then verify active sessions:</p>
+    <pre><code>/ppp active print detail</code></pre>
+
+    <h2>7. Add RADIUS for PPP authentication</h2>
+    <p>Only continue after the local test works. Add the server with the real address and a secret that matches the RADIUS server’s client/NAS definition:</p>
+    <pre><code>/radius add service=ppp address=&lt;RADIUS_IP&gt; secret=&lt;RADIUS_SHARED_SECRET&gt; authentication-port=1812 accounting-port=1813 comment="Primary PPP RADIUS"</code></pre>
+    <p>If the RADIUS server expects a specific source IP, set it deliberately and ensure the server defines that IP as the NAS client:</p>
+    <pre><code>/radius set [find where address="&lt;RADIUS_IP&gt;" and service=ppp] src-address=&lt;RADIUS_SOURCE_IP&gt;</code></pre>
+    <p>Print the entry for review, but redact the secret before sharing any output:</p>
+    <pre><code>/radius print detail</code></pre>
+
+    <h2>8. Enable PPP AAA and accounting</h2>
+    <p>Enable RADIUS authentication and accounting for PPP:</p>
+    <pre><code>/ppp aaa set use-radius=yes accounting=yes interim-update=5m</code></pre>
+    <p>Verify:</p>
+    <pre><code>/ppp aaa print</code></pre>
+    <p>RouterOS may check the local PPP secret before consulting RADIUS. For the RADIUS test, use a username that is not present in <code>/ppp secret</code>, otherwise a successful login may not prove that the RADIUS path works.</p>
+
+    <h2>9. Test authentication and accounting separately</h2>
+    <p>Watch RADIUS and PPPoE logs while making one login attempt:</p>
+    <pre><code>/log print follow where topics~"radius|ppp|pppoe"</code></pre>
+    <p>Inspect RADIUS counters after the test:</p>
+    <pre><code>/radius monitor [find]</code></pre>
+    <p>Interpret the result:</p>
+    <ul>
+      <li><strong>No RADIUS request:</strong> check local-secret selection and <code>/ppp aaa</code>.</li>
+      <li><strong>Timeout:</strong> check route, UDP firewall, server listener, VRF, and source IP.</li>
+      <li><strong>Reject:</strong> read the RADIUS server’s user or policy reason.</li>
+      <li><strong>Bad reply:</strong> compare the shared secret and the source client definition.</li>
+      <li><strong>Login works but usage is empty:</strong> check accounting UDP 1813, <code>accounting=yes</code>, interim updates, and the server accounting log.</li>
+    </ul>
+    <p>RADIUS authentication normally uses UDP 1812 and accounting uses UDP 1813. The standards describe Access-Request/Access-Accept/Access-Reject for authentication and Start/Interim/Stop accounting records; your billing platform may add vendor-specific attributes and policy.</p>
+
+    <h2>10. Add NAT only after the PPP session is proven</h2>
+    <p>NAT is a separate forwarding decision. If this router is the internet gateway and subscribers must share the WAN address, add a narrow masquerade rule for the intended WAN interface:</p>
+    <pre><code>/ip firewall nat add chain=srcnat out-interface=&lt;WAN_IF&gt; src-address=&lt;SUBSCRIBER_SUBNET&gt; action=masquerade comment="PPPoE subscribers to WAN"</code></pre>
+    <p>Replace the subnet with the real subscriber range. Verify counters during one test browse:</p>
+    <pre><code>/ip firewall nat print stats</code></pre>
+    <p>Do not add this rule if NAT is performed upstream or if your design routes public subscriber addresses directly. The correct choice depends on the topology.</p>
+
+    <h2>11. Production hardening checklist</h2>
+    <div class="table-wrap"><table>
+      <tr><th>Area</th><th>Review before rollout</th></tr>
+      <tr><td>Access</td><td>Subscriber interface is correct; WAN is not accidentally exposed to PPPoE discovery.</td></tr>
+      <tr><td>Addressing</td><td>Pool does not overlap LAN, VPN, management, or customer prefixes.</td></tr>
+      <tr><td>RADIUS</td><td>NAS source IP, secret, UDP 1812/1813, PPP service, and server policy match.</td></tr>
+      <tr><td>MTU</td><td>Test real paths; 1480 is a baseline for a 1500-byte Ethernet path, not a guarantee for every topology.</td></tr>
+      <tr><td>QoS</td><td>Confirm upload/download direction and choose Simple Queue, PCQ, or Queue Tree deliberately.</td></tr>
+      <tr><td>Security</td><td>Restrict management services; do not expose Winbox, SSH, or API broadly on WAN.</td></tr>
+      <tr><td>Recovery</td><td>Keep a backup and a tested out-of-band path before firewall or routing changes.</td></tr>
+      <tr><td>Operations</td><td>Record RouterOS version, generated values, change time, test user, and rollback plan.</td></tr>
+    </table></div>
+
+    <h2>12. Remove the temporary local test account</h2>
+    <p>After the RADIUS test user authenticates and accounting is visible, remove the temporary local account by its exact name:</p>
+    <pre><code>/ppp secret remove [find where name="&lt;TEST_USER&gt;"]</code></pre>
+    <p>Keep a local emergency account only if your access policy requires one, and protect it with a unique password, restricted service, and documented break-glass procedure.</p>
+
+    <h2>Sources and version notes</h2>
+    <p>The syntax and behavior in this guide are based on the current MikroTik documentation for <a href="https://manual.mikrotik.com/docs/virtual-private-networks/pppoe/" target="_blank" rel="noopener">PPPoE</a>, <a href="https://help.mikrotik.com/docs/spaces/ROS/pages/328097/RADIUS" target="_blank" rel="noopener">RADIUS</a>, <a href="https://help.mikrotik.com/docs/spaces/ROS/pages/132350049/PPP+AAA" target="_blank" rel="noopener">PPP AAA</a>, and <a href="https://help.mikrotik.com/docs/spaces/ROS/pages/328094/Log" target="_blank" rel="noopener">RouterOS logging</a>. The PPPoE protocol itself is specified in <a href="https://www.rfc-editor.org/rfc/rfc2516" target="_blank" rel="noopener">RFC 2516</a>. Verify commands against the target RouterOS release before applying them.</p>
+
+    <div class="cta">
+      <h3>Prefer generated output?</h3>
+      <p>Use the generator for a starting configuration, then follow this guide to review every interface, address, RADIUS value, and verification step.</p>
+      <a href="/" class="btn">Open the PPPoE + RADIUS generator →</a>
+    </div>
+
+    <footer>Written for WISP and ISP operators running MikroTik + RADIUS. Not affiliated with MikroTik or any RADIUS platform vendor.<br><a href="about.html" style="color:var(--text-dim)">About</a> · <a href="privacy.html" style="color:var(--text-dim)">Privacy</a> · <a href="contact.html" style="color:var(--text-dim)">Contact</a> · <a href="changelog.html">Changelog</a> · <a href="deployment-checklist.html">Deployment checklist</a> · <a href="https://github.com/diaacylan/ispscripts" target="_blank" rel="noopener">View source</a> · <a href="terms.html">Terms</a> · <a href="disclaimer.html">Disclaimer</a></footer>
+  </article>
+<script>
+  const navToggle = document.getElementById('navToggle');
+  const navLinks = document.getElementById('navLinks');
+  navToggle?.addEventListener('click', function () {
+    const isOpen = navLinks.classList.toggle('open');
+    navToggle.setAttribute('aria-expanded', String(isOpen));
+  });
+
+  document.querySelectorAll('.nav-group-toggle').forEach(function (btn) {
+    btn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      var group = btn.closest('.nav-group');
+      var wasOpen = group.classList.contains('open');
+      document.querySelectorAll('.nav-group.open').forEach(function (g) { g.classList.remove('open'); });
+      if (!wasOpen) group.classList.add('open');
+    });
+  });
+  document.addEventListener('click', function () {
+    document.querySelectorAll('.nav-group.open').forEach(function (g) { g.classList.remove('open'); });
+  });
+</script>
+</body>
+</html>

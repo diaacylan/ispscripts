@@ -321,7 +321,7 @@
 <meta name="author" content="Diaa">
 <meta name="theme-color" content="#0E1420">
 <meta property="og:site_name" content="ISP Scripts">
-<meta property="article:modified_time" content="2026-09-21">
+<meta property="article:modified_time" content="2026-09-25">
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "PPPoE + RADIUS on MikroTik: The Complete Setup Guide", "description": "Why WISPs use PPPoE over static IPs, how RADIUS authentication and accounting actually work, and the MTU and CGNAT issues that break new deployments.", "author": {"@type": "Person", "name": "Diaa"}, "publisher": {"@type": "Organization", "name": "ISP Scripts", "url": "https://ispscripts.com/"}, "mainEntityOfPage": "https://ispscripts.com/guide.html", "dateModified": "2026-09-21"}</script>
 </head>
 <body>
@@ -329,12 +329,12 @@
 <div class="wrap">
 
   <nav class="sitenav">
-    <a href="index.html" class="brand">ispscripts<span class="accent">.</span>com</a>
+    <a href="/" class="brand">ispscripts<span class="accent">.</span>com</a>
     <button class="navtoggle" id="navToggle" aria-label="Open navigation" aria-controls="navLinks" aria-expanded="false">&#9776;</button>
     <div class="navlinks" id="navLinks">
       <div class="nav-group">
         <button type="button" class="nav-group-toggle">Generators</button>
-        <div class="nav-group-menu"><a href="index.html">PPPoE + RADIUS</a>
+        <div class="nav-group-menu"><a href="/">PPPoE + RADIUS</a>
           <a href="hotspot.html">Hotspot + RADIUS</a>
           <a href="mikrotik-nat-firewall-generator.html">NAT + Firewall</a>
           <a href="subnet-calculator.html">IP Subnet Calculator</a>
@@ -365,7 +365,7 @@
     <header>
       <div class="eyebrow">Guide &nbsp;→&nbsp; PPPoE &amp; RADIUS on RouterOS</div>
       <h1>PPPoE + RADIUS on MikroTik: <br>the reasoning behind the script</h1>
-      <p class="dek">The <a href="index.html">generator</a> builds the config in seconds. This page covers the part that actually matters if you're running a WISP: why each piece exists, and where new deployments usually break.</p>
+      <p class="dek">The <a href="/">generator</a> builds the config in seconds. This page covers the part that actually matters if you're running a WISP: why each piece exists, and where new deployments usually break.</p>
       <div class="article-meta" style="font-family:var(--font-mono);font-size:12px;color:var(--text-dim);margin-top:16px;">Written by Diaa · Last reviewed 21 September 2026 · RouterOS v7.x focus</div>
     </header>
 
@@ -522,10 +522,15 @@
 
     <div class="note"><strong>RouterOS version:</strong> this generator's output is built and tested against RouterOS v7.x. It hasn't been separately verified against RouterOS v6.</div>
 
+    <section class="callout tip" aria-labelledby="next-reading">
+      <h3 id="next-reading" style="margin-top:0;">Continue with verification</h3>
+      <p>Use the <a href="radius-server-not-responding-mikrotik-v7.html">RouterOS v7 RADIUS troubleshooting checklist</a> when the server times out, the secret is rejected, or accounting is missing. For a clean step-by-step baseline, see the <a href="pppoe-server-mikrotik-v7-configuration-script.html">PPPoE server configuration script guide</a>.</p>
+    </section>
+
     <div class="cta">
       <h3>Ready to generate your config?</h3>
       <p>Fill in your interfaces and RADIUS details and get a ready-to-import <code>.rsc</code> file in seconds.</p>
-      <a href="index.html" class="btn">Open the generator →</a>
+      <a href="/" class="btn">Open the generator →</a>
     </div>
 
     <!-- AdSense: this page has substantial original content (600+ words) and

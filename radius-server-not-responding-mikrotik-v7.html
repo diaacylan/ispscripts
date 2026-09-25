@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4560959124000202"
+     crossorigin="anonymous"></script>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-5GLVMBDCZ4"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-5GLVMBDCZ4');
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<title>RADIUS Server Not Responding on MikroTik RouterOS v7</title>
+<link rel="canonical" href="https://ispscripts.com/radius-server-not-responding-mikrotik-v7.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="RADIUS Server Not Responding on MikroTik RouterOS v7">
+<meta property="og:description" content="Troubleshoot a MikroTik RouterOS v7 RADIUS timeout step by step: PPPoE discovery, routes, UDP 1812/1813, firewall, source IP, shared secret, and accounting.">
+<meta property="og:url" content="https://ispscripts.com/radius-server-not-responding-mikrotik-v7.html">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="RADIUS Server Not Responding on MikroTik RouterOS v7">
+<meta name="twitter:description" content="Troubleshoot a MikroTik RouterOS v7 RADIUS timeout step by step: PPPoE discovery, routes, UDP 1812/1813, firewall, source IP, shared secret, and accounting.">
+<meta name="description" content="Troubleshoot a MikroTik RouterOS v7 RADIUS timeout step by step: PPPoE discovery, routes, UDP 1812/1813, firewall, source IP, shared secret, and accounting.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0E1420;
+    --bg-panel: #161D2B;
+    --bg-panel-2: #1B2333;
+    --bg-input: #10161F;
+    --border: #2A3448;
+    --border-soft: #202940;
+    --text-primary: #E8ECF4;
+    --text-secondary: #96A1B8;
+    --text-dim: #5B6479;
+    --accent: #3DDC84;
+    --accent-soft: rgba(61, 220, 132, 0.13);
+    --amber: #F5A623;
+    --red: #E5484D;
+    --mono-bg: #090D14;
+    --font-display: 'Space Grotesk', sans-serif;
+    --font-body: 'Inter', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+    --radius: 8px;
+    --radius-lg: 12px;
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    margin: 0;
+    background:
+      radial-gradient(1100px 500px at 85% -10%, rgba(61,220,132,0.06), transparent 60%),
+      var(--bg);
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  a { color: var(--accent); }
+  ::selection { background: var(--accent-soft); color: var(--text-primary); }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+
+  .wrap { max-width: 780px; margin: 0 auto; padding: 0 24px 100px; }
+
+  .sitenav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 22px 0;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .sitenav .brand {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 15px;
+    color: var(--text-primary);
+    text-decoration: none;
+  }
+  .sitenav .brand .accent { color: var(--accent); }
+  .sitenav .navlinks { display: flex; gap: 22px; }
+
+  .nav-group { position: relative; }
+  .nav-group-toggle {
+    background: none; border: none; cursor: pointer; font: inherit;
+    color: var(--text-secondary); font-size: 13.5px; font-weight: 500;
+    padding: 0 0 14px 0; margin-bottom: -14px; display: flex; align-items: center; gap: 4px;
+  }
+  .nav-group-toggle:hover { color: var(--text-primary); }
+  .nav-group-toggle::after { content: '\25be'; font-size: 9px; margin-top: 1px; }
+  .nav-group-toggle.active { color: var(--accent); }
+  .nav-group-menu {
+    display: none;
+    position: absolute; top: 100%; left: 0; margin-top: 12px;
+    background: var(--bg-panel); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 8px; min-width: 210px;
+    flex-direction: column; gap: 2px; z-index: 30;
+  }
+  .nav-group:hover .nav-group-menu,
+  .nav-group:focus-within .nav-group-menu { display: flex; }
+  .nav-group.open .nav-group-menu { display: flex; }
+  .nav-group-menu a {
+    padding: 8px 10px; border-radius: 6px; font-size: 13px;
+    color: var(--text-secondary); text-decoration: none;
+  }
+  .nav-group-menu a:hover { background: var(--bg-input); color: var(--text-primary); }
+  .nav-group-menu a.active { color: var(--accent); }
+  .sitenav .navlinks a {
+    font-size: 13.5px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    text-decoration: none;
+    padding-bottom: 3px;
+    border-bottom: 1px solid transparent;
+  }
+  .sitenav .navlinks a:hover { color: var(--text-primary); }
+  .sitenav .navlinks a.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+  .navtoggle {
+    display: none;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-primary);
+    font-size: 17px;
+    line-height: 1;
+    padding: 7px 11px;
+    border-radius: var(--radius);
+    cursor: pointer;
+  }
+  .navtoggle:hover { border-color: var(--accent); }
+  @media (max-width: 720px) {
+    .sitenav { position: relative; }
+    .navtoggle { display: block; }
+    .sitenav .navlinks {
+      display: none;
+      flex-direction: column;
+      width: 100%;
+      gap: 2px;
+      margin-top: 14px;
+    }
+    .sitenav .navlinks.open { display: flex; }
+    .navlinks a {
+      padding: 12px 14px;
+      background: var(--bg-panel);
+      border: 1px solid var(--border-soft);
+      border-radius: var(--radius);
+      border-bottom: 1px solid var(--border-soft) !important;
+    }
+    .navlinks a.active { background: var(--accent-soft); }
+
+    .nav-group-toggle {
+      pointer-events: none;
+      color: var(--text-dim);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      padding: 10px 14px 4px;
+      margin-bottom: 0;
+    }
+    .nav-group-toggle.active { color: var(--accent); }
+    .nav-group-toggle::after { display: none; }
+    .nav-group-menu {
+      display: flex !important;
+      position: static;
+      border: none; background: none; padding: 0; margin: 0;
+      flex-direction: column; gap: 2px;
+    }
+  }
+
+  article header {
+    padding: 32px 0 40px;
+    border-bottom: 1px solid var(--border-soft);
+    margin-bottom: 40px;
+  }
+
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    letter-spacing: .06em;
+    color: var(--text-dim);
+    margin-bottom: 14px;
+  }
+
+  h1 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(28px, 4vw, 38px);
+    line-height: 1.2;
+    margin: 0 0 16px;
+    letter-spacing: -0.01em;
+  }
+
+  .dek {
+    color: var(--text-secondary);
+    font-size: 16.5px;
+    max-width: 620px;
+    margin: 0;
+  }
+
+  h2 {
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 600;
+    margin: 52px 0 18px;
+    letter-spacing: -0.005em;
+  }
+
+  h3 {
+    font-family: var(--font-display);
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 30px 0 12px;
+  }
+
+  p { font-size: 15.5px; color: var(--text-secondary); margin: 0 0 16px; }
+  p strong { color: var(--text-primary); font-weight: 600; }
+
+  code {
+    font-family: var(--font-mono);
+    font-size: 13.5px;
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: #A9C4FF;
+  }
+
+  pre {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    line-height: 1.65;
+    background: var(--mono-bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px 20px;
+    overflow-x: auto;
+    color: #C9E8D3;
+    margin: 0 0 20px;
+  }
+  pre code { background: none; border: none; padding: 0; color: inherit; }
+
+  ul, ol { color: var(--text-secondary); font-size: 15.5px; padding-left: 22px; margin: 0 0 20px; }
+  li { margin-bottom: 8px; }
+  li strong { color: var(--text-primary); }
+
+  .callout {
+    margin: 28px 0;
+    padding: 16px 18px;
+    border-radius: var(--radius);
+    font-size: 14px;
+  }
+  .callout.warn {
+    background: rgba(245, 166, 35, 0.07);
+    border: 1px solid rgba(245, 166, 35, 0.25);
+  }
+  .callout.warn strong { color: var(--amber); }
+  .callout.tip {
+    background: var(--accent-soft);
+    border: 1px solid rgba(61, 220, 132, 0.3);
+  }
+  .callout.tip strong { color: var(--accent); }
+  .callout p { margin: 0; color: var(--text-secondary); }
+
+  .cta {
+    margin-top: 60px;
+    padding: 28px;
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    text-align: center;
+  }
+  .cta h3 { margin-top: 0; }
+  .cta p { max-width: 480px; margin: 0 auto 18px; }
+  .cta a.btn {
+    display: inline-block;
+    background: var(--accent);
+    color: #06210F;
+    font-weight: 600;
+    font-size: 14px;
+    text-decoration: none;
+    padding: 11px 22px;
+    border-radius: var(--radius);
+  }
+
+  footer {
+    margin-top: 56px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border-soft);
+    color: var(--text-dim);
+    font-size: 12.5px;
+  }
+
+  .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 0 0 20px; }
+  .table-wrap table { margin: 0; min-width: 520px; }
+  table { width: 100%; border-collapse: collapse; margin: 0 0 20px; font-size: 14px; }
+  th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--border-soft); color: var(--text-secondary); }
+  th { color: var(--text-primary); font-weight: 600; font-size: 12.5px; text-transform: uppercase; letter-spacing: .04em; }
+  td code { font-size: 12.5px; }
+</style>
+
+<meta name="author" content="Diaa">
+<meta name="theme-color" content="#0E1420">
+<meta property="og:site_name" content="ISP Scripts">
+<meta property="article:modified_time" content="2026-09-25">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "RADIUS Server Not Responding on MikroTik RouterOS v7", "description": "Troubleshoot a MikroTik RouterOS v7 RADIUS timeout step by step: PPPoE discovery, routes, UDP 1812/1813, firewall, source IP, shared secret, and accounting.", "author": {"@type": "Person", "name": "Diaa"}, "publisher": {"@type": "Organization", "name": "ISP Scripts", "url": "https://ispscripts.com/"}, "mainEntityOfPage": "https://ispscripts.com/radius-server-not-responding-mikrotik-v7.html", "dateModified": "2026-09-25"}</script>
+</head><body>
+
+<div class="wrap">
+
+  <nav class="sitenav">
+    <a href="/" class="brand">ispscripts<span class="accent">.</span>com</a>
+    <button class="navtoggle" id="navToggle" aria-label="Open navigation" aria-controls="navLinks" aria-expanded="false">&#9776;</button>
+    <div class="navlinks" id="navLinks">
+      <div class="nav-group">
+        <button type="button" class="nav-group-toggle">Generators</button>
+        <div class="nav-group-menu"><a href="/">PPPoE + RADIUS</a>
+          <a href="hotspot.html">Hotspot + RADIUS</a>
+          <a href="mikrotik-nat-firewall-generator.html">NAT + Firewall</a>
+          <a href="subnet-calculator.html">IP Subnet Calculator</a>
+          <a href="wireguard.html">WireGuard</a>
+          <a href="port-forwarding.html">Port Forwarding</a>
+          <a href="qos-calculator.html">QoS &amp; Queues</a>
+          <a href="wireless-link-budget.html">Wireless Link Budget</a>
+        </div>
+      </div>
+      <div class="nav-group">
+        <button type="button" class="nav-group-toggle">Guides</button>
+        <div class="nav-group-menu">
+          <a href="guide.html">PPPoE + RADIUS Guide</a>
+          <a href="hotspot-guide.html">Hotspot + RADIUS Guide</a>
+          <a href="nat-firewall-guide.html">NAT + Firewall Guide</a>
+          <a href="subnet-calculator-guide.html">Subnet Calculator Guide</a>
+          <a href="pppoe-vs-hotspot.html">PPPoE vs Hotspot</a><a href="deployment-checklist.html">Deployment Checklist</a><a href="diagnose-radius.html">RADIUS Troubleshooting</a>
+        </div>
+      </div>
+      <a href="blog.html" class="active">Blog</a>
+      <a href="about.html">About</a>
+      <a href="contact.html">Contact</a>
+    </div>
+  </nav>
+
+  
+  <article>
+    <header>
+      <div class="eyebrow">Troubleshooting → RADIUS &amp; PPPoE</div>
+      <h1>RADIUS Server Not Responding on MikroTik RouterOS v7</h1>
+      <p class="dek">A field checklist that separates PPPoE discovery, network reachability, RADIUS configuration, firewall policy, shared-secret errors, and accounting problems—so you test the right layer first.</p>
+      <div class="article-meta" style="font-family:var(--font-mono);font-size:12px;color:var(--text-dim);margin-top:16px;">Written by Diaa · Last reviewed 25 September 2026 · RouterOS v7.x focus</div>
+    </header>
+
+    <div class="callout warn"><p><strong>Safety first:</strong> run the checks in order and change one thing at a time. Keep an existing management session open, export a backup before changing firewall or PPP settings, and never paste a real RADIUS shared secret into a public ticket or screenshot.</p></div>
+
+    <h2>What “RADIUS server not responding” can mean</h2>
+    <p>The message is not a single failure. It may mean the router cannot route to the RADIUS server, a firewall drops UDP, the RADIUS client is registered with the wrong source address, the server does not recognize the router as a NAS client, or the reply is rejected because the shared secret is wrong. A PPPoE client can also fail earlier during discovery, before RADIUS is involved at all.</p>
+    <p>Use this order: <strong>PPPoE discovery → IP reachability → RouterOS RADIUS entry → PPP AAA → RADIUS server client definition → shared secret and ports → authentication response → accounting.</strong></p>
+
+    <h2>1. Confirm that the failure reaches the RADIUS layer</h2>
+    <p>If the client never receives a PADO, the issue is usually the subscriber-facing interface, bridge, VLAN, service name, or PPPoE server state—not RADIUS. On a test client, first confirm that the PPPoE server is visible and the client is attempting the expected service name.</p>
+    <p>On the router, print the PPPoE server configuration:</p>
+    <pre><code>/interface pppoe-server server print detail</code></pre>
+    <p>Confirm that the server is enabled, the interface is the subscriber-facing interface, and the service name matches the client when one is required. Do not put a normal IP address on the interface that receives PPPoE discovery unless your topology specifically requires a different design.</p>
+    <p>Then watch only the PPPoE and PPP log topics while making one test connection:</p>
+    <pre><code>/log print follow where topics~"pppoe|ppp"</code></pre>
+    <p>If there is no discovery or session activity, fix Layer 2 or the PPPoE server before investigating RADIUS.</p>
+
+    <h2>2. Test IP reachability from the router</h2>
+    <p>Replace the placeholder with the real RADIUS address. Run one command, read the result, and do not assume that a working ping proves UDP/1812 is allowed; it only proves that ICMP reached the address.</p>
+    <pre><code>/ping address=&lt;RADIUS_SERVER_IP&gt;</code></pre>
+    <p>If the address is in another subnet, inspect the route chosen by RouterOS:</p>
+    <pre><code>/ip route check &lt;RADIUS_SERVER_IP&gt;</code></pre>
+    <p>If the RADIUS server is reached through a specific VRF, source address, or tunnel, perform the test from that same routing context. A common WISP mistake is testing from a management path while PPP traffic uses a different VRF or source address.</p>
+
+    <h2>3. Inspect the RouterOS RADIUS entry</h2>
+    <p>Print the entry without exposing the secret in a screenshot:</p>
+    <pre><code>/radius print detail</code></pre>
+    <p>For PPPoE, verify that the entry includes <code>service=ppp</code>. The default authentication and accounting ports are UDP <code>1812</code> and <code>1813</code>. Verify the server address, source address, and timeout. If you set <code>src-address</code>, the RADIUS server must know that source IP as the router/NAS client.</p>
+    <p>When a request is made, inspect the RADIUS counters:</p>
+    <pre><code>/radius monitor [find]</code></pre>
+    <p>Look for requests, accepts, rejects, timeouts, and bad replies. A timeout points toward routing, firewall, wrong address, or a silent server. A bad reply often points toward a shared-secret mismatch or a response that the router cannot validate.</p>
+
+    <h2>4. Confirm that PPP is allowed to use RADIUS</h2>
+    <p>Registering a server under <code>/radius</code> does not by itself enable remote authentication. Print PPP AAA:</p>
+    <pre><code>/ppp aaa print</code></pre>
+    <p>For remote PPP authentication, <code>use-radius=yes</code> must be enabled. For usage records, <code>accounting=yes</code> must be enabled as well. An interim update such as <code>5m</code> is a practical starting point, but choose an interval that your RADIUS and billing systems can handle.</p>
+    <p>Remember the local database rule: RouterOS checks a matching local PPP secret first. A local test account can therefore succeed while the RADIUS path is never exercised. Test with a username that does not exist locally when you need to prove remote authentication.</p>
+
+    <h2>5. Check the RADIUS server’s NAS/client definition</h2>
+    <p>The RADIUS server must have a client definition for the router’s actual source IP. Check these values on the server side:</p>
+    <ul>
+      <li><strong>Client/NAS address:</strong> the source IP seen by the RADIUS server, not necessarily the router’s management address.</li>
+      <li><strong>Shared secret:</strong> must match exactly, including case and hidden whitespace.</li>
+      <li><strong>Authentication port:</strong> normally UDP 1812.</li>
+      <li><strong>Accounting port:</strong> normally UDP 1813.</li>
+      <li><strong>Service:</strong> the RouterOS entry must include PPP for PPPoE.</li>
+      <li><strong>Policy:</strong> the user must be allowed to authenticate through PPP/PPPoE.</li>
+    </ul>
+    <p>Do not change the secret on both systems at once without a controlled test. Change one side, test one account, and check the server log before moving to the next variable.</p>
+
+    <h2>6. Read the logs while performing one test login</h2>
+    <p>Open a dedicated log view, start one connection attempt, and stop the view after the attempt. RouterOS supports topic-based logging, including <code>radius</code>, <code>ppp</code>, and <code>pppoe</code>.</p>
+    <pre><code>/log print follow where topics~"radius|ppp|pppoe"</code></pre>
+    <p>Interpret the result as a decision tree:</p>
+    <div class="table-wrap"><table>
+      <tr><th>Observation</th><th>Likely layer</th><th>Next check</th></tr>
+      <tr><td>No PPPoE activity</td><td>Layer 2, VLAN, interface, or service name</td><td>PPPoE server interface and client discovery</td></tr>
+      <tr><td>PPPoE session starts, no RADIUS request</td><td>PPP AAA or local-secret selection</td><td><code>/ppp aaa print</code> and test username</td></tr>
+      <tr><td>RADIUS timeout</td><td>Route, UDP firewall, address, VRF, or server down</td><td>Ping, route check, counters, server packet capture/log</td></tr>
+      <tr><td>RADIUS reject</td><td>Credentials or server policy</td><td>Read the RADIUS server’s reject reason</td></tr>
+      <tr><td>Bad reply</td><td>Shared secret or reply validation</td><td>Compare the secret and source client definition</td></tr>
+      <tr><td>Authentication succeeds, usage is empty</td><td>Accounting path</td><td>UDP 1813, <code>accounting=yes</code>, interim updates, server accounting log</td></tr>
+    </table></div>
+
+    <h2>7. Check firewall counters without opening the router</h2>
+    <p>First print filter counters and rule order:</p>
+    <pre><code>/ip firewall filter print stats</code></pre>
+    <p>Look for a drop rule that matches traffic between the router and the RADIUS server, or a rule that drops input traffic if the RADIUS server is on the router itself. If you add a temporary allow rule for testing, place it narrowly, document it, and remove it after the test. Do not disable the whole firewall as a troubleshooting shortcut.</p>
+    <p>For a RADIUS server behind a tunnel or NAT, also confirm that return traffic follows the same path. A one-way UDP path can look exactly like a dead RADIUS server.</p>
+
+    <h2>8. Verify accounting separately from authentication</h2>
+    <p>Authentication and accounting are different conversations. A successful login proves that an Access-Accept was accepted; it does not prove that Accounting-Start, Interim-Update, and Accounting-Stop records are reaching the billing system.</p>
+    <p>After one test session is connected, inspect active PPP sessions:</p>
+    <pre><code>/ppp active print detail</code></pre>
+    <p>Then confirm the server receives accounting records on UDP 1813 and that the session ID and byte counters are changing. If authentication works but accounting does not, do not rotate the user password; inspect the accounting port, firewall path, server listener, and <code>/ppp aaa</code> settings instead.</p>
+
+    <h2>9. A repeatable test matrix</h2>
+    <div class="table-wrap"><table>
+      <tr><th>Test</th><th>Expected result</th><th>What it proves</th></tr>
+      <tr><td>PPPoE discovery</td><td>Client sees the access concentrator</td><td>Layer 2 and PPPoE server are reachable</td></tr>
+      <tr><td>Router ping to RADIUS</td><td>Replies from the server</td><td>Basic IP route exists</td></tr>
+      <tr><td>Unknown test user</td><td>One RADIUS request appears</td><td>Router is not silently using a local secret</td></tr>
+      <tr><td>Valid user</td><td>Access-Accept and a PPP session</td><td>Authentication and authorization work</td></tr>
+      <tr><td>Accounting check</td><td>Start, interim, and stop records</td><td>Usage data path works</td></tr>
+      <tr><td>Router reboot or server outage drill</td><td>Known failure and recovery behavior</td><td>Operations team has a documented fallback</td></tr>
+    </table></div>
+
+    <div class="callout tip"><p><strong>Fastest diagnosis:</strong> if <code>/radius monitor</code> shows no requests, stay on RouterOS configuration and local-secret selection. If requests time out, stay on routing/firewall/server reachability. If the server logs a reject, stop changing the network and fix the user policy. If the server logs an accept but the router reports a bad reply, compare the shared secret and source client address.</p></div>
+
+    <h2>Sources and version notes</h2>
+    <p>This checklist follows MikroTik's official <a href="https://help.mikrotik.com/docs/spaces/ROS/pages/328097/RADIUS" target="_blank" rel="noopener">RADIUS</a>, <a href="https://help.mikrotik.com/docs/spaces/ROS/pages/132350049/PPP+AAA" target="_blank" rel="noopener">PPP AAA</a>, <a href="https://help.mikrotik.com/docs/spaces/ROS/pages/2031625/PPPoE" target="_blank" rel="noopener">PPPoE</a>, and <a href="https://help.mikrotik.com/docs/spaces/ROS/pages/328094/Log" target="_blank" rel="noopener">logging</a> documentation. RouterOS menus and defaults can change between releases, so confirm the exact syntax on the target version before production use. RADIUS authentication is described in <a href="https://www.rfc-editor.org/rfc/rfc2865" target="_blank" rel="noopener">RFC 2865</a>, and accounting in <a href="https://www.rfc-editor.org/rfc/rfc2866" target="_blank" rel="noopener">RFC 2866</a>.</p>
+
+    <div class="cta">
+      <h3>Need a clean baseline?</h3>
+      <p>Generate the RouterOS-side PPPoE and RADIUS configuration, then use this checklist to verify each layer before deployment.</p>
+      <a href="/" class="btn">Open the PPPoE + RADIUS generator →</a>
+    </div>
+
+    <footer>Written for WISP and ISP operators running MikroTik + RADIUS. Not affiliated with MikroTik or any RADIUS platform vendor.<br><a href="about.html" style="color:var(--text-dim)">About</a> · <a href="privacy.html" style="color:var(--text-dim)">Privacy</a> · <a href="contact.html" style="color:var(--text-dim)">Contact</a> · <a href="changelog.html">Changelog</a> · <a href="deployment-checklist.html">Deployment checklist</a> · <a href="https://github.com/diaacylan/ispscripts" target="_blank" rel="noopener">View source</a> · <a href="terms.html">Terms</a> · <a href="disclaimer.html">Disclaimer</a></footer>
+  </article>
+<script>
+  const navToggle = document.getElementById('navToggle');
+  const navLinks = document.getElementById('navLinks');
+  navToggle?.addEventListener('click', function () {
+    const isOpen = navLinks.classList.toggle('open');
+    navToggle.setAttribute('aria-expanded', String(isOpen));
+  });
+
+  document.querySelectorAll('.nav-group-toggle').forEach(function (btn) {
+    btn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      var group = btn.closest('.nav-group');
+      var wasOpen = group.classList.contains('open');
+      document.querySelectorAll('.nav-group.open').forEach(function (g) { g.classList.remove('open'); });
+      if (!wasOpen) group.classList.add('open');
+    });
+  });
+  document.addEventListener('click', function () {
+    document.querySelectorAll('.nav-group.open').forEach(function (g) { g.classList.remove('open'); });
+  });
+</script>
+</body>
+</html>

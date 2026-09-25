@@ -15,16 +15,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" href="/favicon.ico" sizes="any">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-<title>Subnetting Explained: CIDR, Network & Broadcast Math</title>
+<title>How to Calculate Subnets: CIDR, Network & Broadcast Addresses</title>
 <link rel="canonical" href="https://ispscripts.com/subnet-calculator-guide.html">
 <meta property="og:type" content="website">
-<meta property="og:title" content="Subnetting Explained: CIDR, Network &amp; Broadcast Math">
-<meta property="og:description" content="Subnetting Explained: CIDR, Network &amp; Broadcast Math — practical MikroTik, WISP, and ISP networking tools and guides.">
+<meta property="og:title" content="How to Calculate Subnets: CIDR, Network &amp; Broadcast Addresses">
+<meta property="og:description" content="Learn how to calculate subnets by hand: CIDR to subnet mask, network and broadcast addresses, usable hosts, subnet splits, and VLSM examples.">
 <meta property="og:url" content="https://ispscripts.com/subnet-calculator-guide.html">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Subnetting Explained: CIDR, Network &amp; Broadcast Math">
-<meta name="twitter:description" content="Subnetting Explained: CIDR, Network &amp; Broadcast Math — practical MikroTik, WISP, and ISP networking tools and guides.">
-<meta name="description" content="How IP subnetting actually works — CIDR notation, the binary math behind network and broadcast addresses, and how to plan subnets without a calculator.">
+<meta name="twitter:title" content="How to Calculate Subnets: CIDR, Network &amp; Broadcast Addresses">
+<meta name="twitter:description" content="Learn how to calculate subnets by hand: CIDR to subnet mask, network and broadcast addresses, usable hosts, subnet splits, and VLSM examples.">
+<meta name="description" content="Learn how to calculate subnets by hand: CIDR to subnet mask, network and broadcast addresses, usable hosts, subnet splits, and VLSM examples.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -321,20 +321,20 @@
 <meta name="author" content="Diaa">
 <meta name="theme-color" content="#0E1420">
 <meta property="og:site_name" content="ISP Scripts">
-<meta property="article:modified_time" content="2026-09-21">
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Subnetting Explained: CIDR, Network & Broadcast Math", "description": "How IP subnetting actually works — CIDR notation, the binary math behind network and broadcast addresses, and how to plan subnets without a calculator.", "author": {"@type": "Person", "name": "Diaa"}, "publisher": {"@type": "Organization", "name": "ISP Scripts", "url": "https://ispscripts.com/"}, "mainEntityOfPage": "https://ispscripts.com/subnet-calculator-guide.html", "dateModified": "2026-09-21"}</script>
+<meta property="article:modified_time" content="2026-09-25">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "How to Calculate Subnets: CIDR, Network & Broadcast Addresses", "description": "Learn how to calculate subnets by hand: CIDR to subnet mask, network and broadcast addresses, usable hosts, subnet splits, and VLSM examples.", "author": {"@type": "Person", "name": "Diaa"}, "publisher": {"@type": "Organization", "name": "ISP Scripts", "url": "https://ispscripts.com/"}, "mainEntityOfPage": "https://ispscripts.com/subnet-calculator-guide.html", "dateModified": "2026-09-25"}</script>
 </head>
 <body>
 
 <div class="wrap">
 
   <nav class="sitenav">
-    <a href="index.html" class="brand">ispscripts<span class="accent">.</span>com</a>
+    <a href="/" class="brand">ispscripts<span class="accent">.</span>com</a>
     <button class="navtoggle" id="navToggle" aria-label="Open navigation" aria-controls="navLinks" aria-expanded="false">&#9776;</button>
     <div class="navlinks" id="navLinks">
       <div class="nav-group">
         <button type="button" class="nav-group-toggle">Generators</button>
-        <div class="nav-group-menu"><a href="index.html">PPPoE + RADIUS</a>
+        <div class="nav-group-menu"><a href="/">PPPoE + RADIUS</a>
           <a href="hotspot.html">Hotspot + RADIUS</a>
           <a href="mikrotik-nat-firewall-generator.html">NAT + Firewall</a>
           <a href="subnet-calculator.html">IP Subnet Calculator</a>
@@ -364,9 +364,9 @@
   <article>
     <header>
       <div class="eyebrow">Guide → IP Subnetting</div>
-      <h1>Subnetting Explained: <br>the math behind the calculator</h1>
+      <h1>How to Calculate Subnets: <br>CIDR, network &amp; broadcast addresses</h1>
       <p class="dek">The <a href="subnet-calculator.html">calculator</a> gives you the answer instantly. This page covers the binary math behind it — useful once you want to subnet by hand, or just understand what's actually happening.</p>
-      <div class="article-meta" style="font-family:var(--font-mono);font-size:12px;color:var(--text-dim);margin-top:16px;">Written by Diaa · Last reviewed 21 September 2026 · RouterOS v7.x focus</div>
+      <div class="article-meta" style="font-family:var(--font-mono);font-size:12px;color:var(--text-dim);margin-top:16px;">Written by Diaa · Last reviewed 25 September 2026 · IPv4 and RouterOS v7.x focus</div>
     </header>
 
     <h2>What a subnet mask actually does</h2>

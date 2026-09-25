@@ -33,4 +33,4 @@
 
 ## Publication note
 
-The GitHub Pages repository is `https://github.com/diaacylan/ispscripts` on `main`. The files are prepared locally but have not been pushed in this turn pending confirmation to publish the listed public changes.
+The GitHub Pages repository is `https://github.com/diaacylan/ispscripts` on `main`. The changes were published successfully to commit `cf5aee418125d18fe1dce8ff117bce6159905bb9` after write permission was enabled, and the live domain verification passed.

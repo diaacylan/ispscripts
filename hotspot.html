@@ -70,21 +70,21 @@
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #0E1420;
-    --bg-panel: #161D2B;
-    --bg-panel-2: #1B2333;
-    --bg-input: #10161F;
-    --border: #2A3448;
-    --border-soft: #202940;
-    --text-primary: #E8ECF4;
-    --text-secondary: #96A1B8;
-    --text-dim: #5B6479;
-    --accent: #3DDC84;
-    --accent-soft: rgba(61, 220, 132, 0.13);
-    --accent-ring: rgba(61, 220, 132, 0.35);
-    --amber: #F5A623;
+    --bg: #18181a;
+    --bg-panel: #222225;
+    --bg-panel-2: #29292d;
+    --bg-input: #1b1b1d;
+    --border: #36363c;
+    --border-soft: #2c2c31;
+    --text-primary: #F4F2EF;
+    --text-secondary: #A9A7AD;
+    --text-dim: #77757C;
+    --accent: #F26A3D;
+    --accent-soft: rgba(242,106,61, 0.13);
+    --accent-ring: rgba(242,106,61, 0.35);
+    --amber: #F2C14E;
     --red: #E5484D;
-    --mono-bg: #090D14;
+    --mono-bg: #151516;
     --font-display: 'Space Grotesk', sans-serif;
     --font-body: 'Inter', sans-serif;
     --font-mono: 'JetBrains Mono', monospace;
@@ -98,8 +98,8 @@
   body {
     margin: 0;
     background:
-      radial-gradient(1100px 500px at 85% -10%, rgba(61,220,132,0.07), transparent 60%),
-      radial-gradient(900px 400px at -10% 10%, rgba(245,166,35,0.05), transparent 55%),
+      radial-gradient(1100px 500px at 85% -10%, rgba(242,106,61,0.07), transparent 60%),
+      radial-gradient(900px 400px at -10% 10%, rgba(242,193,78,0.05), transparent 55%),
       var(--bg);
     color: var(--text-primary);
     font-family: var(--font-body);
@@ -207,7 +207,7 @@
 
   .toolbanner {
     background: var(--accent-soft);
-    border: 1px solid rgba(61, 220, 132, 0.25);
+    border: 1px solid rgba(242,106,61, 0.25);
     border-radius: var(--radius);
     padding: 10px 16px;
     font-size: 13px;
@@ -223,7 +223,7 @@
   .led { width: 7px; height: 7px; border-radius: 50%; background: var(--text-dim); }
   .led.on { background: var(--accent); box-shadow: 0 0 8px 1px var(--accent-ring); animation: blink 2.6s ease-in-out infinite; }
   .led.on:nth-child(2) { animation-delay: .5s; }
-  .led.on:nth-child(4) { background: var(--amber); box-shadow: 0 0 8px 1px rgba(245,166,35,.35); animation-delay: 1.1s; }
+  .led.on:nth-child(4) { background: var(--amber); box-shadow: 0 0 8px 1px rgba(242,193,78,.35); animation-delay: 1.1s; }
   @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: .35; } }
 
   .eyebrow { font-family: var(--font-mono); font-size: 12.5px; letter-spacing: .06em; color: var(--text-dim); margin-bottom: 14px; }
@@ -289,7 +289,7 @@
   .field-msg.warn { color: var(--amber); }
 
   input.field-err { border-color: var(--red) !important; box-shadow: 0 0 0 3px rgba(229, 72, 77, 0.15) !important; }
-  input.field-warn { border-color: var(--amber) !important; box-shadow: 0 0 0 3px rgba(245, 166, 35, 0.15) !important; }
+  input.field-warn { border-color: var(--amber) !important; box-shadow: 0 0 0 3px rgba(242,193,78, 0.15) !important; }
 
   .output-col { position: sticky; top: 24px; min-width: 0; }
   .terminal { background: var(--mono-bg); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; }
@@ -297,14 +297,14 @@
   .dots { display: flex; gap: 6px; }
   .dots span { width: 10px; height: 10px; border-radius: 50%; display: block; }
   .dots span:nth-child(1) { background: #E5484D; }
-  .dots span:nth-child(2) { background: #F5A623; }
-  .dots span:nth-child(3) { background: #3DDC84; }
+  .dots span:nth-child(2) { background: #F2C14E; }
+  .dots span:nth-child(3) { background: #F26A3D; }
   .term-filename { font-family: var(--font-mono); font-size: 12.5px; color: var(--text-dim); }
   .term-body { padding: 20px; max-height: 620px; overflow: auto; }
-  #output { font-family: var(--font-mono); font-size: 13px; line-height: 1.65; white-space: pre; margin: 0; color: #C9E8D3; }
+  #output { font-family: var(--font-mono); font-size: 13px; line-height: 1.65; white-space: pre; margin: 0; color: #E7E2DA; }
   #output .c { color: var(--text-dim); }
   #output .k { color: var(--accent); }
-  #output .v { color: #A9C4FF; }
+  #output .v { color: #FFB48C; }
   .cursor { display: inline-block; width: 7px; height: 14px; background: var(--accent); vertical-align: text-bottom; animation: caret 1s steps(1) infinite; }
   @keyframes caret { 50% { opacity: 0; } }
 
@@ -317,9 +317,9 @@
   }
   button:hover { border-color: var(--accent); }
   button:active { transform: translateY(1px); }
-  button.primary { background: var(--accent); border-color: var(--accent); color: #06210F; }
-  button.primary:hover { background: #34C976; }
-  button.copied { background: var(--accent); border-color: var(--accent); color: #06210F; }
+  button.primary { background: var(--accent); border-color: var(--accent); color: #FFFFFF; }
+  button.primary:hover { background: #E85A2C; }
+  button.copied { background: var(--accent); border-color: var(--accent); color: #FFFFFF; }
 
   .about { margin-top: 64px; padding-top: 40px; border-top: 1px solid var(--border-soft); }
   .about h2 { font-family: var(--font-display); font-size: 22px; font-weight: 600; margin: 0 0 18px; }
@@ -351,14 +351,14 @@
   .faq p { font-size: 14px; color: var(--text-secondary); margin: 10px 0 0; }
   .about p.lead { color: var(--text-secondary); font-size: 15px; max-width: 760px; }
 
-  .note { margin-top: 28px; padding: 16px 18px; background: rgba(245, 166, 35, 0.07); border: 1px solid rgba(245, 166, 35, 0.25); border-radius: var(--radius); font-size: 13.5px; color: var(--text-secondary); }
+  .note { margin-top: 28px; padding: 16px 18px; background: rgba(242,193,78, 0.07); border: 1px solid rgba(242,193,78, 0.25); border-radius: var(--radius); font-size: 13.5px; color: var(--text-secondary); }
   .note strong { color: var(--amber); }
 
   footer { margin-top: 56px; padding-top: 24px; border-top: 1px solid var(--border-soft); color: var(--text-dim); font-size: 12.5px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
 
   .preset-panel {
     margin: 0 0 26px; padding: 16px 18px; background: var(--accent-soft);
-    border: 1px solid rgba(61,220,132,.24); border-radius: var(--radius);
+    border: 1px solid rgba(242,106,61,.24); border-radius: var(--radius);
   }
   .preset-panel label { color: var(--text-primary); }
   .preset-panel select { width: 100%; background: var(--bg-input); border: 1px solid var(--border);
@@ -388,45 +388,33 @@
 </script>
 
 <meta name="author" content="Diaa">
-<meta name="theme-color" content="#0E1420">
 <meta property="og:site_name" content="ISP Scripts">
-<meta property="article:modified_time" content="2026-09-21"></head>
+<meta property="article:modified_time" content="2026-09-21"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&display=swap">
+<link rel="stylesheet" href="/theme.css">
+<meta name="theme-color" content="#1c1c1e">
+</head>
 <body>
+<div class="app-frame">
+<div class="topbar" role="banner">
+  <a href="/" class="brand" aria-label="ISP Scripts home"><b>ISP</b> Scripts</a>
+  <div class="navlinks" id="navLinks" role="navigation" aria-label="Main">
+    <a href="/" class="">Dashboard</a>
+    <div class="nav-group"><button type="button" class="nav-group-toggle active">Generators</button><div class="nav-group-menu"><a href="/">PPPoE + RADIUS</a><a href="hotspot.html" class="active">Hotspot + RADIUS</a><a href="mikrotik-nat-firewall-generator.html">NAT + Firewall</a><a href="wireguard.html">WireGuard</a><a href="port-forwarding.html">Port Forwarding</a><a href="qos-calculator.html">QoS &amp; Queues</a><a href="firewall-rule-builder.html">Firewall Rule Builder</a><a href="vlan-generator.html">VLAN Generator</a><a href="dhcp-server-generator.html">DHCP Server</a><hr><a href="tools.html">All tools</a></div></div>
+    <div class="nav-group"><button type="button" class="nav-group-toggle">Guides</button><div class="nav-group-menu"><a href="guide.html">PPPoE + RADIUS guide</a><a href="hotspot-guide.html">Hotspot + RADIUS guide</a><a href="nat-firewall-guide.html">NAT + Firewall guide</a><a href="subnet-calculator-guide.html">Subnet calculator guide</a><a href="pppoe-vs-hotspot.html">PPPoE vs Hotspot</a><a href="deployment-checklist.html">Deployment checklist</a><a href="diagnose-radius.html">RADIUS troubleshooting</a></div></div>
+    <a href="tools.html" class="">Devices &amp; tools</a>
+    <a href="blog.html" class="">Blog</a>
+    <a href="contact.html" class="">Support</a>
+  </div>
+  <div class="tb-icons">
+    <a class="tb-btn avatar" href="about.html" title="About ISP Scripts" aria-label="About ISP Scripts"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg></a>
+    <a class="tb-btn" href="changelog.html" title="What’s new" aria-label="What’s new — changelog"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg><span class="dot"></span></a>
+  </div>
+  <button class="navtoggle" id="navToggle" aria-label="Open navigation" aria-controls="navLinks" aria-expanded="false">&#9776;</button>
+</div>
+<aside class="rail"><nav aria-label="Sections"><a href="/" title="Dashboard" aria-label="Dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V20a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V9.5"/></svg></a><a href="tools.html" title="Generators" aria-label="Generators" class="active" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></a><a href="mikrotik.html" title="Router tools" aria-label="Router tools"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="13" width="19" height="7" rx="1.5"/><path d="M6.5 16.5h.01M10 16.5h.01"/><path d="M14 16.5h4"/><path d="M7 13V9M17 13V9"/></svg></a><a href="wireless-link-budget.html" title="Wireless link budget" aria-label="Wireless link budget"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="15" width="18" height="6" rx="1.5"/><path d="M7 18h.01M11 18h.01"/><path d="M12 15v-3"/><path d="M8.5 9.5a5 5 0 0 1 7 0"/><path d="M6 7a8.5 8.5 0 0 1 12 0"/></svg></a><a href="guide.html" title="Guides &amp; help" aria-label="Guides &amp; help"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.5"/><path d="M9.3 9.2a2.8 2.8 0 0 1 5.4 1c0 1.9-2.7 2.5-2.7 4"/><path d="M12 17.5h.01"/></svg></a></nav></aside>
+
 
 <div class="wrap">
-
-  <nav class="sitenav">
-    <a href="/" class="brand">ispscripts<span class="accent">.</span>com</a>
-    <button class="navtoggle" id="navToggle" aria-label="Open navigation" aria-controls="navLinks" aria-expanded="false">&#9776;</button>
-    <div class="navlinks" id="navLinks">
-      <div class="nav-group">
-        <button type="button" class="nav-group-toggle active">Generators</button>
-        <div class="nav-group-menu"><a href="/">PPPoE + RADIUS</a>
-          <a href="hotspot.html">Hotspot + RADIUS</a>
-          <a href="mikrotik-nat-firewall-generator.html">NAT + Firewall</a>
-          <a href="subnet-calculator.html">IP Subnet Calculator</a>
-          <a href="wireguard.html">WireGuard</a>
-          <a href="port-forwarding.html">Port Forwarding</a>
-          <a href="qos-calculator.html">QoS &amp; Queues</a>
-          <a href="wireless-link-budget.html">Wireless Link Budget</a>
-        </div>
-      </div>
-      <div class="nav-group">
-        <button type="button" class="nav-group-toggle">Guides</button>
-        <div class="nav-group-menu">
-          <a href="guide.html">PPPoE + RADIUS Guide</a>
-          <a href="hotspot-guide.html">Hotspot + RADIUS Guide</a>
-          <a href="nat-firewall-guide.html">NAT + Firewall Guide</a>
-          <a href="subnet-calculator-guide.html">Subnet Calculator Guide</a>
-          <a href="pppoe-vs-hotspot.html">PPPoE vs Hotspot</a><a href="deployment-checklist.html">Deployment Checklist</a><a href="diagnose-radius.html">RADIUS Troubleshooting</a>
-        </div>
-      </div>
-      <a href="tools.html">Tools</a>
-      <a href="blog.html">Blog</a>
-      <a href="about.html">About</a>
-      <a href="contact.html">Contact</a>
-    </div>
-  </nav>
 
   <div class="toolbanner">🛠️ This site has 8 free networking tools + in-depth guides — <a href="about.html">see everything here</a>.</div>
 
@@ -886,5 +874,6 @@ add name=<span class="v">hs-profile</span> hotspot-address=<span class="v">10.20
   });
 </script>
 
+</div>
 </body>
 </html>

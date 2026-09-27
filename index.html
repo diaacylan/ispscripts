@@ -78,21 +78,21 @@
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #0E1420;
-    --bg-panel: #161D2B;
-    --bg-panel-2: #1B2333;
-    --bg-input: #10161F;
-    --border: #2A3448;
-    --border-soft: #202940;
-    --text-primary: #E8ECF4;
-    --text-secondary: #96A1B8;
-    --text-dim: #5B6479;
-    --accent: #3DDC84;
-    --accent-soft: rgba(61, 220, 132, 0.13);
-    --accent-ring: rgba(61, 220, 132, 0.35);
-    --amber: #F5A623;
+    --bg: #18181a;
+    --bg-panel: #222225;
+    --bg-panel-2: #29292d;
+    --bg-input: #1b1b1d;
+    --border: #36363c;
+    --border-soft: #2c2c31;
+    --text-primary: #F4F2EF;
+    --text-secondary: #A9A7AD;
+    --text-dim: #77757C;
+    --accent: #F26A3D;
+    --accent-soft: rgba(242,106,61, 0.13);
+    --accent-ring: rgba(242,106,61, 0.35);
+    --amber: #F2C14E;
     --red: #E5484D;
-    --mono-bg: #090D14;
+    --mono-bg: #151516;
     --font-display: 'Space Grotesk', sans-serif;
     --font-body: 'Inter', sans-serif;
     --font-mono: 'JetBrains Mono', monospace;
@@ -107,8 +107,8 @@
   body {
     margin: 0;
     background:
-      radial-gradient(1100px 500px at 85% -10%, rgba(61,220,132,0.07), transparent 60%),
-      radial-gradient(900px 400px at -10% 10%, rgba(245,166,35,0.05), transparent 55%),
+      radial-gradient(1100px 500px at 85% -10%, rgba(242,106,61,0.07), transparent 60%),
+      radial-gradient(900px 400px at -10% 10%, rgba(242,193,78,0.05), transparent 55%),
       var(--bg);
     color: var(--text-primary);
     font-family: var(--font-body);
@@ -252,7 +252,7 @@
 
   .toolbanner {
     background: var(--accent-soft);
-    border: 1px solid rgba(61, 220, 132, 0.25);
+    border: 1px solid rgba(242,106,61, 0.25);
     border-radius: var(--radius);
     padding: 10px 16px;
     font-size: 13px;
@@ -287,7 +287,7 @@
     animation: blink 2.6s ease-in-out infinite;
   }
   .led.on:nth-child(2) { animation-delay: .5s; }
-  .led.on:nth-child(4) { background: var(--amber); box-shadow: 0 0 8px 1px rgba(245,166,35,.35); animation-delay: 1.1s; }
+  .led.on:nth-child(4) { background: var(--amber); box-shadow: 0 0 8px 1px rgba(242,193,78,.35); animation-delay: 1.1s; }
 
   @keyframes blink {
     0%, 100% { opacity: 1; }
@@ -456,7 +456,7 @@
   .field-msg.warn { color: var(--amber); }
 
   input.field-err { border-color: var(--red) !important; box-shadow: 0 0 0 3px rgba(229, 72, 77, 0.15) !important; }
-  input.field-warn { border-color: var(--amber) !important; box-shadow: 0 0 0 3px rgba(245, 166, 35, 0.15) !important; }
+  input.field-warn { border-color: var(--amber) !important; box-shadow: 0 0 0 3px rgba(242,193,78, 0.15) !important; }
 
   /* ---------- Output panel ---------- */
 
@@ -481,8 +481,8 @@
   .dots { display: flex; gap: 6px; }
   .dots span { width: 10px; height: 10px; border-radius: 50%; display: block; }
   .dots span:nth-child(1) { background: #E5484D; }
-  .dots span:nth-child(2) { background: #F5A623; }
-  .dots span:nth-child(3) { background: #3DDC84; }
+  .dots span:nth-child(2) { background: #F2C14E; }
+  .dots span:nth-child(3) { background: #F26A3D; }
 
   .term-filename {
     font-family: var(--font-mono);
@@ -502,12 +502,12 @@
     line-height: 1.65;
     white-space: pre;
     margin: 0;
-    color: #C9E8D3;
+    color: #E7E2DA;
   }
 
   #output .c { color: var(--text-dim); }
   #output .k { color: var(--accent); }
-  #output .v { color: #A9C4FF; }
+  #output .v { color: #FFB48C; }
 
   .cursor {
     display: inline-block;
@@ -549,11 +549,11 @@
   button.primary {
     background: var(--accent);
     border-color: var(--accent);
-    color: #06210F;
+    color: #FFFFFF;
   }
-  button.primary:hover { background: #34C976; }
+  button.primary:hover { background: #E85A2C; }
 
-  button.copied { background: var(--accent); border-color: var(--accent); color: #06210F; }
+  button.copied { background: var(--accent); border-color: var(--accent); color: #FFFFFF; }
 
   /* ---------- About / content section ---------- */
 
@@ -610,8 +610,8 @@
   .note {
     margin-top: 28px;
     padding: 16px 18px;
-    background: rgba(245, 166, 35, 0.07);
-    border: 1px solid rgba(245, 166, 35, 0.25);
+    background: rgba(242,193,78, 0.07);
+    border: 1px solid rgba(242,193,78, 0.25);
     border-radius: var(--radius);
     font-size: 13.5px;
     color: var(--text-secondary);
@@ -657,7 +657,7 @@
 
   .preset-panel {
     margin: 0 0 26px; padding: 16px 18px; background: var(--accent-soft);
-    border: 1px solid rgba(61,220,132,.24); border-radius: var(--radius);
+    border: 1px solid rgba(242,106,61,.24); border-radius: var(--radius);
   }
   .preset-panel label { color: var(--text-primary); }
   .preset-panel select { width: 100%; background: var(--bg-input); border: 1px solid var(--border);
@@ -687,66 +687,151 @@
 </script>
 
 <meta name="author" content="Diaa">
-<meta name="theme-color" content="#0E1420">
 <meta property="og:site_name" content="ISP Scripts">
-<meta property="article:modified_time" content="2026-09-25"></head>
+<meta property="article:modified_time" content="2026-09-25"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&display=swap">
+<link rel="stylesheet" href="/theme.css">
+<meta name="theme-color" content="#1c1c1e">
+</head>
 <body>
+<div class="app-frame">
+<div class="topbar" role="banner">
+  <a href="/" class="brand" aria-label="ISP Scripts home"><b>ISP</b> Scripts</a>
+  <div class="navlinks" id="navLinks" role="navigation" aria-label="Main">
+    <a href="/" class="active">Dashboard</a>
+    <div class="nav-group"><button type="button" class="nav-group-toggle">Generators</button><div class="nav-group-menu"><a href="/" class="active">PPPoE + RADIUS</a><a href="hotspot.html">Hotspot + RADIUS</a><a href="mikrotik-nat-firewall-generator.html">NAT + Firewall</a><a href="wireguard.html">WireGuard</a><a href="port-forwarding.html">Port Forwarding</a><a href="qos-calculator.html">QoS &amp; Queues</a><a href="firewall-rule-builder.html">Firewall Rule Builder</a><a href="vlan-generator.html">VLAN Generator</a><a href="dhcp-server-generator.html">DHCP Server</a><hr><a href="tools.html">All tools</a></div></div>
+    <div class="nav-group"><button type="button" class="nav-group-toggle">Guides</button><div class="nav-group-menu"><a href="guide.html">PPPoE + RADIUS guide</a><a href="hotspot-guide.html">Hotspot + RADIUS guide</a><a href="nat-firewall-guide.html">NAT + Firewall guide</a><a href="subnet-calculator-guide.html">Subnet calculator guide</a><a href="pppoe-vs-hotspot.html">PPPoE vs Hotspot</a><a href="deployment-checklist.html">Deployment checklist</a><a href="diagnose-radius.html">RADIUS troubleshooting</a></div></div>
+    <a href="tools.html" class="">Devices &amp; tools</a>
+    <a href="blog.html" class="">Blog</a>
+    <a href="contact.html" class="">Support</a>
+  </div>
+  <div class="tb-icons">
+    <a class="tb-btn avatar" href="about.html" title="About ISP Scripts" aria-label="About ISP Scripts"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg></a>
+    <a class="tb-btn" href="changelog.html" title="What’s new" aria-label="What’s new — changelog"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg><span class="dot"></span></a>
+  </div>
+  <button class="navtoggle" id="navToggle" aria-label="Open navigation" aria-controls="navLinks" aria-expanded="false">&#9776;</button>
+</div>
+<aside class="rail"><nav aria-label="Sections"><a href="/" title="Dashboard" aria-label="Dashboard" class="active" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V20a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V9.5"/></svg></a><a href="tools.html" title="Generators" aria-label="Generators"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></a><a href="mikrotik.html" title="Router tools" aria-label="Router tools"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="13" width="19" height="7" rx="1.5"/><path d="M6.5 16.5h.01M10 16.5h.01"/><path d="M14 16.5h4"/><path d="M7 13V9M17 13V9"/></svg></a><a href="wireless-link-budget.html" title="Wireless link budget" aria-label="Wireless link budget"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="15" width="18" height="6" rx="1.5"/><path d="M7 18h.01M11 18h.01"/><path d="M12 15v-3"/><path d="M8.5 9.5a5 5 0 0 1 7 0"/><path d="M6 7a8.5 8.5 0 0 1 12 0"/></svg></a><a href="guide.html" title="Guides &amp; help" aria-label="Guides &amp; help"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.5"/><path d="M9.3 9.2a2.8 2.8 0 0 1 5.4 1c0 1.9-2.7 2.5-2.7 4"/><path d="M12 17.5h.01"/></svg></a></nav></aside>
+
 
 <div class="wrap">
+  <section class="hero" aria-labelledby="hero-title">
+    <div class="hero-copy">
+      <h1 id="hero-title">Professional ISP Toolkit</h1>
+      <p class="hero-sub">Generate, manage, and deploy MikroTik configs</p>
+      <p class="hero-body">ISP Scripts helps WISP operators, small ISPs, and network technicians turn their known network values into a readable PPPoE + RADIUS starting configuration. Review it against your topology before importing — the tool is a baseline, not a substitute for a router backup or a production change plan.</p>
+      <ul class="hero-facts">
+        <li>Free, no signup</li><li>Runs 100% in your browser</li><li>Nothing you type is sent anywhere</li><li>Tested on RouterOS v7.x</li>
+      </ul>
+    </div>
+    <div class="hero-art" aria-hidden="true">
+      <svg viewBox="0 0 440 250" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <radialGradient id="hg" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#F26A3D" stop-opacity=".55"/><stop offset=".55" stop-color="#F26A3D" stop-opacity=".14"/><stop offset="1" stop-color="#F26A3D" stop-opacity="0"/></radialGradient>
+          <linearGradient id="mt" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3a3a3f"/><stop offset="1" stop-color="#1d1d20"/></linearGradient>
+          <linearGradient id="wh" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f4f3f1"/><stop offset="1" stop-color="#c9c7c4"/></linearGradient>
+          <linearGradient id="dk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2c2c30"/><stop offset="1" stop-color="#121214"/></linearGradient>
+        </defs>
+        <ellipse cx="225" cy="150" rx="215" ry="98" fill="url(#hg)"/>
+        <!-- signal traces -->
+        <g fill="none" stroke="#F26A3D" stroke-width="1.6" stroke-linecap="round" opacity=".85">
+          <path d="M74 76v34h40"/><path d="M200 70v28h30"/><path d="M372 54v30h-24"/><path d="M252 44c10 20 30 22 40 44"/>
+        </g>
+        <!-- floating config chips -->
+        <g stroke="#F26A3D" stroke-width="1.4" fill="#2a1a14">
+          <rect x="50" y="38" width="48" height="36" rx="6"/><rect x="176" y="28" width="60" height="40" rx="6"/><rect x="346" y="26" width="46" height="26" rx="5"/>
+        </g>
+        <g stroke="#FF8452" stroke-width="2" stroke-linecap="round">
+          <path d="M60 50h8M72 50h16M60 58h20M60 64h12"/><path d="M188 40h36M188 48h28M188 56h32"/><path d="M356 36h26M356 43h18"/>
+        </g>
+        <circle cx="196" cy="48" r="0"/>
+        <!-- floor line -->
+        <path d="M40 232h390" stroke="#F26A3D" stroke-width="2.4"/>
+        <path d="M40 233h390" stroke="#F26A3D" stroke-width="10" opacity=".12"/>
+        <!-- rack switch (back, left) -->
+        <g>
+          <rect x="30" y="108" width="100" height="36" rx="4" fill="url(#wh)"/>
+          <rect x="30" y="140" width="100" height="6" rx="2" fill="#a9a7a4"/>
+          <g fill="#2b2b2e"><rect x="62" y="118" width="7" height="6"/><rect x="71" y="118" width="7" height="6"/><rect x="80" y="118" width="7" height="6"/><rect x="89" y="118" width="7" height="6"/><rect x="98" y="118" width="7" height="6"/><rect x="107" y="118" width="7" height="6"/><rect x="62" y="127" width="7" height="6"/><rect x="71" y="127" width="7" height="6"/><rect x="80" y="127" width="7" height="6"/><rect x="89" y="127" width="7" height="6"/><rect x="98" y="127" width="7" height="6"/><rect x="107" y="127" width="7" height="6"/></g>
+          <circle cx="42" cy="124" r="2" fill="#62D48B"/><circle cx="49" cy="124" r="2" fill="#F26A3D"/>
+        </g>
+        <!-- long dark switch (front) -->
+        <g>
+          <rect x="18" y="176" width="190" height="52" rx="5" fill="url(#mt)"/>
+          <rect x="18" y="176" width="190" height="4" rx="2" fill="#4a4a50"/>
+          <g fill="#0d0d0f" stroke="#55555c" stroke-width=".8">
+            <rect x="60" y="192" width="9" height="8"/><rect x="71" y="192" width="9" height="8"/><rect x="82" y="192" width="9" height="8"/><rect x="93" y="192" width="9" height="8"/><rect x="104" y="192" width="9" height="8"/><rect x="115" y="192" width="9" height="8"/><rect x="126" y="192" width="9" height="8"/><rect x="137" y="192" width="9" height="8"/>
+            <rect x="60" y="204" width="9" height="8"/><rect x="71" y="204" width="9" height="8"/><rect x="82" y="204" width="9" height="8"/><rect x="93" y="204" width="9" height="8"/><rect x="104" y="204" width="9" height="8"/><rect x="115" y="204" width="9" height="8"/><rect x="126" y="204" width="9" height="8"/><rect x="137" y="204" width="9" height="8"/>
+          </g>
+          <rect x="156" y="190" width="30" height="24" rx="2" fill="#D93A2B"/>
+          <text x="171" y="205" font-family="Inter,Arial" font-size="6" fill="#fff" text-anchor="middle" font-weight="700">SFP+</text>
+          <text x="28" y="200" font-family="Inter,Arial" font-size="8" fill="#cfcdd2" font-weight="700">RB</text>
+        </g>
+        <!-- center router with two antennas -->
+        <g>
+          <path d="M226 96l14-70" stroke="#1a1a1c" stroke-width="7" stroke-linecap="round"/>
+          <path d="M290 96l12-74" stroke="#1a1a1c" stroke-width="7" stroke-linecap="round"/>
+          <path d="M226 96l14-70M290 96l12-74" stroke="#3a3a40" stroke-width="2" stroke-linecap="round"/>
+          <rect x="196" y="112" width="124" height="62" rx="8" fill="url(#dk)"/>
+          <path d="M204 112h108l-6-16H210z" fill="#35353a"/>
+          <rect x="206" y="104" width="46" height="4" rx="2" fill="#F26A3D" opacity=".8"/>
+          <g fill="#0b0b0c" stroke="#4d4d53" stroke-width=".8"><rect x="214" y="150" width="11" height="9"/><rect x="228" y="150" width="11" height="9"/><rect x="242" y="150" width="11" height="9"/><rect x="256" y="150" width="11" height="9"/></g>
+          <circle cx="292" cy="154" r="3" fill="#62D48B"/><circle cx="302" cy="154" r="3" fill="#F26A3D"/>
+          <text x="210" y="134" font-family="Inter,Arial" font-size="8" fill="#9a989e" font-weight="600">hAP</text>
+        </g>
+        <!-- dark tower (right-mid) -->
+        <g>
+          <rect x="300" y="150" width="40" height="80" rx="4" fill="url(#dk)"/>
+          <circle cx="320" cy="172" r="7" fill="none" stroke="#4d4d53" stroke-width="2"/>
+          <rect x="310" y="196" width="20" height="3" rx="1.5" fill="#4d4d53"/><rect x="310" y="203" width="20" height="3" rx="1.5" fill="#4d4d53"/>
+        </g>
+        <!-- white access point with antennas -->
+        <g>
+          <path d="M360 150l-6-82M404 150l6-90M382 150v-78" stroke="#1a1a1c" stroke-width="6" stroke-linecap="round"/>
+          <path d="M360 150l-6-82M404 150l6-90M382 150v-78" stroke="#3c3c42" stroke-width="1.8" stroke-linecap="round"/>
+          <rect x="340" y="150" width="88" height="80" rx="7" fill="url(#wh)"/>
+          <rect x="340" y="150" width="88" height="18" rx="7" fill="#fff"/>
+          <g fill="#2b2b2e"><rect x="352" y="196" width="10" height="9" rx="1"/><rect x="365" y="196" width="10" height="9" rx="1"/><rect x="378" y="196" width="10" height="9" rx="1"/><rect x="391" y="196" width="10" height="9" rx="1"/><rect x="404" y="196" width="10" height="9" rx="1"/></g>
+          <text x="352" y="184" font-family="Inter,Arial" font-size="7" fill="#6d6b70" font-weight="700">MikroTik</text>
+        </g>
+      </svg>
+    </div>
+  </section>
 
-  <nav class="sitenav">
-    <a href="/" class="brand">ispscripts<span class="accent">.</span>com</a>
-    <button class="navtoggle" id="navToggle" aria-label="Open navigation" aria-controls="navLinks" aria-expanded="false">&#9776;</button>
-    <div class="navlinks" id="navLinks">
-      <div class="nav-group">
-        <button type="button" class="nav-group-toggle active">Generators</button>
-        <div class="nav-group-menu"><a href="/">PPPoE + RADIUS</a>
-          <a href="hotspot.html">Hotspot + RADIUS</a>
-          <a href="mikrotik-nat-firewall-generator.html">NAT + Firewall</a>
-          <a href="subnet-calculator.html">IP Subnet Calculator</a>
-          <a href="wireguard.html">WireGuard</a>
-          <a href="port-forwarding.html">Port Forwarding</a>
-          <a href="qos-calculator.html">QoS &amp; Queues</a>
-          <a href="wireless-link-budget.html">Wireless Link Budget</a>
-        </div>
+  <section class="dash" aria-label="Generator overview">
+    <div class="codegen">
+      <div class="codegen-head">
+        <h2>Code Generator</h2>
+        <button type="button" class="codegen-copy" id="dashCopy">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg>
+          <span>Copy</span>
+        </button>
       </div>
-      <div class="nav-group">
-        <button type="button" class="nav-group-toggle">Guides</button>
-        <div class="nav-group-menu">
-          <a href="guide.html">PPPoE + RADIUS Guide</a>
-          <a href="hotspot-guide.html">Hotspot + RADIUS Guide</a>
-          <a href="nat-firewall-guide.html">NAT + Firewall Guide</a>
-          <a href="subnet-calculator-guide.html">Subnet Calculator Guide</a>
-          <a href="pppoe-vs-hotspot.html">PPPoE vs Hotspot</a><a href="deployment-checklist.html">Deployment Checklist</a><a href="diagnose-radius.html">RADIUS Troubleshooting</a>
-        </div>
+      <div class="codegen-body">
+        <ol class="codegen-lines" id="dashLines" aria-label="Preview of the generated pppoe-config.rsc"></ol>
       </div>
-      <a href="tools.html">Tools</a>
-      <a href="blog.html">Blog</a>
-      <a href="about.html">About</a>
-      <a href="contact.html">Contact</a>
+      <p class="codegen-foot">Live preview of <span class="mono">pppoe-config.rsc</span>. <a href="#generator">Edit the settings below</a> and it updates as you type.</p>
     </div>
-  </nav>
 
-  <div class="toolbanner">🛠️ This site has 25+ free networking tools + in-depth guides — <a href="about.html">see everything here</a>.</div>
+    <div class="dash-side">
+      <a class="stat-card" href="tools.html">
+        <span class="stat-label">Free tools &amp; generators</span>
+        <span class="stat-row"><span class="stat-num">24</span>
+          <svg viewBox="0 0 48 28" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 23l12-12 9 8 19-16"/><path d="M33 3h10v10"/></svg>
+        </span>
+      </a>
+      <div class="tools-card">
+        <h2>Popular tools</h2>
+        <ul>
+          <li><a href="#generator"><span class="t-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><rect x="2.5" y="13" width="19" height="7" rx="1.5"/><path d="M6.5 16.5h.01M10 16.5h.01M14 16.5h4M7 13V9M17 13V9"/></svg></span><span class="t-txt"><strong>PPPoE + RADIUS</strong><small>This page</small></span><span class="pill">Ready</span></a></li>
+          <li><a href="hotspot.html"><span class="t-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><rect x="3" y="15" width="18" height="6" rx="1.5"/><path d="M12 15v-3M8.5 9.5a5 5 0 0 1 7 0M6 7a8.5 8.5 0 0 1 12 0"/></svg></span><span class="t-txt"><strong>Hotspot + RADIUS</strong><small>Voucher access</small></span><span class="pill">Ready</span></a></li>
+          <li><a href="mikrotik-nat-firewall-generator.html"><span class="t-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 3v6c0 4.5-3.4 8-8 9-4.6-1-8-4.5-8-9V6z"/></svg></span><span class="t-txt"><strong>NAT + Firewall</strong><small>Gateway hardening</small></span><span class="pill">Ready</span></a></li>
+        </ul>
+      </div>
+    </div>
+  </section>
 
-  <header>
-    <div class="leds">
-      <span class="led on"></span>
-      <span class="led on"></span>
-      <span class="led"></span>
-      <span class="led on"></span>
-      <span class="led"></span>
-    </div>
-    <div class="eyebrow">/interface pppoe-server &nbsp;→&nbsp; RouterOS config generator</div>
-    <h1>Build a tested baseline <span class="accent">MikroTik config</span><br>for your ISP in seconds</h1>
-    <p>ISP Scripts helps WISP operators, small ISPs, and network technicians turn their known network values into a readable PPPoE + RADIUS starting configuration. Review it against your topology before importing — the tool is a baseline, not a substitute for a router backup or a production change plan.</p>
-    <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:16px;">
-      <span style="font-size:12.5px; font-family:var(--font-mono); color:var(--text-secondary); background:var(--bg-panel); border:1px solid var(--border); border-radius:999px; padding:5px 12px;">Free, no signup</span>
-      <span style="font-size:12.5px; font-family:var(--font-mono); color:var(--text-secondary); background:var(--bg-panel); border:1px solid var(--border); border-radius:999px; padding:5px 12px;">Runs 100% in your browser</span>
-      <span style="font-size:12.5px; font-family:var(--font-mono); color:var(--text-secondary); background:var(--bg-panel); border:1px solid var(--border); border-radius:999px; padding:5px 12px;">Nothing you type is sent anywhere</span>
-      <span style="font-size:12.5px; font-family:var(--font-mono); color:var(--text-secondary); background:var(--bg-panel); border:1px solid var(--border); border-radius:999px; padding:5px 12px;">Tested on RouterOS v7.x</span>
-    </div>
-  </header>
+  <h2 class="gen-title" id="generator">MikroTik PPPoE + RADIUS config generator</h2>
+
 
   <div class="grid">
 
@@ -1344,5 +1429,30 @@ add service-name=<span class="v">isp-pppoe</span> interface=<span class="v">ethe
   });
 </script>
 
+<script>
+/* Dashboard code panel: mirrors the live generator output with line numbers */
+(function(){
+  var out=document.getElementById('output'), list=document.getElementById('dashLines'), btn=document.getElementById('dashCopy');
+  if(!out||!list) return;
+  function render(){
+    var html=out.innerHTML.replace(/<span class="cursor"><\/span>/g,'');
+    var lines=html.split('\n');
+    while(lines.length && lines[lines.length-1].trim()==='') lines.pop();
+    list.innerHTML=lines.map(function(l){
+      l=l.replace(/^(add|set)(\s)/,'<span class="kw">$1</span>$2');
+      return '<li>'+(l||' ')+'</li>';
+    }).join('');
+  }
+  new MutationObserver(render).observe(out,{childList:true,characterData:true,subtree:true});
+  render();
+  btn&&btn.addEventListener('click',function(){
+    var text=out.innerText.replace(/\u200b/g,''), label=btn.querySelector('span');
+    function done(){label.textContent='Copied';setTimeout(function(){label.textContent='Copy';},1600);}
+    if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(text).then(done,fallback);}else fallback();
+    function fallback(){var ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');}catch(e){}document.body.removeChild(ta);done();}
+  });
+})();
+</script>
+</div>
 </body>
 </html>

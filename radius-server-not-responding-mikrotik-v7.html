@@ -30,20 +30,20 @@
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #0E1420;
-    --bg-panel: #161D2B;
-    --bg-panel-2: #1B2333;
-    --bg-input: #10161F;
-    --border: #2A3448;
-    --border-soft: #202940;
-    --text-primary: #E8ECF4;
-    --text-secondary: #96A1B8;
-    --text-dim: #5B6479;
-    --accent: #3DDC84;
-    --accent-soft: rgba(61, 220, 132, 0.13);
-    --amber: #F5A623;
+    --bg: #18181a;
+    --bg-panel: #222225;
+    --bg-panel-2: #29292d;
+    --bg-input: #1b1b1d;
+    --border: #36363c;
+    --border-soft: #2c2c31;
+    --text-primary: #F4F2EF;
+    --text-secondary: #A9A7AD;
+    --text-dim: #77757C;
+    --accent: #F26A3D;
+    --accent-soft: rgba(242,106,61, 0.13);
+    --amber: #F2C14E;
     --red: #E5484D;
-    --mono-bg: #090D14;
+    --mono-bg: #151516;
     --font-display: 'Space Grotesk', sans-serif;
     --font-body: 'Inter', sans-serif;
     --font-mono: 'JetBrains Mono', monospace;
@@ -57,7 +57,7 @@
   body {
     margin: 0;
     background:
-      radial-gradient(1100px 500px at 85% -10%, rgba(61,220,132,0.06), transparent 60%),
+      radial-gradient(1100px 500px at 85% -10%, rgba(242,106,61,0.06), transparent 60%),
       var(--bg);
     color: var(--text-primary);
     font-family: var(--font-body);
@@ -232,7 +232,7 @@
     border: 1px solid var(--border);
     padding: 2px 6px;
     border-radius: 4px;
-    color: #A9C4FF;
+    color: #FFB48C;
   }
 
   pre {
@@ -244,7 +244,7 @@
     border-radius: var(--radius);
     padding: 18px 20px;
     overflow-x: auto;
-    color: #C9E8D3;
+    color: #E7E2DA;
     margin: 0 0 20px;
   }
   pre code { background: none; border: none; padding: 0; color: inherit; }
@@ -260,13 +260,13 @@
     font-size: 14px;
   }
   .callout.warn {
-    background: rgba(245, 166, 35, 0.07);
-    border: 1px solid rgba(245, 166, 35, 0.25);
+    background: rgba(242,193,78, 0.07);
+    border: 1px solid rgba(242,193,78, 0.25);
   }
   .callout.warn strong { color: var(--amber); }
   .callout.tip {
     background: var(--accent-soft);
-    border: 1px solid rgba(61, 220, 132, 0.3);
+    border: 1px solid rgba(242,106,61, 0.3);
   }
   .callout.tip strong { color: var(--accent); }
   .callout p { margin: 0; color: var(--text-secondary); }
@@ -284,7 +284,7 @@
   .cta a.btn {
     display: inline-block;
     background: var(--accent);
-    color: #06210F;
+    color: #FFFFFF;
     font-weight: 600;
     font-size: 14px;
     text-decoration: none;
@@ -309,45 +309,34 @@
 </style>
 
 <meta name="author" content="Diaa">
-<meta name="theme-color" content="#0E1420">
 <meta property="og:site_name" content="ISP Scripts">
 <meta property="article:modified_time" content="2026-09-25">
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "RADIUS Server Not Responding on MikroTik RouterOS v7", "description": "Troubleshoot a MikroTik RouterOS v7 RADIUS timeout step by step: PPPoE discovery, routes, UDP 1812/1813, firewall, source IP, shared secret, and accounting.", "author": {"@type": "Person", "name": "Diaa"}, "publisher": {"@type": "Organization", "name": "ISP Scripts", "url": "https://ispscripts.com/"}, "mainEntityOfPage": "https://ispscripts.com/radius-server-not-responding-mikrotik-v7.html", "dateModified": "2026-09-25"}</script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&display=swap">
+<link rel="stylesheet" href="/theme.css">
+<meta name="theme-color" content="#1c1c1e">
 </head><body>
+<div class="app-frame">
+<div class="topbar" role="banner">
+  <a href="/" class="brand" aria-label="ISP Scripts home"><b>ISP</b> Scripts</a>
+  <div class="navlinks" id="navLinks" role="navigation" aria-label="Main">
+    <a href="/" class="">Dashboard</a>
+    <div class="nav-group"><button type="button" class="nav-group-toggle">Generators</button><div class="nav-group-menu"><a href="/">PPPoE + RADIUS</a><a href="hotspot.html">Hotspot + RADIUS</a><a href="mikrotik-nat-firewall-generator.html">NAT + Firewall</a><a href="wireguard.html">WireGuard</a><a href="port-forwarding.html">Port Forwarding</a><a href="qos-calculator.html">QoS &amp; Queues</a><a href="firewall-rule-builder.html">Firewall Rule Builder</a><a href="vlan-generator.html">VLAN Generator</a><a href="dhcp-server-generator.html">DHCP Server</a><hr><a href="tools.html">All tools</a></div></div>
+    <div class="nav-group"><button type="button" class="nav-group-toggle">Guides</button><div class="nav-group-menu"><a href="guide.html">PPPoE + RADIUS guide</a><a href="hotspot-guide.html">Hotspot + RADIUS guide</a><a href="nat-firewall-guide.html">NAT + Firewall guide</a><a href="subnet-calculator-guide.html">Subnet calculator guide</a><a href="pppoe-vs-hotspot.html">PPPoE vs Hotspot</a><a href="deployment-checklist.html">Deployment checklist</a><a href="diagnose-radius.html">RADIUS troubleshooting</a></div></div>
+    <a href="tools.html" class="">Devices &amp; tools</a>
+    <a href="blog.html" class="active">Blog</a>
+    <a href="contact.html" class="">Support</a>
+  </div>
+  <div class="tb-icons">
+    <a class="tb-btn avatar" href="about.html" title="About ISP Scripts" aria-label="About ISP Scripts"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg></a>
+    <a class="tb-btn" href="changelog.html" title="What’s new" aria-label="What’s new — changelog"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg><span class="dot"></span></a>
+  </div>
+  <button class="navtoggle" id="navToggle" aria-label="Open navigation" aria-controls="navLinks" aria-expanded="false">&#9776;</button>
+</div>
+<aside class="rail"><nav aria-label="Sections"><a href="/" title="Dashboard" aria-label="Dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V20a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V9.5"/></svg></a><a href="tools.html" title="Generators" aria-label="Generators"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></a><a href="mikrotik.html" title="Router tools" aria-label="Router tools"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="13" width="19" height="7" rx="1.5"/><path d="M6.5 16.5h.01M10 16.5h.01"/><path d="M14 16.5h4"/><path d="M7 13V9M17 13V9"/></svg></a><a href="wireless-link-budget.html" title="Wireless link budget" aria-label="Wireless link budget"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="15" width="18" height="6" rx="1.5"/><path d="M7 18h.01M11 18h.01"/><path d="M12 15v-3"/><path d="M8.5 9.5a5 5 0 0 1 7 0"/><path d="M6 7a8.5 8.5 0 0 1 12 0"/></svg></a><a href="guide.html" title="Guides &amp; help" aria-label="Guides &amp; help"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.5"/><path d="M9.3 9.2a2.8 2.8 0 0 1 5.4 1c0 1.9-2.7 2.5-2.7 4"/><path d="M12 17.5h.01"/></svg></a></nav></aside>
+
 
 <div class="wrap">
-
-  <nav class="sitenav">
-    <a href="/" class="brand">ispscripts<span class="accent">.</span>com</a>
-    <button class="navtoggle" id="navToggle" aria-label="Open navigation" aria-controls="navLinks" aria-expanded="false">&#9776;</button>
-    <div class="navlinks" id="navLinks">
-      <div class="nav-group">
-        <button type="button" class="nav-group-toggle">Generators</button>
-        <div class="nav-group-menu"><a href="/">PPPoE + RADIUS</a>
-          <a href="hotspot.html">Hotspot + RADIUS</a>
-          <a href="mikrotik-nat-firewall-generator.html">NAT + Firewall</a>
-          <a href="subnet-calculator.html">IP Subnet Calculator</a>
-          <a href="wireguard.html">WireGuard</a>
-          <a href="port-forwarding.html">Port Forwarding</a>
-          <a href="qos-calculator.html">QoS &amp; Queues</a>
-          <a href="wireless-link-budget.html">Wireless Link Budget</a>
-        </div>
-      </div>
-      <div class="nav-group">
-        <button type="button" class="nav-group-toggle">Guides</button>
-        <div class="nav-group-menu">
-          <a href="guide.html">PPPoE + RADIUS Guide</a>
-          <a href="hotspot-guide.html">Hotspot + RADIUS Guide</a>
-          <a href="nat-firewall-guide.html">NAT + Firewall Guide</a>
-          <a href="subnet-calculator-guide.html">Subnet Calculator Guide</a>
-          <a href="pppoe-vs-hotspot.html">PPPoE vs Hotspot</a><a href="deployment-checklist.html">Deployment Checklist</a><a href="diagnose-radius.html">RADIUS Troubleshooting</a>
-        </div>
-      </div>
-      <a href="blog.html" class="active">Blog</a>
-      <a href="about.html">About</a>
-      <a href="contact.html">Contact</a>
-    </div>
-  </nav>
 
   
   <article>
@@ -477,5 +466,6 @@
     document.querySelectorAll('.nav-group.open').forEach(function (g) { g.classList.remove('open'); });
   });
 </script>
+</div>
 </body>
 </html>

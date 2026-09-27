@@ -59,13 +59,10 @@ h1 .accent,h2 .accent{color:var(--orange)}
 /* ---------- App frame ---------- */
 .app-frame{
   position:relative;
-  max-width:1440px;
-  margin:18px auto;
+  width:100%;
+  margin:0;
   background:var(--shell);
-  border:1px solid #2b2b2f;
-  border-radius:22px;
-  box-shadow:0 30px 80px rgba(0,0,0,.55), 0 0 0 1px rgba(255,255,255,.02) inset;
-  min-height:calc(100vh - 36px);
+  min-height:100vh;
   overflow:clip;
 }
 
@@ -83,6 +80,8 @@ h1 .accent,h2 .accent{color:var(--orange)}
   font:700 25px/1 var(--font-display);
   color:var(--fg); text-decoration:none; letter-spacing:-.02em; white-space:nowrap;
 }
+.topbar .brand{display:inline-block;white-space:nowrap}
+.topbar .brand::before{content:'';display:inline-block;vertical-align:middle;margin:-4px 11px 0 0;width:36px;height:36px;border-radius:10px;background:url(/favicon.svg) center/cover no-repeat;box-shadow:0 6px 16px rgba(242,106,61,.3)}
 .topbar .brand b{color:var(--orange);font-weight:700}
 .topbar .navlinks{display:flex;align-items:stretch;gap:34px;height:100%;flex:1}
 .topbar .navlinks > a,
@@ -154,10 +153,10 @@ h1 .accent,h2 .accent{color:var(--orange)}
   margin:0 0 0 var(--rail-w) !important;
   padding:34px clamp(20px,4vw,52px) 60px !important;
 }
-.app-frame > .wrap > *{max-width:1180px}
+.app-frame > .wrap > *{max-width:1360px}
 .app-frame > .wrap > .grid,
 .app-frame > .wrap > .dash,
-.app-frame > .wrap > .hero{max-width:1180px}
+.app-frame > .wrap > .hero{max-width:1360px}
 
 /* ---------- Panels / cards ---------- */
 .panel,.results,.explainer,.card,.about-card,.related a,.tool-card,.faq details,
@@ -218,9 +217,9 @@ footer a{color:var(--fg-2) !important}
 }
 @media (max-width:860px){
   :root{--rail-w:0px;--top-h:64px}
-  .app-frame{margin:0;border-radius:0;border:0;min-height:100vh}
   .topbar{padding:0 16px}
   .topbar .brand{font-size:22px}
+  .topbar .brand::before{width:32px;height:32px;border-radius:9px}
   .topbar .navtoggle{display:block;margin-left:6px}
   .topbar .tb-icons{margin-left:auto}
   .topbar .tb-btn.avatar{display:none}
